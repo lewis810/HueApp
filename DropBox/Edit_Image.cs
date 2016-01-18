@@ -14,7 +14,9 @@ using System.Xml;
 
 namespace DropBox
 {
-
+    //ToDo
+    //가로로 긴 이미지 처리
+    //
     public partial class Edit_Image : Form
     {
         struct link_info
@@ -39,6 +41,7 @@ namespace DropBox
         int image_tag;
         string work_message;
         int btn_id_to_add = -1;
+        int click_init = 0;
 
         List<link_info> link_data = new List<link_info>();
         link_info link_temp;
@@ -47,7 +50,7 @@ namespace DropBox
         List<image_info> imageInfo = new List<image_info>();
 
         Control[] btn_link;
-        Button TempDeleteButton;
+        Button TempDeleteButton, moveBtn;
         ContextMenu cm;
 
         //drawing
@@ -61,6 +64,9 @@ namespace DropBox
         Boolean myPress;
         Graphics g;
         Rectangle rect;
+
+        bool isDragged = false;
+        Point ptOffset;
         //drawing
 
         Image mainImage, imageTemp;
@@ -72,7 +78,7 @@ namespace DropBox
 
         public Edit_Image() { InitializeComponent(); }
 
-        public Edit_Image(string _mPath, string _filePath)
+        public Edit_Image(string _mPath, string _filePath, string _deviceType)
         {
             InitializeComponent();
 
@@ -114,12 +120,13 @@ namespace DropBox
             org_width = img.Width;
             org_height = img.Height;
 
+
             //Edit_Image 처음 호출 했을 때 panel1의 사이즈 정하기
             if (img != null && (img.Height > img.Width))
             {
                 panel1.Height = (int)(this.Height * 0.9);
                 float WidthOverHeight = (float)img.Width / (float)img.Height;    //이미지의 가로세로 비율
-                panel1.Width = (int)(WidthOverHeight * (this.Height * 0.9));
+                panel1.Width = (int)(getWidthOverHeight("iPhone5") * (this.Height * 0.9));      //여기에 디바이스정보 넣기
                 //MessageBox.Show(img.Width.ToString() + "/" + img.Height.ToString() + "*" + this.Height.ToString() + "=" + panel1.Width.ToString() + ", " + WidthOverHeight.ToString());
                 panel1.Location = new Point(((this.Width / 2) - (panel1.Width / 2)), 0);
 
@@ -130,6 +137,21 @@ namespace DropBox
             pictureBox1.BackgroundImage = mainImage;
             groupBox1_Load();
             read_link();
+        }
+
+        private double getWidthOverHeight(string deviceType)
+        {
+            double ratio = 0;
+            switch (deviceType)
+            {
+                case "GalaxyS2_HD":
+                case "GalaxyS3":
+                case "GalaxyNote2":
+                case "iPhone5":
+                case "iPhone6": ratio = 0.5625; break;  // 9 : 16
+            }
+
+            return ratio;
         }
 
         private void groupBox1_Load()
@@ -158,9 +180,17 @@ namespace DropBox
             btn_link = new Control[imageInfo.Count];
 
             //프로젝트 내에 있는 파일이름 가져오기
-            var imageFiles = new DirectoryInfo(mPath).GetFiles("*.png");
+            
+            DirectoryInfo dinfo = new DirectoryInfo(mPath);
 
-            for (int i = 0; i < imageInfo.Count; i++)
+            string[] extensions = new[] { ".jpg", ".tiff", ".bmp", ".png" };
+
+            FileInfo[] files =
+                dinfo.EnumerateFiles()
+                     .Where(f => extensions.Contains(f.Extension.ToLower()))
+                     .ToArray();
+
+            for (int i = 0; i < files.Length; i++)
             {
                 //링크연결을 위한 이미지
                 btn_link[i] = new Button();
@@ -171,7 +201,7 @@ namespace DropBox
                 btn_link[i].Tag = i.ToString();
 
                 btn_link[i].Click += new EventHandler(btt_link_click);
-                btn_link[i].Name = imageFiles[i].Name;
+                btn_link[i].Name = files[i].Name;
                 btn_link[i].Text = i.ToString();
                 btn_link[i].ForeColor = Color.Lime;
                 btn_link[i].Font = new Font(btn_link[i].Font.Name, 10, FontStyle.Bold);
@@ -229,7 +259,7 @@ namespace DropBox
                         xmlWriter.WriteStartDocument();
                         xmlWriter.WriteStartElement("LinkTable");
                         xmlWriter.WriteStartElement("DeviceInfo");
-                        xmlWriter.WriteString("IOS");
+                        xmlWriter.WriteString("IOS");               //device info
                         xmlWriter.WriteEndElement();
 
                         createNode(image_name, link_temp.btn_id.ToString(), link_temp.from
@@ -320,19 +350,19 @@ namespace DropBox
         {
             XDocument xDocument = XDocument.Load(mPath + "link.xml");
             XElement root = xDocument.Element("LinkTable");
-            IEnumerable<XElement> rows = root.Descendants("LinkInfo");
+            IEnumerable<XElement> rows = root.Descendants("LinkInfo"); //xml파일 안에 링크가 아무것도 없는 경우 여기서 에러남
             XElement firstRow = rows.First();
             firstRow.AddBeforeSelf(
-               new XElement("LinkInfo",
-               new XElement("FileName", pFileName),
-               new XElement("Tag", pTag),
-               new XElement("SrcIdx", pSrcIdx),
-               new XElement("DstIdx", pDstIdx),
-               new XElement("LinkX", pLinkX),
-               new XElement("LinkY", pLinkY),
-               new XElement("LinkWidth", pLinkWidth),
-               new XElement("LinkHeight", pLinkHeight)
-               ));
+                new XElement("LinkInfo",
+                new XElement("FileName", pFileName),
+                new XElement("Tag", pTag),
+                new XElement("SrcIdx", pSrcIdx),
+                new XElement("DstIdx", pDstIdx),
+                new XElement("LinkX", pLinkX),
+                new XElement("LinkY", pLinkY),
+                new XElement("LinkWidth", pLinkWidth),
+                new XElement("LinkHeight", pLinkHeight)
+                ));
             xDocument.Save(mPath + "link.xml");
             MessageBox.Show("XML File appended ! ");
         }
@@ -350,7 +380,26 @@ namespace DropBox
             }
             else
             {
+
+                if (e.Button == MouseButtons.Left)
+                {
+                    isDragged = true;
+                    moveBtn = btn;
+                    Point ptStartPosition = moveBtn.PointToScreen(new Point(e.X, e.Y));
+
+                    ptOffset = new Point();
+                    ptOffset.X = btn.Location.X - ptStartPosition.X;
+                    ptOffset.Y = btn.Location.Y - ptStartPosition.Y;
+                }
+                else
+                {
+                    isDragged = false;
+                }
+
                 panel_image_link.Visible = false;
+
+
+
                 if (ctl != null)
                 {
                     for (int i = 0; i < link_data.Count; i++)
@@ -395,17 +444,28 @@ namespace DropBox
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
+            this.isDragged = true;
             this.myPress = true; //마우스가 눌러짐
             this.link_alloc.Visible = false;
             this.panel_image_link.Visible = false;
             this.myPointStart.X = e.X; //마우스가 눌러진 X 좌표
             this.myPointStart.Y = e.Y; //마우스가 눌러진 Y 좌표
+            this.click_init = 1;
             this.g = Graphics.FromHwnd(pictureBox1.Handle);
         }
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (myShape == 3)      //사각형
+            if (isDragged)
+            {
+                //Point newPoint = moveBtn.PointToScreen(new Point(e.X, e.Y));
+                //newPoint.Offset(ptOffset);
+                moveBtn.Location = new Point(e.X, e.Y);
+                moveBtn.FlatAppearance.BorderColor = Color.Lime;
+                //Console.WriteLine(e.X.ToString() + ", " + e.Y.ToString());
+            }
+
+            else if (myShape == 3)      //사각형
             {
                 if (this.myPress)
                 {
@@ -439,6 +499,8 @@ namespace DropBox
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
+            isDragged = false;
+            //MessageBox.Show(moveBtn.Location.X.ToString() + ", " + moveBtn.Location.Y.ToString());
             if (this.myShape == 3)
             {
                 this.sizeX = Math.Abs(e.X - this.myPointStart.X);
@@ -457,7 +519,7 @@ namespace DropBox
                 link_temp.image_height = this.sizeY;
 
                 //그냥 클릭한 것에 대해서는 반응하지 않도록
-                if (Math.Abs(this.myPointStart.X - e.X) > 5 && Math.Abs(this.myPointStart.Y - e.Y) > 5)
+                if (Math.Abs(this.myPointStart.X - e.X) > 5 && Math.Abs(this.myPointStart.Y - e.Y) > 5 && click_init == 1)
                 {
                     this.link_alloc.Visible = true;
                     this.link_alloc.BringToFront();
@@ -485,9 +547,11 @@ namespace DropBox
                 }
                 else
                 {
+                    link_alloc.Visible = false;
                     this.Invalidate();
                 }
             }
+            click_init = 0;
             this.myPress = false;
         }
 
@@ -530,9 +594,12 @@ namespace DropBox
         //read
         private void read_link()
         {
-            DirectoryInfo Info = new DirectoryInfo(mPath + "link.xml");
+            
+            FileInfo Info = new FileInfo(mPath + "link.xml");
+            //MessageBox.Show(Info.ToString());
             if (Info.Exists)
-            {
+            {   
+                
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(mPath + "link.xml");
                 XmlNodeList nodeList = xmlDoc.DocumentElement.SelectNodes("/LinkTable/LinkInfo");
@@ -605,6 +672,10 @@ namespace DropBox
                 }
                 btn_id_to_add += 1;   //다음 버튼 생성 시 부여될 id
             }
+            else
+            {
+                MessageBox.Show("no Info");
+            }
         }
 
         //delete
@@ -630,6 +701,14 @@ namespace DropBox
         {
             return link_data.ElementAt(temp).btn_id;
         }
-        
+
+        //public IEnumerable<FileInfo> GetFilesByExtensions(this DirectoryInfo dir, params string[] extensions)
+        //{
+        //    if (extensions == null)
+        //        throw new ArgumentNullException("extensions");
+        //    IEnumerable<FileInfo> files = dir.EnumerateFiles();
+        //    return files.Where(f => extensions.Contains(f.Extension));
+        //}
+
     }
 }

@@ -179,7 +179,7 @@ namespace DropBox
                     //MessageBox.Show(temp, "Warning",
                     //        MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    EditProject editProject = new EditProject(mPath);
+                    EditProject editProject = new EditProject(mPath, " ");
                     editProject.Show();
                     //MessageBox.Show("Left click", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
@@ -294,9 +294,9 @@ namespace DropBox
                 //MessageBox.Show(file["path"].ToString() + "\n" + Path.GetDirectoryName(file["path"].ToString()).Replace("\\", "/"));
                 //MessageBox.Show("C:\\Users\\" + Environment.UserName + "\\Dropbox");
 
-                Edit_Image edit_image = new Edit_Image("C:\\Users\\" + Environment.UserName + "\\Dropbox" + Path.GetDirectoryName(file["path"].ToString())
-                                                    , "C:\\Users\\" + Environment.UserName + "\\Dropbox\\" + file["path"].ToString());
-                edit_image.Show();
+                //Edit_Image edit_image = new Edit_Image("C:\\Users\\" + Environment.UserName + "\\Dropbox" + Path.GetDirectoryName(file["path"].ToString())
+                //                                    , "C:\\Users\\" + Environment.UserName + "\\Dropbox\\" + file["path"].ToString());
+                //edit_image.Show();
             }
 
             else

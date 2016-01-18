@@ -16,20 +16,21 @@ namespace DropBox
     {
         private string myPath;
         private Button TempDeleteButton;
+        private string deviceType;
 
         public EditProject()
         {
             InitializeComponent();
         }
 
-        public EditProject(string _myPath)
+        public EditProject(string _myPath, string _deviceType)
         {
             InitializeComponent();
 
             myPath = _myPath;
+            deviceType = _deviceType;
 
             DirectoryInfo Info = new DirectoryInfo(myPath + "\\");
-
 
             if (Info.Exists)
             {
@@ -194,7 +195,7 @@ namespace DropBox
 
 
 
-                    Edit_Image editProject = new Edit_Image(myPath, mPath);
+                    Edit_Image editProject = new Edit_Image(myPath, mPath, deviceType);
                     editProject.Show();
                     break;
                 case MouseButtons.Right:

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{16F47A80-38E4-4885-A788-DEE61FDDC51D}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DropBox</RootNamespace>
     <AssemblyName>DropBox</AssemblyName>
@@ -98,6 +98,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="CreateNewProject.resx">
+      <DependentUpon>CreateNewProject.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EditProject.resx">
       <DependentUpon>EditProject.cs</DependentUpon>
     </EmbeddedResource>

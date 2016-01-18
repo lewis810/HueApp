@@ -68,10 +68,7 @@ namespace DropBox
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
             //Image mImage = Image.FromFile((string)di.GetFiles()[0].Name);
-
-
 
             Button newButton = new Button();
             newButton.Name = textBoxProjectName.Text;
@@ -88,6 +85,7 @@ namespace DropBox
         private void eachButton_Click(object sender, MouseEventArgs e)
         {
             //MouseEventArgs me = (MouseEventArgs)e;
+            
 
             switch (e.Button)
             {
@@ -103,7 +101,7 @@ namespace DropBox
                     //MessageBox.Show(temp, "Warning",
                     //        MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    EditProject editProject = new EditProject(mPath);
+                    EditProject editProject = new EditProject(mPath, getDevice(comboBox1.SelectedItem.ToString()));
                     editProject.Show();
                     //MessageBox.Show("Left click", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
@@ -124,6 +122,24 @@ namespace DropBox
 
         }
 
+        //device 리스트를 만들어서 체크해서 넘기는 것
+        private string getDevice(string temp)
+        {
+            string[] device_list = {"iPhone4", "iPhone5", "iPhone6", "GalaxyS4", "GalaxyS5"};
+            string device = string.Empty;
+            
+            for(int i = 0; i < device_list.Length; i++)
+            {
+                if(temp.Contains(device_list[i]) == true)
+                {
+                    device = device_list[i];
+                    break;
+                }
+            }
+
+            return device;
+        }
+
         private void menuItem_delete_click(object sender, EventArgs e)
         {
 
@@ -139,8 +155,6 @@ namespace DropBox
             Info.Delete(true);
 
             form1.flowLayoutPanel1.Controls.Remove(main.TempDeleteButton);
-
-
 
             //$$$$$$
         }
