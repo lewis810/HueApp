@@ -50,11 +50,10 @@
             this.tsBar.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.tsBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbtnLine04});
-            this.tsBar.Location = new System.Drawing.Point(1040, 0);
+            this.tsBar.Location = new System.Drawing.Point(615, 0);
             this.tsBar.Name = "tsBar";
-            this.tsBar.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
             this.tsBar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.tsBar.Size = new System.Drawing.Size(25, 906);
+            this.tsBar.Size = new System.Drawing.Size(24, 654);
             this.tsBar.TabIndex = 3;
             this.tsBar.Text = "tsBar";
             // 
@@ -63,16 +62,16 @@
             this.tsbtnLine04.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.tsbtnLine04.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbtnLine04.Name = "tsbtnLine04";
-            this.tsbtnLine04.Size = new System.Drawing.Size(20, 4);
+            this.tsbtnLine04.Size = new System.Drawing.Size(21, 4);
             this.tsbtnLine04.Text = "toolStripButton1";
             this.tsbtnLine04.ToolTipText = "사각형";
             // 
             // link_alloc
             // 
-            this.link_alloc.Location = new System.Drawing.Point(622, 341);
-            this.link_alloc.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.link_alloc.Location = new System.Drawing.Point(373, 246);
+            this.link_alloc.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.link_alloc.Name = "link_alloc";
-            this.link_alloc.Size = new System.Drawing.Size(93, 28);
+            this.link_alloc.Size = new System.Drawing.Size(56, 20);
             this.link_alloc.TabIndex = 6;
             this.link_alloc.Text = "링크연동";
             this.link_alloc.UseVisualStyleBackColor = true;
@@ -85,10 +84,10 @@
             this.panel_image_link.AutoSize = true;
             this.panel_image_link.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panel_image_link.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel_image_link.Location = new System.Drawing.Point(0, 906);
-            this.panel_image_link.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel_image_link.Location = new System.Drawing.Point(0, 654);
+            this.panel_image_link.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.panel_image_link.Name = "panel_image_link";
-            this.panel_image_link.Size = new System.Drawing.Size(1040, 0);
+            this.panel_image_link.Size = new System.Drawing.Size(615, 0);
             this.panel_image_link.TabIndex = 7;
             this.panel_image_link.Visible = false;
             // 
@@ -96,10 +95,10 @@
             // 
             this.panel_image_load.AutoScroll = true;
             this.panel_image_load.BackColor = System.Drawing.Color.Silver;
-            this.panel_image_load.Location = new System.Drawing.Point(0, 150);
-            this.panel_image_load.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel_image_load.Location = new System.Drawing.Point(0, 108);
+            this.panel_image_load.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.panel_image_load.Name = "panel_image_load";
-            this.panel_image_load.Size = new System.Drawing.Size(1027, 446);
+            this.panel_image_load.Size = new System.Drawing.Size(616, 322);
             this.panel_image_load.TabIndex = 8;
             this.panel_image_load.Visible = false;
             // 
@@ -109,9 +108,9 @@
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(405, 666);
+            this.pictureBox1.Size = new System.Drawing.Size(243, 481);
             this.pictureBox1.TabIndex = 9;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
@@ -122,27 +121,29 @@
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Location = new System.Drawing.Point(335, 12);
+            this.panel1.Location = new System.Drawing.Point(201, 9);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(405, 666);
+            this.panel1.Size = new System.Drawing.Size(243, 481);
             this.panel1.TabIndex = 10;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.label1.Location = new System.Drawing.Point(1040, 0);
+            this.label1.Location = new System.Drawing.Point(615, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(0, 18);
+            this.label1.Size = new System.Drawing.Size(0, 13);
             this.label1.TabIndex = 11;
             // 
             // Edit_Image
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ClientSize = new System.Drawing.Size(1065, 906);
+            this.ClientSize = new System.Drawing.Size(639, 654);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel_image_link);
@@ -150,7 +151,7 @@
             this.Controls.Add(this.tsBar);
             this.Controls.Add(this.panel_image_load);
             this.DoubleBuffered = true;
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.Name = "Edit_Image";
             this.Text = "Form1";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;

@@ -530,77 +530,81 @@ namespace DropBox
         //read
         private void read_link()
         {
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(mPath + "link.xml");
-            XmlNodeList nodeList = xmlDoc.DocumentElement.SelectNodes("/LinkTable/LinkInfo");
-            string pFileName = "", pTag = "", pSrcIdx = "", pDstIdx = "";
-            string pLinkX = "", pLinkY = "", pLinkWidth = "", pLinkHeight = "";
-            int i = 0;
-            foreach (XmlNode node in nodeList)
+            DirectoryInfo Info = new DirectoryInfo(mPath + "link.xml");
+            if (Info.Exists)
             {
-                pFileName = node.SelectSingleNode("FileName").InnerText;
-                pTag = node.SelectSingleNode("Tag").InnerText;
-                pSrcIdx = node.SelectSingleNode("SrcIdx").InnerText;
-                pDstIdx = node.SelectSingleNode("DstIdx").InnerText;
-                pLinkX = node.SelectSingleNode("LinkX").InnerText;
-                pLinkY = node.SelectSingleNode("LinkY").InnerText;
-                pLinkWidth = node.SelectSingleNode("LinkWidth").InnerText;
-                pLinkHeight = node.SelectSingleNode("LinkHeight").InnerText;
-                //MessageBox.Show("FileName : " + pFileName + "\n"
-                //    + "Tag : " + pTag + "\n"
-                //    + "SrcIdx : " + pSrcIdx + "\n"
-                //    + "DstIdx : " + pDstIdx + "\n"
-                //    + "LinkX : " + pLinkX + "\n"
-                //    + "LinkY : " + pLinkY + "\n"
-                //    + "LInkWidth : " + pLinkWidth + "\n"
-                //    + "LinkHeight : " + pLinkHeight + "\n");
-                link_temp.from = pSrcIdx;
-                link_temp.to = pDstIdx;
-                link_temp.image_xy = new Point(Convert.ToInt32(pLinkX), Convert.ToInt32(pLinkY));
-                link_temp.image_width = Convert.ToInt32(pLinkWidth);
-                link_temp.image_height = Convert.ToInt32(pLinkHeight);
-                link_temp.btn_id = Convert.ToInt32(pTag);
-                if(btn_id_to_add < link_temp.btn_id)
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(mPath + "link.xml");
+                XmlNodeList nodeList = xmlDoc.DocumentElement.SelectNodes("/LinkTable/LinkInfo");
+                string pFileName = "", pTag = "", pSrcIdx = "", pDstIdx = "";
+                string pLinkX = "", pLinkY = "", pLinkWidth = "", pLinkHeight = "";
+                int i = 0;
+                foreach (XmlNode node in nodeList)
                 {
-                    btn_id_to_add = link_temp.btn_id;
+                    pFileName = node.SelectSingleNode("FileName").InnerText;
+                    pTag = node.SelectSingleNode("Tag").InnerText;
+                    pSrcIdx = node.SelectSingleNode("SrcIdx").InnerText;
+                    pDstIdx = node.SelectSingleNode("DstIdx").InnerText;
+                    pLinkX = node.SelectSingleNode("LinkX").InnerText;
+                    pLinkY = node.SelectSingleNode("LinkY").InnerText;
+                    pLinkWidth = node.SelectSingleNode("LinkWidth").InnerText;
+                    pLinkHeight = node.SelectSingleNode("LinkHeight").InnerText;
+                    //MessageBox.Show("FileName : " + pFileName + "\n"
+                    //    + "Tag : " + pTag + "\n"
+                    //    + "SrcIdx : " + pSrcIdx + "\n"
+                    //    + "DstIdx : " + pDstIdx + "\n"
+                    //    + "LinkX : " + pLinkX + "\n"
+                    //    + "LinkY : " + pLinkY + "\n"
+                    //    + "LInkWidth : " + pLinkWidth + "\n"
+                    //    + "LinkHeight : " + pLinkHeight + "\n");
+                    link_temp.from = pSrcIdx;
+                    link_temp.to = pDstIdx;
+                    link_temp.image_xy = new Point(Convert.ToInt32(pLinkX), Convert.ToInt32(pLinkY));
+                    link_temp.image_width = Convert.ToInt32(pLinkWidth);
+                    link_temp.image_height = Convert.ToInt32(pLinkHeight);
+                    link_temp.btn_id = Convert.ToInt32(pTag);
+                    if (btn_id_to_add < link_temp.btn_id)
+                    {
+                        btn_id_to_add = link_temp.btn_id;
+                    }
+
+                    if (link_temp.from.CompareTo(image_name) == 0)
+                    {
+                        //이미지의 오리지널 데이터
+                        //MessageBox.Show("temp X : " + link_temp.image_xy.X.ToString() + "\ntemp Y : " + link_temp.image_xy.Y.ToString()
+                        //                + "\ntemp width : " + link_temp.image_width.ToString() + "\ntemp height : " + link_temp.image_height.ToString());
+                        link_temp.bttn = new Button();
+                        link_data.Add(link_temp);
+                        this.pictureBox1.Controls.Add(link_data.ElementAt(i).bttn);
+                        this.link_data.ElementAt(i).bttn.Parent = this.pictureBox1;
+                        link_data.ElementAt(i).bttn.MouseUp += new MouseEventHandler(btt_in_picture);
+                        link_data.ElementAt(i).bttn.Visible = true;
+                        link_data.ElementAt(i).bttn.FlatStyle = FlatStyle.Flat;
+                        link_data.ElementAt(i).bttn.BackColor = Color.Transparent;
+                        link_data.ElementAt(i).bttn.FlatAppearance.BorderColor = Color.Lime;
+                        link_data.ElementAt(i).bttn.FlatAppearance.MouseDownBackColor = Color.Transparent;
+                        link_data.ElementAt(i).bttn.FlatAppearance.MouseOverBackColor = Color.Transparent;
+                        link_data.ElementAt(i).bttn.Location = new Point((int)(link_temp.image_xy.X * resize_ratio), (int)(link_temp.image_xy.Y * resize_ratio));
+                        link_data.ElementAt(i).bttn.Width = (int)(link_temp.image_width * resize_ratio);
+                        link_data.ElementAt(i).bttn.Height = (int)(link_temp.image_height * resize_ratio);
+                        link_data.ElementAt(i).bttn.BringToFront();
+                        //비율이 조정된 데이터
+                        //MessageBox.Show("btn X : " + link_data.ElementAt(i).bttn.Location.X.ToString()
+                        //                + "\nbtn Y : " + link_data.ElementAt(i).bttn.Location.Y.ToString()
+                        //                + "\nbtn width : " + link_data.ElementAt(i).bttn.Width
+                        //                + "\nbtn height : " + link_data.ElementAt(i).bttn.Height);
+
+                        //contextMenu 설정
+                        link_data.ElementAt(i).bttn.ContextMenu = cm;
+
+                        //원본 width * 변경 x 좌표 / 변경 width = 원본 x 좌표 
+                        //Console.WriteLine("원본 x 좌표 : " + (((double)img.Width * (double)link_data.ElementAt(i).image_xy.X) / (double)panel1.Width).ToString());
+                        //MessageBox.Show(link_data.ElementAt(i).bttn.Location.X.ToString() + ", " + link_data.ElementAt(i).image_xy.X.ToString());
+                        i++;
+                    }
                 }
-
-                if (link_temp.from.CompareTo(image_name) == 0)
-                {
-                    //이미지의 오리지널 데이터
-                    //MessageBox.Show("temp X : " + link_temp.image_xy.X.ToString() + "\ntemp Y : " + link_temp.image_xy.Y.ToString()
-                    //                + "\ntemp width : " + link_temp.image_width.ToString() + "\ntemp height : " + link_temp.image_height.ToString());
-                    link_temp.bttn = new Button();
-                    link_data.Add(link_temp);
-                    this.pictureBox1.Controls.Add(link_data.ElementAt(i).bttn);
-                    this.link_data.ElementAt(i).bttn.Parent = this.pictureBox1;
-                    link_data.ElementAt(i).bttn.MouseUp += new MouseEventHandler(btt_in_picture);
-                    link_data.ElementAt(i).bttn.Visible = true;
-                    link_data.ElementAt(i).bttn.FlatStyle = FlatStyle.Flat;
-                    link_data.ElementAt(i).bttn.BackColor = Color.Transparent;
-                    link_data.ElementAt(i).bttn.FlatAppearance.BorderColor = Color.Lime;
-                    link_data.ElementAt(i).bttn.FlatAppearance.MouseDownBackColor = Color.Transparent;
-                    link_data.ElementAt(i).bttn.FlatAppearance.MouseOverBackColor = Color.Transparent;
-                    link_data.ElementAt(i).bttn.Location = new Point((int)(link_temp.image_xy.X * resize_ratio), (int)(link_temp.image_xy.Y * resize_ratio));
-                    link_data.ElementAt(i).bttn.Width = (int)(link_temp.image_width * resize_ratio);
-                    link_data.ElementAt(i).bttn.Height = (int)(link_temp.image_height * resize_ratio);
-                    link_data.ElementAt(i).bttn.BringToFront();
-                    //비율이 조정된 데이터
-                    //MessageBox.Show("btn X : " + link_data.ElementAt(i).bttn.Location.X.ToString()
-                    //                + "\nbtn Y : " + link_data.ElementAt(i).bttn.Location.Y.ToString()
-                    //                + "\nbtn width : " + link_data.ElementAt(i).bttn.Width
-                    //                + "\nbtn height : " + link_data.ElementAt(i).bttn.Height);
-
-                    //contextMenu 설정
-                    link_data.ElementAt(i).bttn.ContextMenu = cm;
-
-                    //원본 width * 변경 x 좌표 / 변경 width = 원본 x 좌표 
-                    //Console.WriteLine("원본 x 좌표 : " + (((double)img.Width * (double)link_data.ElementAt(i).image_xy.X) / (double)panel1.Width).ToString());
-                    //MessageBox.Show(link_data.ElementAt(i).bttn.Location.X.ToString() + ", " + link_data.ElementAt(i).image_xy.X.ToString());
-                    i++;
-                }
+                btn_id_to_add += 1;   //다음 버튼 생성 시 부여될 id
             }
-            btn_id_to_add += 1;   //다음 버튼 생성 시 부여될 id
         }
 
         //delete
