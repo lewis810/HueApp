@@ -381,20 +381,20 @@ namespace DropBox
             else
             {
 
-                if (e.Button == MouseButtons.Left)
-                {
-                    isDragged = true;
-                    moveBtn = btn;
-                    Point ptStartPosition = moveBtn.PointToScreen(new Point(e.X, e.Y));
+                //if (e.Button == MouseButtons.Left)
+                //{
+                //    isDragged = true;
+                //    moveBtn = btn;
+                //    Point ptStartPosition = moveBtn.PointToScreen(new Point(e.X, e.Y));
 
-                    ptOffset = new Point();
-                    ptOffset.X = btn.Location.X - ptStartPosition.X;
-                    ptOffset.Y = btn.Location.Y - ptStartPosition.Y;
-                }
-                else
-                {
-                    isDragged = false;
-                }
+                //    ptOffset = new Point();
+                //    ptOffset.X = btn.Location.X - ptStartPosition.X;
+                //    ptOffset.Y = btn.Location.Y - ptStartPosition.Y;
+                //}
+                //else
+                //{
+                //    isDragged = false;
+                //}
 
                 panel_image_link.Visible = false;
 
@@ -444,7 +444,7 @@ namespace DropBox
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
-            this.isDragged = true;
+            //this.isDragged = true;
             this.myPress = true; //마우스가 눌러짐
             this.link_alloc.Visible = false;
             this.panel_image_link.Visible = false;
@@ -456,16 +456,16 @@ namespace DropBox
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDragged)
-            {
-                //Point newPoint = moveBtn.PointToScreen(new Point(e.X, e.Y));
-                //newPoint.Offset(ptOffset);
-                moveBtn.Location = new Point(e.X, e.Y);
-                moveBtn.FlatAppearance.BorderColor = Color.Lime;
-                //Console.WriteLine(e.X.ToString() + ", " + e.Y.ToString());
-            }
+            //if (isDragged)
+            //{
+            //    //Point newPoint = moveBtn.PointToScreen(new Point(e.X, e.Y));
+            //    //newPoint.Offset(ptOffset);
+            //    moveBtn.Location = new Point(e.X, e.Y);
+            //    moveBtn.FlatAppearance.BorderColor = Color.Lime;
+            //    //Console.WriteLine(e.X.ToString() + ", " + e.Y.ToString());
+            //}
 
-            else if (myShape == 3)      //사각형
+            if (myShape == 3)      //사각형
             {
                 if (this.myPress)
                 {
@@ -499,7 +499,7 @@ namespace DropBox
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
-            isDragged = false;
+            //isDragged = false;
             //MessageBox.Show(moveBtn.Location.X.ToString() + ", " + moveBtn.Location.Y.ToString());
             if (this.myShape == 3)
             {
