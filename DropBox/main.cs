@@ -95,10 +95,10 @@ namespace DropBox
                 //    //listBox1.Items.Add(file);
                 //}
 
-                if (this.CurrentPath != "/")
-                {
-                    listBox1.Items.Insert(0, UniValue.ParseJson("{path: '..'}"));
-                }
+                //if (this.CurrentPath != "/")
+                //{
+                //    listBox1.Items.Insert(0, UniValue.ParseJson("{path: '..'}"));
+                //}
             }
             else
             {
