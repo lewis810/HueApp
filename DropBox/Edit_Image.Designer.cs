@@ -41,6 +41,7 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.save_btn = new System.Windows.Forms.Button();
+            this.del_btn = new System.Windows.Forms.Button();
             this.tsBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
@@ -131,10 +132,10 @@
             // 
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "Swipe Right",
-            "Swipe Left",
-            "Swipe Up",
-            "Swipe Down"});
+            "Swipe_Right",
+            "Swipe_Left",
+            "Swipe_Up",
+            "Swipe_Down"});
             this.comboBox1.Location = new System.Drawing.Point(12, 12);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(230, 26);
@@ -144,10 +145,12 @@
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
+            this.listBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.listBox1.IntegralHeight = false;
             this.listBox1.ItemHeight = 18;
-            this.listBox1.Location = new System.Drawing.Point(13, 45);
+            this.listBox1.Location = new System.Drawing.Point(12, 44);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(229, 130);
+            this.listBox1.Size = new System.Drawing.Size(230, 119);
             this.listBox1.TabIndex = 13;
             this.listBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseUp);
             // 
@@ -161,6 +164,16 @@
             this.save_btn.UseVisualStyleBackColor = true;
             this.save_btn.Click += new System.EventHandler(this.SaveBtnClick);
             // 
+            // del_btn
+            // 
+            this.del_btn.Location = new System.Drawing.Point(107, 182);
+            this.del_btn.Name = "del_btn";
+            this.del_btn.Size = new System.Drawing.Size(90, 58);
+            this.del_btn.TabIndex = 15;
+            this.del_btn.Text = "UNLINK";
+            this.del_btn.UseVisualStyleBackColor = true;
+            this.del_btn.Click += new System.EventHandler(this.del_btn_Click);
+            // 
             // Edit_Image
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
@@ -168,6 +181,7 @@
             this.BackColor = System.Drawing.Color.Silver;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(1065, 906);
+            this.Controls.Add(this.del_btn);
             this.Controls.Add(this.save_btn);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.comboBox1);
@@ -204,6 +218,7 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button save_btn;
+        private System.Windows.Forms.Button del_btn;
     }
 }
 
