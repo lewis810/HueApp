@@ -13,6 +13,8 @@ using Nemiro.OAuth.LoginForms;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using System.Xml;
 
 namespace DropBox
 {
@@ -20,6 +22,7 @@ namespace DropBox
     {
         private string CurrentPath = "/";
         public static Button TempDeleteButton;
+        public string id;
 
         public main()
         {
@@ -50,9 +53,12 @@ namespace DropBox
 
             if (login.IsSuccessfully)
             {
+                
+
                 Properties.Settings.Default.AccessToken = login.AccessToken.Value;
                 Properties.Settings.Default.Save();
                 this.GetFiles();                                //초기 로그인 하고 나서 정보 받아오기
+                
             }
             else
             {
@@ -74,6 +80,25 @@ namespace DropBox
             );
         }
 
+        private void GetID()
+        {
+            OAuthUtility.GetAsync
+            (
+                "https://api.dropboxapi.com/1/account/info",
+                new HttpParameterCollection
+                {
+                    {"access_token", Properties.Settings.Default.AccessToken }
+                },
+                callback: GetID_Result
+            );
+        }
+
+        private void GetID_Result(RequestResult result)
+        {
+            id = result["email"].ToString();
+            id = id.Substring(0, id.IndexOf("@"));
+        }
+
         private void GetFiles_Result(RequestResult result)
         {
             if (this.InvokeRequired)
@@ -82,12 +107,13 @@ namespace DropBox
                 return;
             }
 
-            if (result.StatusCode == 200)
-            {
-                //listBox1.Items.Clear();
-                //listBox1.DisplayMember = "path";
+            //if (result.StatusCode == 200)
+            //{
+            //listBox1.Items.Clear();
+            //listBox1.DisplayMember = "path";
+            this.GetID();
+            init();
 
-                init();
 
                 //foreach (UniValue file in result["contents"])
                 //{
@@ -99,16 +125,17 @@ namespace DropBox
                 //{
                 //    listBox1.Items.Insert(0, UniValue.ParseJson("{path: '..'}"));
                 //}
-            }
-            else
-            {
-                MessageBox.Show("error...GetFile");
-            }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("error...GetFile");
+            //}
         }
 
         public void init()
         {
             string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE";
+            string pResolution = "";
             DirectoryInfo Info = new DirectoryInfo(mPath);
 
             if (Info.Exists)
@@ -116,26 +143,32 @@ namespace DropBox
                 DirectoryInfo[] CInfo = Info.GetDirectories();
 
                 // file 들이 있는지 확인
+                XmlDocument xmlDoc = new XmlDocument();
 
 
                 foreach (DirectoryInfo eachInfo in CInfo)
                 {
+                    //각 폴더에 있는 link.xml에 접근하여 해상도를 읽어옴
+                    xmlDoc.Load(mPath + "\\" + eachInfo + "\\" + "link.xml");
+                    XmlNode nodeDevice = xmlDoc.DocumentElement.SelectSingleNode("/LinkTable");
+                    pResolution = (nodeDevice.SelectSingleNode("DeviceResolution").InnerText);
+
                     Button newButton = new Button();
                     newButton.Name = eachInfo.Name;
-                    newButton.Text = "New project\n" + eachInfo.Name;
+                    pResolution = pResolution.Replace(" (", System.Environment.NewLine + "(");
+                    newButton.Text = eachInfo.Name + "\n" + pResolution;
                     newButton.TextAlign = ContentAlignment.BottomCenter;
                     newButton.Size = new Size(128, 128);
                     newButton.Margin = new Padding(10, 10, 10, 10);
                     newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
 
-                    if (eachInfo.GetFiles().Length > 0)
+                    if (eachInfo.GetFiles().Length > 1)
                     {
                         Image img;
                         using (var bmpTemp = new Bitmap(eachInfo.FullName + "\\" + eachInfo.GetFiles()[0]))
                         {
                             img = new Bitmap(bmpTemp);
                         }
-
 
                         // 이것을 썸네일로
                         //Bitmap tempImage = new Bitmap(eachInfo.FullName + "\\" + eachInfo.GetFiles()[0]);
@@ -161,6 +194,7 @@ namespace DropBox
             }
         }
 
+        //기존에 있던 프로젝트를 눌렀을 때
         private void eachButton_Click(object sender, MouseEventArgs e)
         {
             //MouseEventArgs me = (MouseEventArgs)e;
@@ -179,7 +213,7 @@ namespace DropBox
                     //MessageBox.Show(temp, "Warning",
                     //        MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    EditProject editProject = new EditProject(mPath, " ");
+                    EditProject editProject = new EditProject(mPath, id);
                     editProject.Show();
                     //MessageBox.Show("Left click", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
@@ -386,9 +420,10 @@ namespace DropBox
 
         private void btCreateProject_Click(object sender, EventArgs e)
         {
-            CreateNewProject mCreateNewProject = new CreateNewProject(this);
+            CreateNewProject mCreateNewProject = new CreateNewProject(this, id);
             if (!mCreateNewProject.Visible)
                 mCreateNewProject.Show();
         }
+
     }
 }

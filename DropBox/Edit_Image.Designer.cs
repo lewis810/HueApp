@@ -42,6 +42,7 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.save_btn = new System.Windows.Forms.Button();
             this.del_btn = new System.Windows.Forms.Button();
+            this.BACK_btn = new System.Windows.Forms.Button();
             this.tsBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
@@ -136,7 +137,7 @@
             "Swipe_Left",
             "Swipe_Up",
             "Swipe_Down"});
-            this.comboBox1.Location = new System.Drawing.Point(12, 12);
+            this.comboBox1.Location = new System.Drawing.Point(12, 60);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(230, 26);
             this.comboBox1.TabIndex = 12;
@@ -148,7 +149,7 @@
             this.listBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.listBox1.IntegralHeight = false;
             this.listBox1.ItemHeight = 18;
-            this.listBox1.Location = new System.Drawing.Point(12, 44);
+            this.listBox1.Location = new System.Drawing.Point(12, 101);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(230, 119);
             this.listBox1.TabIndex = 13;
@@ -156,7 +157,7 @@
             // 
             // save_btn
             // 
-            this.save_btn.Location = new System.Drawing.Point(13, 181);
+            this.save_btn.Location = new System.Drawing.Point(14, 238);
             this.save_btn.Name = "save_btn";
             this.save_btn.Size = new System.Drawing.Size(87, 59);
             this.save_btn.TabIndex = 14;
@@ -166,13 +167,23 @@
             // 
             // del_btn
             // 
-            this.del_btn.Location = new System.Drawing.Point(107, 182);
+            this.del_btn.Location = new System.Drawing.Point(107, 238);
             this.del_btn.Name = "del_btn";
             this.del_btn.Size = new System.Drawing.Size(90, 58);
             this.del_btn.TabIndex = 15;
             this.del_btn.Text = "UNLINK";
             this.del_btn.UseVisualStyleBackColor = true;
             this.del_btn.Click += new System.EventHandler(this.del_btn_Click);
+            // 
+            // BACK_btn
+            // 
+            this.BACK_btn.Location = new System.Drawing.Point(14, 12);
+            this.BACK_btn.Name = "BACK_btn";
+            this.BACK_btn.Size = new System.Drawing.Size(142, 42);
+            this.BACK_btn.TabIndex = 16;
+            this.BACK_btn.Text = "<--";
+            this.BACK_btn.UseVisualStyleBackColor = true;
+            this.BACK_btn.Click += new System.EventHandler(this.BACK_btn_Click);
             // 
             // Edit_Image
             // 
@@ -181,6 +192,7 @@
             this.BackColor = System.Drawing.Color.Silver;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(1065, 906);
+            this.Controls.Add(this.BACK_btn);
             this.Controls.Add(this.del_btn);
             this.Controls.Add(this.save_btn);
             this.Controls.Add(this.listBox1);
@@ -195,6 +207,7 @@
             this.Name = "Edit_Image";
             this.Text = "Form1";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Edit_Image_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.tsBar.ResumeLayout(false);
@@ -219,6 +232,7 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button save_btn;
         private System.Windows.Forms.Button del_btn;
+        private System.Windows.Forms.Button BACK_btn;
     }
 }
 

@@ -36,10 +36,11 @@
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.DEL_btn = new System.Windows.Forms.Button();
             this.SAVE_btn = new System.Windows.Forms.Button();
             this.EDIT_btn = new System.Windows.Forms.Button();
             this.NEW_btn = new System.Windows.Forms.Button();
-            this.DEL_btn = new System.Windows.Forms.Button();
+            this.ProjectName_label = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -58,6 +59,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Window;
+            this.panel1.Controls.Add(this.ProjectName_label);
             this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.Scenario_btn);
             this.panel1.Controls.Add(this.btnAddImages);
@@ -125,6 +127,16 @@
             this.panel2.Size = new System.Drawing.Size(1234, 656);
             this.panel2.TabIndex = 0;
             // 
+            // DEL_btn
+            // 
+            this.DEL_btn.Location = new System.Drawing.Point(781, 127);
+            this.DEL_btn.Name = "DEL_btn";
+            this.DEL_btn.Size = new System.Drawing.Size(106, 48);
+            this.DEL_btn.TabIndex = 3;
+            this.DEL_btn.Text = "DELETE";
+            this.DEL_btn.UseVisualStyleBackColor = true;
+            this.DEL_btn.Click += new System.EventHandler(this.DEL_btn_Click);
+            // 
             // SAVE_btn
             // 
             this.SAVE_btn.Location = new System.Drawing.Point(780, 322);
@@ -155,15 +167,15 @@
             this.NEW_btn.UseVisualStyleBackColor = true;
             this.NEW_btn.Click += new System.EventHandler(this.NEW_btn_Click);
             // 
-            // DEL_btn
+            // ProjectName_label
             // 
-            this.DEL_btn.Location = new System.Drawing.Point(781, 127);
-            this.DEL_btn.Name = "DEL_btn";
-            this.DEL_btn.Size = new System.Drawing.Size(106, 48);
-            this.DEL_btn.TabIndex = 3;
-            this.DEL_btn.Text = "DELETE";
-            this.DEL_btn.UseVisualStyleBackColor = true;
-            this.DEL_btn.Click += new System.EventHandler(this.DEL_btn_Click);
+            this.ProjectName_label.AutoSize = true;
+            this.ProjectName_label.Font = new System.Drawing.Font("굴림", 15F);
+            this.ProjectName_label.Location = new System.Drawing.Point(48, 36);
+            this.ProjectName_label.Name = "ProjectName_label";
+            this.ProjectName_label.Size = new System.Drawing.Size(96, 30);
+            this.ProjectName_label.TabIndex = 3;
+            this.ProjectName_label.Text = "label1";
             // 
             // EditProject
             // 
@@ -177,6 +189,7 @@
             this.Name = "EditProject";
             this.Text = "EditProject";
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -196,5 +209,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button SAVE_btn;
         private System.Windows.Forms.Button DEL_btn;
+        private System.Windows.Forms.Label ProjectName_label;
     }
 }

@@ -8,16 +8,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Xml.Linq;
+using System.Xml;
 
 namespace DropBox
 {
     public partial class CreateNewProject : Form
     {
-        public CreateNewProject(main temp)
+        string user_id;
+
+        public CreateNewProject(main temp, string _id)
         {
             InitializeComponent();
             textBoxProjectName_SetText();
             form1 = temp;
+            user_id = _id;
         }
 
         protected void textBoxProjectName_SetText()
@@ -61,6 +66,33 @@ namespace DropBox
             if (di.Exists == false)
             {
                 di.Create();
+                //프로젝트를 만들면서 디바이스에 대한 정보만 가지고 있는 xml을 만든다.
+
+                XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+                xmlWriterSettings.Indent = true;
+                xmlWriterSettings.NewLineOnAttributes = true;
+                using (XmlWriter xmlWriter = XmlWriter.Create(mPath + "\\" + "link.xml", xmlWriterSettings))
+                {
+                    xmlWriter.WriteStartDocument();
+                    xmlWriter.WriteStartElement("LinkTable");
+
+                    xmlWriter.WriteStartElement("UserId");
+                    xmlWriter.WriteString(user_id);       //재정의된 device info
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteStartElement("DeviceInfo");
+                    xmlWriter.WriteString(GetDeviceName(comboBox1.Text));       //재정의된 device info
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.WriteStartElement("DeviceResolution");
+                    xmlWriter.WriteString(comboBox1.Text);                      //ex) iPhone5 (640 x 1280)
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.WriteEndDocument();
+                    xmlWriter.Flush();
+                    xmlWriter.Close();
+                    MessageBox.Show("create");
+                }
             }
             else
             {
@@ -69,10 +101,11 @@ namespace DropBox
                 return;
             }
             //Image mImage = Image.FromFile((string)di.GetFiles()[0].Name);
-
+            string pResolution;
             Button newButton = new Button();
             newButton.Name = textBoxProjectName.Text;
-            newButton.Text = "New project\n" + textBoxProjectName.Text;
+            pResolution = comboBox1.Text.Replace(" (", System.Environment.NewLine + "(");
+            newButton.Text = textBoxProjectName.Text + "\n" + pResolution;
             newButton.TextAlign = ContentAlignment.BottomCenter;
             newButton.Size = new Size(128, 128);
             newButton.Margin = new Padding(10, 10, 10, 10);
@@ -82,6 +115,7 @@ namespace DropBox
             this.Dispose();
         }
 
+        //새로 만든 프로젝트를 눌렀을 때
         private void eachButton_Click(object sender, MouseEventArgs e)
         {
             //MouseEventArgs me = (MouseEventArgs)e;
@@ -101,14 +135,13 @@ namespace DropBox
                     //MessageBox.Show(temp, "Warning",
                     //        MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    EditProject editProject = new EditProject(mPath, getDevice(comboBox1.SelectedItem.ToString()));
+                    EditProject editProject = new EditProject(mPath, user_id);
                     editProject.Show();
                     //MessageBox.Show("Left click", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
                 case MouseButtons.Right:
 
                     //MessageBox.Show("Right click", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
 
                     Button temp_btn_right = sender as Button;
                     ContextMenu cm = new ContextMenu();
@@ -142,7 +175,6 @@ namespace DropBox
 
         private void menuItem_delete_click(object sender, EventArgs e)
         {
-
             string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + main.TempDeleteButton.Name + "\\";
 
             //get control hovered with mouse
@@ -159,6 +191,127 @@ namespace DropBox
             //$$$$$$
         }
 
+        private string GetDeviceName(string user_selection)
+        {
+            if (user_selection.CompareTo("iPhone4 (640 x 960)") == 0)
+            {
+                return "iphone4";
+            }
+            else if (user_selection.CompareTo("iPhone5 (640 x 1136)") == 0)
+            {
+                return "iphone5";
+            }
+            else if(user_selection.CompareTo("iPhone6 (750 x 1334)") == 0)
+            {
+                return "iphone6";
+            }
+            else if (user_selection.CompareTo("iPhone6S (750 x 1334)") == 0)
+            {
+                return "iphone6s";
+            }
+            else if (user_selection.CompareTo("iPhone6 + (1080 x 1920)") == 0)
+            {
+                return "iphone6p";
+            }
+            else if (user_selection.CompareTo("iPhone6S+ (1080 x 1920)") == 0)
+            {
+                return "iphone6sp";
+            }
+            else if (user_selection.CompareTo("GalaxyS2 (480 x 800)") == 0)
+            {
+                return "galaxyS2";
+            }
+            else if (user_selection.CompareTo("GalaxyS2_HD (720 x 1280)") == 0)
+            {
+                return "galaxyS2HD";
+            }
+
+            else if (user_selection.CompareTo("GalaxyS3 (720 x 1280)") == 0)
+            {
+                return "galaxyS3";
+            }
+            else if (user_selection.CompareTo("GalaxyS4 (1080 x 1920)") == 0)
+            {
+                return "galaxyS4";
+            }
+            else if (user_selection.CompareTo("GalaxyS5 (1080 x 1920)") == 0)
+            {
+                return "galaxyS5";
+            }
+            else if (user_selection.CompareTo("GalaxyS6 (1440 x 2560)") == 0)
+            {
+                return "galaxyS6";
+            }
+            else if (user_selection.CompareTo("GalaxyNote1 (800 x 1280)") == 0)
+            {
+                return "note1";
+            }
+            else if (user_selection.CompareTo("GalaxyNote2 (720 x 1280)") == 0)
+            {
+                return "note2";
+            }
+            else if (user_selection.CompareTo("GalaxyNote3 (1080 x 1920)") == 0)
+            {
+                return "note3";
+            }
+            else if (user_selection.CompareTo("GalaxyNote4 (1440 x 2560)") == 0)
+            {
+                return "note4";
+            }
+            else if (user_selection.CompareTo("GalaxyNote5 (1440 x 2560)") == 0)
+            {
+                return "note5";
+            }
+            else if (user_selection.CompareTo("GalaxyTabS (1600 x 2560)") == 0)
+            {
+                return "tabS";
+            }
+            else if (user_selection.CompareTo("OptimusG_Pro (1080 x 1920)") == 0)
+            {
+                return "gPro";
+            }
+            else if (user_selection.CompareTo("G2 (1080 x 1920)") == 0)
+            {
+                return "g2";
+            }
+            else if (user_selection.CompareTo("G3 (1440 x 2560)") == 0)
+            {
+                return "g3";
+            }
+            else if (user_selection.CompareTo("G4 (1440 x 2560)") == 0)
+            {
+                return "g4";
+            }
+            else if (user_selection.CompareTo("GalaxyNexus (720 x 1280)") == 0)
+            {
+                return "galaxyNexus";
+            }
+            else if (user_selection.CompareTo("Nexus4 (768 x 1280)") == 0)
+            {
+                return "nexus4";
+            }
+            else if (user_selection.CompareTo("Nexus5(1080 x 1920)") == 0)
+            {
+                return "nexus5";
+            }
+            else if (user_selection.CompareTo("Nexus7(2013) (1200 x 1920)") == 0)
+            {
+                return "nexus7_2013";
+            }
+            else if (user_selection.CompareTo("Nexus7 (800 x 1280)") == 0)
+            {
+                return "nexus7";
+            }
+            else if (user_selection.CompareTo("Nexus10 (1600 x 2560)") == 0)
+            {
+                return "nexus10";
+            }
+
+            return "undefined";
+        }
+
         main form1;
+
+
     }
 }

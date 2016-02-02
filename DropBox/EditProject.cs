@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml;
 using System.Text.RegularExpressions;
+using System.IO.Compression;
 
 namespace DropBox
 {
@@ -22,7 +23,6 @@ namespace DropBox
 
         private string myPath;
         private Button TempDeleteButton;
-        private string deviceType;
 
         public struct SCENARIO
         {
@@ -57,23 +57,54 @@ namespace DropBox
         LINK temp_link;
         int last_index = 0;
         public ListBox listBox;
+        string user_id;
 
         public EditProject()
         {
             InitializeComponent();
         }
 
-        public EditProject(string _myPath, string _deviceType)
+        public EditProject(string _myPath, LinkData _pData, ScenarioData _sData, string _user_id)
         {
             InitializeComponent();
 
             myPath = _myPath;
-            deviceType = _deviceType;
+            pData = _pData;
+            sData = _sData;
+            user_id = _user_id;
+
+            SetupButton();
+            
+            for(int i = 0; i < sData.getSData().Count; i++)
+            {
+                listBox1.Items.Add(sData.getSData()[i].title);
+            }
+        }
+
+        public EditProject(string _myPath, string _id)
+        {
+            InitializeComponent();
+
+            myPath = _myPath;
+            user_id = _id;
+
+            SetupButton();
+            ReadLink();
+            ReadScenario();
+        }
+
+        private void SetupButton()
+        {
+            
+
             temp_link.link_data_temp = new List<link_info_temp>();
             panel2.Visible = false;
             listBox = this.listBox1;
 
             DirectoryInfo Info = new DirectoryInfo(myPath + "\\");
+
+            //프로젝트 이름
+            ProjectName_label.Text = Info.Name;
 
             if (Info.Exists)
             {
@@ -133,8 +164,6 @@ namespace DropBox
                     }
                 }
             }
-            ReadLink();
-            ReadScenario();
         }
 
         //read
@@ -146,8 +175,9 @@ namespace DropBox
                 XmlDocument xmlDoc = new XmlDocument();
 
                 xmlDoc.Load(myPath + "\\" + "link.xml");
-                XmlNode nodeDeviceType = xmlDoc.DocumentElement.SelectSingleNode("/LinkTable");
-                pData.SetDeviceType(nodeDeviceType.SelectSingleNode("DeviceInfo").InnerText);
+                XmlNode nodeDevice = xmlDoc.DocumentElement.SelectSingleNode("/LinkTable");
+                pData.SetDeviceType(nodeDevice.SelectSingleNode("DeviceInfo").InnerText);
+                pData.SetDeviceResolution(nodeDevice.SelectSingleNode("DeviceResolution").InnerText);
                 XmlNodeList nodeList = xmlDoc.DocumentElement.SelectNodes("/LinkTable/Link");
 
                 string pFile_name;
@@ -182,7 +212,7 @@ namespace DropBox
             }
             else
             {
-                MessageBox.Show("no Info");
+                //MessageBox.Show("no Info");
             }
 
 
@@ -244,9 +274,8 @@ namespace DropBox
             }
             else
             {
-                MessageBox.Show("no Info");
+                //MessageBox.Show("no Info");
             }
-            MessageBox.Show(this.listBox1.Items.Count.ToString());
         }
 
 
@@ -322,24 +351,8 @@ namespace DropBox
             }
         }
 
-        /*private void eachButton_Click(object sender, EventArgs e)
-        {
-            // 영민이형이 한거 불러오기
-
-            Button temp_btn = sender as Button;
-
-            string mPath = myPath + "\\" + temp_btn.Name;
-
-
-
-            Edit_Image editProject = new Edit_Image(myPath, mPath);
-            editProject.Show();
-        }*/
-
         private void eachButton_Click(object sender, MouseEventArgs e)
         {
-            //MouseEventArgs me = (MouseEventArgs)e;
-
             switch (e.Button)
             {
                 case MouseButtons.Left:
@@ -349,10 +362,9 @@ namespace DropBox
                     string mPath = myPath + "\\" + temp_btn.Name;
 
 
-
-                    Edit_Image editProject = new Edit_Image(myPath, mPath, deviceType, pData);
+                    Edit_Image editProject = new Edit_Image(myPath, mPath, pData, sData, user_id);
+                    this.Dispose();
                     editProject.Show();
-                    this.Close();
                     break;
                 case MouseButtons.Right:
                     //MessageBox.Show("Right click", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -460,9 +472,12 @@ namespace DropBox
             {
                 xmlWriter.WriteStartDocument();
                 xmlWriter.WriteStartElement("ScenarioTable");
+
                 //xmlWriter.WriteStartElement("ProjectName");
                 //xmlWriter.WriteString(pData.GetDeviceType());               //project name
                 //xmlWriter.WriteEndElement();
+                //MessageBox.Show(pData.GetDeviceType());
+                //GetDeviceType(pData.GetDeviceType());
 
                 CreateNode(xmlWriter);
 
@@ -473,21 +488,19 @@ namespace DropBox
                 MessageBox.Show("create");
 
                 //기존의 ZIP파일 지우고 다시 생성하기
-                //if (File.Exists(mPath + difo.Name + ".zip"))  //프로젝트 이름
-                //{
-                //    MessageBox.Show("기존 파일 삭제");
-                //    File.Delete(mPath + difo.Name + ".zip");
-                //}
+                if (File.Exists(myPath + difo.Name + ".zip"))  //프로젝트 이름
+                {
+                    File.Delete(myPath + difo.Name + ".zip");
+                }
 
-                ////이미 프로그램 상에서 이미지 파일을 사용하고 있기 때문에 사용중이라는 에러가 뜨는데 실제로는 ZIP파일이 생성이 됨. 에러메시지 차단.
-                //try
-                //{
-                //    ZipFile.CreateFromDirectory(mPath, mPath + difo.Name + ".zip");
-                //}
-                //catch (IOException IOE)
-                //{
-                //    MessageBox.Show("IOException");
-                //}
+                //이미 프로그램 상에서 이미지 파일을 사용하고 있기 때문에 사용중이라는 에러가 뜨는데 실제로는 ZIP파일이 생성이 됨. 에러메시지 차단.
+                try
+                {
+                    ZipFile.CreateFromDirectory(myPath, myPath + difo.Name + ".zip");
+                }
+                catch (IOException IOE)
+                {
+                }
             }
         }
 
@@ -532,7 +545,5 @@ namespace DropBox
             sData.getSData().RemoveAt(listBox1.SelectedIndex);
             this.listBox1.Items.Remove(listBox1.SelectedItem);
         }
-
-        
     }
 }

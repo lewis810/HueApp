@@ -58,6 +58,7 @@ namespace DropBox
         };
 
         LinkData pData;
+        ScenarioData sData;
 
         bool swipe = false;
         string image_name;
@@ -100,10 +101,11 @@ namespace DropBox
         private string mPath;
         private string mfilePath;
         private string deviceType;
+        string user_id;
 
         public Edit_Image() { InitializeComponent(); }
 
-        public Edit_Image(string _mPath, string _filePath, string _deviceType, LinkData _Data)
+        public Edit_Image(string _mPath, string _filePath, LinkData _Data, ScenarioData _sData, string _user_id)
         {
             InitializeComponent();
 
@@ -112,8 +114,9 @@ namespace DropBox
             pictureBox1.Parent = panel1;
             mPath = _mPath;
             mfilePath = _filePath;
-            deviceType = _deviceType;
             pData = _Data;
+            sData = _sData;
+            user_id = _user_id;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -151,7 +154,7 @@ namespace DropBox
             if (img != null && (img.Height >= img.Width))
             {
                 panel1.Height = (int)(this.Height * 0.9);
-                panel1.Width = (int)(GetWidthOverHeight("iPhone5") * (this.Height * 0.9));      //여기에 디바이스정보 넣기
+                panel1.Width = (int)(GetWidthOverHeight(pData.GetDeviceType()) * (this.Height * 0.9));      //여기에 디바이스정보 넣기
                 panel1.Location = new Point(((this.Width / 2) - (panel1.Width / 2)), 0);
                 resize_ratio = (float)panel1.Width / (float)img.Width;
             }
@@ -172,11 +175,11 @@ namespace DropBox
             double ratio = 0;
             switch (deviceType)
             {
-                case "GalaxyS2_HD":
-                case "GalaxyS3":
-                case "GalaxyNote2":
-                case "iPhone5":
-                case "iPhone6": ratio = 0.5625; break;  // 9 : 16
+                case "galaxyS2HD":
+                case "galaxyS3":
+                case "note2":
+                case "iphone5":
+                case "iphone6": ratio = 0.5625; break;  // 9 : 16l
             }
 
             return ratio;
@@ -232,7 +235,7 @@ namespace DropBox
                 btn_link[i].Text = i.ToString();
                 btn_link[i].ForeColor = Color.Lime;
                 btn_link[i].Font = new Font(btn_link[i].Font.Name, 10, FontStyle.Bold);
-                btn_link[i].BackgroundImage = Image.FromFile(imageInfo.ElementAt(i).str_image);
+                btn_link[i].BackgroundImage = Image.FromFile(imageInfo[i].str_image);
                 btn_link[i].BackgroundImageLayout = ImageLayout.Stretch;
 
             }
@@ -273,16 +276,16 @@ namespace DropBox
 
                 if (btn != null)
                 {
-                    for (int i = 0; i < pData.GetLinks().ElementAt(fileIndex).link_data.Count; i++)
+                    for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
                     {
-                        if (btn.TabIndex == pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).btn_id)
+                        if (btn.TabIndex == pData.GetLinks()[fileIndex].link_data[i].btn_id)
                         {
                             work_message =
-                                     "Destination Index : " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).dst_file
-                                    + "\nXY coordination : " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).image_xy.X + ", " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).image_xy.Y
-                                    + "\nRectangle Width : " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).image_width
-                                    + "\nRectangle Height : " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).image_height
-                                    + "\nLink ID : " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).btn_id
+                                     "Destination Index : " + pData.GetLinks()[fileIndex].link_data[i].dst_file
+                                    + "\nXY coordination : " + pData.GetLinks()[fileIndex].link_data[i].image_xy.X + ", " + pData.GetLinks()[fileIndex].link_data[i].image_xy.Y
+                                    + "\nRectangle Width : " + pData.GetLinks()[fileIndex].link_data[i].image_width
+                                    + "\nRectangle Height : " + pData.GetLinks()[fileIndex].link_data[i].image_height
+                                    + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
                                     + "\n------------------------\n";
                             str_work.Add(work_message);
                             break;
@@ -293,7 +296,7 @@ namespace DropBox
 
                     for (int j = str_work.Count; j > 0; j--)
                     {
-                        this.label1.Text += str_work.ElementAt(j - 1);
+                        this.label1.Text += str_work[j - 1];
                     }
                 }
             }
@@ -472,9 +475,9 @@ namespace DropBox
                         //해당 링크 정보가 터치일 경우에 버튼의 위치와 크기 resize.
                         if (pData.GetLinks()[fileIndex].link_data[i].input_type.Contains("Touch"))
                         {
-                            btnOnScreen[j].Location = new Point((int)(pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).image_xy.X * resize_ratio), (int)(pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).image_xy.Y * resize_ratio));
-                            btnOnScreen[j].Width = (int)(pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).image_width * resize_ratio);
-                            btnOnScreen[j].Height = (int)(pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).image_height * resize_ratio);
+                            btnOnScreen[j].Location = new Point((int)(pData.GetLinks()[fileIndex].link_data[i].image_xy.X * resize_ratio), (int)(pData.GetLinks()[fileIndex].link_data[i].image_xy.Y * resize_ratio));
+                            btnOnScreen[j].Width = (int)(pData.GetLinks()[fileIndex].link_data[i].image_width * resize_ratio);
+                            btnOnScreen[j].Height = (int)(pData.GetLinks()[fileIndex].link_data[i].image_height * resize_ratio);
                             btnOnScreen[j].Visible = true;
                             j++;
                         }
@@ -492,15 +495,15 @@ namespace DropBox
         private void DeleteLink(int pDeleteIndex)
         {
             //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            for (int i = 0; i < pData.GetLinks().ElementAt(fileIndex).link_data.Count; i++)
+            for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
             {
-                if (pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).btn_id == pDeleteIndex)
+                if (pData.GetLinks()[fileIndex].link_data[i].btn_id == pDeleteIndex)
                 {
                     
                     //삭제 메시지
                     work_message =
                                     "링크가 삭제되었습니다."
-                                    + "\nLink ID : " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).btn_id
+                                    + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
                                     + "\n------------------------\n";
                     str_work.Add(work_message);
 
@@ -508,30 +511,15 @@ namespace DropBox
 
                     for (int j = str_work.Count; j > 0; j--)
                     {
-                        this.label1.Text += str_work.ElementAt(j - 1);
+                        this.label1.Text += str_work[j - 1];
                     }
-                    pData.GetLinks().ElementAt(fileIndex).link_data.RemoveAt(i);
+                    pData.GetLinks()[fileIndex].link_data.RemoveAt(i);
 
                     break;
 
                     
                 }
             }
-
-            //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-            //XmlDocument xmlDoc = new XmlDocument();
-            //xmlDoc.Load(mPath + "link.xml");
-            //XmlElement el = (XmlElement)xmlDoc.SelectSingleNode("/LinkTable/LinkInfo[FileName='" + pfileName + "' and Tag=" + pTag + "]");
-            //if (el == null)
-            //    MessageBox.Show("el null");
-            //if (el != null)
-            //{
-            //    //MessageBox.Show("el info : " + el.InnerText);
-            //    el.ParentNode.RemoveChild(el);
-
-            //}
-            //xmlDoc.Save(mPath + "link.xml");
         }
 
         //리스트박스 내 아이템 클릭
@@ -547,13 +535,13 @@ namespace DropBox
             //좌클릭
             else if(e.Button == MouseButtons.Left && listBox1.SelectedItem != null)
             {
-                for (int i = 0; i < pData.GetLinks().ElementAt(fileIndex).link_data.Count; i++)
+                for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
                 {
-                    if (pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).input_type.CompareTo(listBox1.SelectedItem.ToString()) == 0)
+                    if (pData.GetLinks()[fileIndex].link_data[i].input_type.CompareTo(listBox1.SelectedItem.ToString()) == 0)
                     {
                         work_message =
-                                    "Destination Index : " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).dst_file
-                                    + "\nLink ID : " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).btn_id
+                                    "Destination Index : " + pData.GetLinks()[fileIndex].link_data[i].dst_file
+                                    + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
                                     + "\n------------------------\n";
                         str_work.Add(work_message);
                         break;
@@ -565,7 +553,7 @@ namespace DropBox
 
                 for (int j = str_work.Count; j > 0; j--)
                 {
-                    this.label1.Text += str_work.ElementAt(j - 1);
+                    this.label1.Text += str_work[j - 1];
                 }
             }
 
@@ -573,16 +561,16 @@ namespace DropBox
 
         private void del_btn_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < pData.GetLinks().ElementAt(fileIndex).link_data.Count; i++)
+            for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
             {
-                if (pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).input_type.CompareTo(listBox1.SelectedItem.ToString()) == 0)
+                if (pData.GetLinks()[fileIndex].link_data[i].input_type.CompareTo(listBox1.SelectedItem.ToString()) == 0)
                 {
                     listBox1.Items.Remove(listBox1.SelectedItem);
                     listBox1.Height = listBox1.PreferredHeight;
 
                     work_message =
                                     "링크가 삭제되었습니다."
-                                    + "\nLink ID : " + pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).btn_id
+                                    + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
                                     + "\n------------------------\n";
                     str_work.Add(work_message);
 
@@ -590,15 +578,25 @@ namespace DropBox
 
                     for (int j = str_work.Count; j > 0; j--)
                     {
-                        this.label1.Text += str_work.ElementAt(j - 1);
+                        this.label1.Text += str_work[j - 1];
                     }
 
-                    pData.GetLinks().ElementAt(fileIndex).link_data.RemoveAt(i);
+                    pData.GetLinks()[fileIndex].link_data.RemoveAt(i);
 
-                    //DeleteLink(pData.GetLinks().ElementAt(fileIndex).link_data.ElementAt(i).btn_id);
                     break;
                 }
             }
+        }
+
+        private void Edit_Image_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            EditProject editProject = new EditProject(mPath, pData, sData, user_id);
+            editProject.Show();
+        }
+
+        private void BACK_btn_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         //Xml 저장
@@ -612,8 +610,14 @@ namespace DropBox
             {
                 xmlWriter.WriteStartDocument();
                 xmlWriter.WriteStartElement("LinkTable");
+                xmlWriter.WriteStartElement("UserId");
+                xmlWriter.WriteString(pData.GetDeviceType());               //user id
+                xmlWriter.WriteEndElement();
                 xmlWriter.WriteStartElement("DeviceInfo");
                 xmlWriter.WriteString(pData.GetDeviceType());               //device info
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteStartElement("DeviceResolution");
+                xmlWriter.WriteString(pData.GetDeviceResolution());                      //ex) iPhone5 (640 x 1280)
                 xmlWriter.WriteEndElement();
 
                 CreateNodeTemp(xmlWriter);
@@ -627,7 +631,6 @@ namespace DropBox
                 //기존의 ZIP파일 지우고 다시 생성하기
                 if(File.Exists(mPath + difo.Name + ".zip"))
                 {
-                    MessageBox.Show("기존 파일 삭제");
                     File.Delete(mPath + difo.Name + ".zip");
                 }
 
@@ -637,7 +640,6 @@ namespace DropBox
                 }
                 catch (IOException IOE)
                 {
-                    MessageBox.Show("IOException");
                 }
             }
         }
@@ -649,42 +651,42 @@ namespace DropBox
             for (i = 0; i < pData.GetLinks().Count; i++)
             {
                 //해당 인덱스에 링크정보가 하나도 없으면 저장하지 않는다.
-                if (pData.GetLinks().ElementAt(i).link_data.Count != 0)
+                if (pData.GetLinks()[i].link_data.Count != 0)
                 {
                     writer.WriteStartElement("Link");
                     writer.WriteStartAttribute("fileName");
-                    writer.WriteString(pData.GetLinks().ElementAt(i).file_name);             //image name
-                    for (j = 0; j < pData.GetLinks().ElementAt(i).link_data.Count; j++)
+                    writer.WriteString(pData.GetLinks()[i].file_name);             //image name
+                    for (j = 0; j < pData.GetLinks()[i].link_data.Count; j++)
                     {
                         writer.WriteStartElement("LinkInfo");
                         writer.WriteStartElement("Tag");
-                        writer.WriteString(pData.GetLinks().ElementAt(i).link_data.ElementAt(j).btn_id.ToString());
+                        writer.WriteString(pData.GetLinks()[i].link_data[j].btn_id.ToString());
                         writer.WriteEndElement();
                         writer.WriteStartElement("InputType");
-                        writer.WriteString(pData.GetLinks().ElementAt(i).link_data.ElementAt(j).input_type);
+                        writer.WriteString(pData.GetLinks()[i].link_data[j].input_type);
                         writer.WriteEndElement();
                         writer.WriteStartElement("StartFile");
-                        writer.WriteString(pData.GetLinks().ElementAt(i).file_name);
+                        writer.WriteString(pData.GetLinks()[i].file_name);
                         writer.WriteEndElement();
 
                         //case : touch (swipe는 아래 부분을 쓰지 않음)
-                        if (pData.GetLinks().ElementAt(i).link_data.ElementAt(j).input_type.Contains("Touch"))
+                        if (pData.GetLinks()[i].link_data[j].input_type.Contains("Touch"))
                         {
                             writer.WriteStartElement("LinkX");
-                            writer.WriteString(pData.GetLinks().ElementAt(i).link_data.ElementAt(j).image_xy.X.ToString());
+                            writer.WriteString(pData.GetLinks()[i].link_data[j].image_xy.X.ToString());
                             writer.WriteEndElement();
                             writer.WriteStartElement("LinkY");
-                            writer.WriteString(pData.GetLinks().ElementAt(i).link_data.ElementAt(j).image_xy.Y.ToString());
+                            writer.WriteString(pData.GetLinks()[i].link_data[j].image_xy.Y.ToString());
                             writer.WriteEndElement();
                             writer.WriteStartElement("LinkWidth");
-                            writer.WriteString(pData.GetLinks().ElementAt(i).link_data.ElementAt(j).image_width.ToString());
+                            writer.WriteString(pData.GetLinks()[i].link_data[j].image_width.ToString());
                             writer.WriteEndElement();
                             writer.WriteStartElement("LinkHeight");
-                            writer.WriteString(pData.GetLinks().ElementAt(i).link_data.ElementAt(j).image_height.ToString());
+                            writer.WriteString(pData.GetLinks()[i].link_data[j].image_height.ToString());
                             writer.WriteEndElement();
                         }
                         writer.WriteStartElement("DstFile");
-                        writer.WriteString(pData.GetLinks().ElementAt(i).link_data.ElementAt(j).dst_file);
+                        writer.WriteString(pData.GetLinks()[i].link_data[j].dst_file);
                         writer.WriteEndElement();
 
                         writer.WriteEndElement();
@@ -707,7 +709,6 @@ namespace DropBox
             //선택된 파일의 인덱스 찾기
             for (i = 0; i < pData.GetLinks().Count; i++)
             {
-                MessageBox.Show(pData.GetLinks()[i].file_name);
                 if (image_name.CompareTo(pData.GetLinks()[i].file_name) == 0)
                 {
                     fileIndex = i;
@@ -769,7 +770,7 @@ namespace DropBox
             }
             catch (ArgumentOutOfRangeException e)
             {
-                MessageBox.Show("empty");
+                //MessageBox.Show("empty");
             }
         }
 
@@ -788,7 +789,7 @@ namespace DropBox
                 //해당 이미지 이름이 없으면 새로운 index를 부여해서 전체 어레이에 추가하도록 합니다.
                 for (int i = 0; i < pData.GetLinks().Count; i++)
                 {
-                    if (pData.GetLinks().ElementAt(i).file_name.CompareTo(image_name) == 0)
+                    if (pData.GetLinks()[i].file_name.CompareTo(image_name) == 0)
                     {
                         addIndex = i;
                         break;
@@ -808,8 +809,8 @@ namespace DropBox
                     listBox1.Height = listBox1.PreferredHeight;
                     work_message =
                                "저장되었습니다."
-                           + "\nDestination Index : " + pData.GetLinks().ElementAt(addIndex).link_data.ElementAt(btn_index).dst_file
-                           + "\nLink ID : " + pData.GetLinks().ElementAt(addIndex).link_data.ElementAt(btn_index).btn_id
+                           + "\nDestination Index : " + pData.GetLinks()[addIndex].link_data[btn_index].dst_file
+                           + "\nLink ID : " + pData.GetLinks()[addIndex].link_data[btn_index].btn_id
                            + "\n------------------------\n"; 
                     swipe = false;
                 }
@@ -836,11 +837,11 @@ namespace DropBox
 
                     work_message =
                                 "저장되었습니다."
-                            + "\nDestination Index : " + pData.GetLinks().ElementAt(addIndex).link_data.ElementAt(btn_index).dst_file
-                            + "\nXY coordination : " + pData.GetLinks().ElementAt(addIndex).link_data.ElementAt(btn_index).image_xy.X + ", " + pData.GetLinks().ElementAt(addIndex).link_data.ElementAt(btn_index).image_xy.Y
-                            + "\nRectangle Width : " + pData.GetLinks().ElementAt(addIndex).link_data.ElementAt(btn_index).image_width
-                            + "\nRectangle Height : " + pData.GetLinks().ElementAt(addIndex).link_data.ElementAt(btn_index).image_height
-                            + "\nLink ID : " + pData.GetLinks().ElementAt(addIndex).link_data.ElementAt(btn_index).btn_id
+                            + "\nDestination Index : " + pData.GetLinks()[addIndex].link_data[btn_index].dst_file
+                            + "\nXY coordination : " + pData.GetLinks()[addIndex].link_data[btn_index].image_xy.X + ", " + pData.GetLinks()[addIndex].link_data[btn_index].image_xy.Y
+                            + "\nRectangle Width : " + pData.GetLinks()[addIndex].link_data[btn_index].image_width
+                            + "\nRectangle Height : " + pData.GetLinks()[addIndex].link_data[btn_index].image_height
+                            + "\nLink ID : " + pData.GetLinks()[addIndex].link_data[btn_index].btn_id
                             + "\n------------------------\n";
                 }
                 btn_id_to_add++;
@@ -852,21 +853,13 @@ namespace DropBox
                 //우측에 출력되는 메시지
                 for (int j = str_work.Count; j > 0; j--)
                 {
-                    this.label1.Text += str_work.ElementAt(j - 1);
+                    this.label1.Text += str_work[j - 1];
                 }
                 panel_image_link.Visible = false;
 
-                //MessageBox.Show(pData.GetLinks().ElementAt(fileIndex).link_data.Count.ToString());
+                //MessageBox.Show(pData.GetLinks()[fileIndex).link_data.Count.ToString());
             }
             this.Invalidate();
         }
-
-        private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            this.Controls.Clear();
-            Application.OpenForms["Form1"].Close();
-            MessageBox.Show("q");
-        }
-
     }
 }

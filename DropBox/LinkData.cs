@@ -12,6 +12,7 @@ namespace DropBox
     public class LinkData
     {
         private string device_type;
+        private string device_resolution;
 
         public struct LINK
         {
@@ -36,9 +37,11 @@ namespace DropBox
         //getters
         public List<LINK> GetLinks(){ return this.links;}
         public string GetDeviceType(){ return this.device_type;}
+        public string GetDeviceResolution() { return this.device_resolution; }
 
         //setters
         public void SetDeviceType(string new_device_type) { this.device_type = new_device_type; }
+        public void SetDeviceResolution(string new_device_resolution) { this.device_resolution = new_device_resolution; }
         public void SetLink(string new_file_name, int pTag, string pDstFile, Point pImage_xy, int pImage_width, int pImage_height, string pInput_type)
         {
             //원본 데이터에 ADD할 임시 LINK
@@ -60,10 +63,9 @@ namespace DropBox
             //이미 파일 이름이 links에 존재하면 해당 인덱스에 data만 추가
             for (int i = 0; i < links.Count; i++)
             {
-                if (links.ElementAt(i).file_name.Equals(new_file_name))
+                if (links[i].file_name.Equals(new_file_name))
                 {
-                    links.ElementAt(i).link_data.Add(temp_link_info);
-                    //MessageBox.Show("Added : 이미 존재하는 파일명" + ", " + temp_link_info.btn_id + ", " + temp_link_info.DstFile + ", " + temp_link_info.image_height);
+                    links[i].link_data.Add(temp_link_info);
                     return;
                 }
             }
@@ -73,12 +75,6 @@ namespace DropBox
             list_temp_link_info.Add(temp_link_info);
             temp_links.link_data = list_temp_link_info;
             links.Add(temp_links);
-            //임시 변수들 초기화
-            //list_temp_link_info = null;
-            //MessageBox.Show(temp_link_info.btn_id.ToString());
-            //temp_links = null;
-
-            //MessageBox.Show("Added : " + temp_links.fileName + ", " + temp_link_info.btn_id + ", " + temp_link_info.DstFile + ", " + temp_link_info.image_height);
             return;
         }
 
@@ -96,7 +92,7 @@ namespace DropBox
 
             //해당 이미지에 처음 링크를 설정하는 것이라면 먼저 new LINK를 새로 추가한다.
             try {
-                links.ElementAt(addIndex).link_data.Add(plink_info);
+                links[addIndex].link_data.Add(plink_info);
             }
             catch (ArgumentOutOfRangeException e)
             {
@@ -119,14 +115,9 @@ namespace DropBox
                 list_temp_link_info.Add(temp_link_info);
                 temp_links.link_data = list_temp_link_info;
                 links.Add(temp_links);
-
-                //MessageBox.Show(links.ElementAt(2).file_name + "  " + links.ElementAt(2).link_data.ElementAt(0).image_height);
             }
-
-            MessageBox.Show(links[addIndex].link_data.Count.ToString());
-            return links.ElementAt(addIndex).link_data.Count - 1;
+            return links[addIndex].link_data.Count - 1;
         }
 
-        
     }
 }
