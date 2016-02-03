@@ -27,6 +27,7 @@ namespace DropBox
         private Button TempDeleteButton;
         private ContextMenu cm;
 
+        main _main;
 
         public struct SCENARIO
         {
@@ -86,7 +87,7 @@ namespace DropBox
             imageListView_EditProject.Columns.Add(ColumnType.FolderName);
         }
 
-        public EditProject(string _myPath, LinkData _pData, ScenarioData _sData, string _user_id)
+        public EditProject(string _myPath, LinkData _pData, ScenarioData _sData, string _user_id, main temp)
         {
             InitializeComponent();
 
@@ -94,6 +95,7 @@ namespace DropBox
             pData = _pData;
             sData = _sData;
             user_id = _user_id;
+            _main = temp;
 
             SetupButton();
             
@@ -156,6 +158,7 @@ namespace DropBox
             cm = new ContextMenu();
             cm.MenuItems.Add("Delete", new System.EventHandler(this.imageListView_menuItem_delete_click));
         }
+
 
         private void SetupButton()
         {
@@ -657,6 +660,11 @@ namespace DropBox
                 }
             }
 
+        }
+
+        private void EditProject_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _main.refresh();
         }
     }
 }

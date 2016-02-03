@@ -207,7 +207,7 @@ namespace DropBox
 
 
 
-                    Button newButton = new Button();
+                    /*Button newButton = new Button();
                     newButton.Name = eachInfo.Name;
                     pResolution = pResolution.Replace(" (", System.Environment.NewLine + "(");
                     newButton.Text = eachInfo.Name + "\n" + pResolution;
@@ -216,7 +216,7 @@ namespace DropBox
                     newButton.Margin = new Padding(10, 10, 10, 10);
                     newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
 
-                    /*if (eachInfo.GetFiles().Length > 1)
+                    / *if (eachInfo.GetFiles().Length > 1)
                     {
                         //!@#$ 첫번째 이미지 불러오는 곳. 에러 잡기 필요
                         Image img;
@@ -243,8 +243,8 @@ namespace DropBox
                         newPicture.SizeMode = PictureBoxSizeMode.StretchImage;
 
                         newButton.Controls.Add(newPicture);
-                    }*/
-                    flowLayoutPanel1.Controls.Add(newButton);
+                    }* /
+                    flowLayoutPanel1.Controls.Add(newButton);*/
                 }
             }
         }
@@ -332,7 +332,7 @@ namespace DropBox
         private void menuItem_delete_click(object sender, EventArgs e)
         {
 
-            string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + TempDeleteButton.Name + "\\";
+           /* string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + TempDeleteButton.Name + "\\";
 
             //get control hovered with mouse
             //Button buttonToRemove = (this.GetChildAtPoint(this.PointToClient(Cursor.Position)) as Button);
@@ -341,7 +341,7 @@ namespace DropBox
 
             DirectoryInfo Info = new DirectoryInfo(mPath);
 
-            /*if (Info.Exists)
+            / *if (Info.Exists)
             {
                 foreach (FileInfo file in Info.GetFiles())
                 {
@@ -351,7 +351,7 @@ namespace DropBox
                 {
                     dir.Delete(true);
                 }
-            }*/
+            }* /
 
             Info.Delete(true);
 
@@ -359,7 +359,7 @@ namespace DropBox
 
 
 
-            //$$$$$$
+            //$$$$$$*/
         }
 
 
@@ -521,7 +521,34 @@ namespace DropBox
                 mCreateNewProject.Show();
         }
 
+        public void refresh()
+        {
+            string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE";
+            DirectoryInfo Info = new DirectoryInfo(mPath);
 
+            imageListView_Main.Items.Clear();
+
+            if (Info.Exists)
+            {
+                DirectoryInfo[] CInfo = Info.GetDirectories();
+
+                foreach (DirectoryInfo eachInfo in CInfo)
+                {
+                    if (Directory.GetFiles(eachInfo.FullName).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg")).Count() > 1)
+                    {
+                        // @@@@ imageListView
+                        imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("*.png")[0]);
+                    }
+
+                    if (Directory.GetFiles(eachInfo.FullName).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg")).Count() == 0)
+                    {
+                        // @@@@ imageListView
+                        imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("DoNotDelete.bmp")[0]);
+                    }
+
+                }
+            }
+        }
 
     }
 }

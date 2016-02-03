@@ -36,7 +36,6 @@
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.button3 = new System.Windows.Forms.Button();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btCreateProject = new System.Windows.Forms.Button();
             this.lblMyProjects = new System.Windows.Forms.Label();
@@ -110,15 +109,6 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.BackColor = System.Drawing.SystemColors.Control;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 120);
-            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(432, 462);
-            this.flowLayoutPanel1.TabIndex = 6;
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.btCreateProject);
@@ -155,14 +145,15 @@
             // 
             this.imageListView_Main.AllowDrag = true;
             this.imageListView_Main.AllowDrop = true;
+            this.imageListView_Main.CheckBoxAlignment = System.Drawing.ContentAlignment.TopLeft;
             this.imageListView_Main.ColumnHeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.imageListView_Main.GroupHeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.imageListView_Main.Location = new System.Drawing.Point(437, 121);
+            this.imageListView_Main.Location = new System.Drawing.Point(0, 121);
             this.imageListView_Main.Name = "imageListView_Main";
             this.imageListView_Main.PersistentCacheDirectory = "";
             this.imageListView_Main.PersistentCacheSize = ((long)(100));
             this.imageListView_Main.ShowCheckBoxes = true;
-            this.imageListView_Main.Size = new System.Drawing.Size(696, 460);
+            this.imageListView_Main.Size = new System.Drawing.Size(1133, 460);
             this.imageListView_Main.TabIndex = 8;
             this.imageListView_Main.ItemClick += new Manina.Windows.Forms.ItemClickEventHandler(this.imageListView1_itemClick);
             this.imageListView_Main.ItemDoubleClick += new Manina.Windows.Forms.ItemDoubleClickEventHandler(this.imageListView1_itemDoubleClick);
@@ -174,7 +165,6 @@
             this.ClientSize = new System.Drawing.Size(1133, 593);
             this.Controls.Add(this.imageListView_Main);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.textBox1);
@@ -201,7 +191,6 @@
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button button3;
-        public System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btCreateProject;
         private System.Windows.Forms.Label lblMyProjects;

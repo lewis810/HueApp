@@ -209,6 +209,7 @@
             this.Controls.Add(this.panel2);
             this.Name = "EditProject";
             this.Text = "EditProject";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.EditProject_FormClosed);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);

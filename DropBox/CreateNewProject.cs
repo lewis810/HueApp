@@ -124,7 +124,7 @@ namespace DropBox
 
 
 
-            string pResolution;
+            /*string pResolution;
             Button newButton = new Button();
             newButton.Name = textBoxProjectName.Text;
             pResolution = comboBox1.Text.Replace(" (", System.Environment.NewLine + "(");
@@ -134,7 +134,7 @@ namespace DropBox
             newButton.Margin = new Padding(10, 10, 10, 10);
             newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
 
-            form1.flowLayoutPanel1.Controls.Add(newButton);
+            form1.flowLayoutPanel1.Controls.Add(newButton);*/
             this.Dispose();
         }
 
@@ -198,7 +198,7 @@ namespace DropBox
 
         private void menuItem_delete_click(object sender, EventArgs e)
         {
-            string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + main.TempDeleteButton.Name + "\\";
+            /*string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + main.TempDeleteButton.Name + "\\";
 
             //get control hovered with mouse
             //Button buttonToRemove = (this.GetChildAtPoint(this.PointToClient(Cursor.Position)) as Button);
@@ -211,7 +211,7 @@ namespace DropBox
 
             form1.flowLayoutPanel1.Controls.Remove(main.TempDeleteButton);
 
-            //$$$$$$
+            //$$$$$$*/
         }
 
         private string GetDeviceName(string user_selection)
