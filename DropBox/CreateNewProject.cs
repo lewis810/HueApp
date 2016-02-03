@@ -101,6 +101,29 @@ namespace DropBox
                 return;
             }
             //Image mImage = Image.FromFile((string)di.GetFiles()[0].Name);
+
+            //@@@@ imagelistview
+            //System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(CreateNewProject));
+            //(System.Drawing.Image)(resources.GetObject("jiyong"));
+
+            using (Stream resource = GetType().Assembly.GetManifestResourceStream("DropBox.Resources.DoNotDelete.bmp"))
+            {
+                if (resource == null)
+                {
+                    throw new ArgumentException("No such resource", "resourceName");
+                }
+                using (Stream output = File.OpenWrite(mPath + "\\DoNotDelete.bmp"))
+                {
+                    resource.CopyTo(output);
+                }
+                //File.Copy(DropBox.Properties.Resources.jiyong.bmp, mPath);
+
+                File.SetAttributes(mPath + "\\DoNotDelete.bmp", FileAttributes.Hidden);
+            }
+            form1.imageListView_Main.Items.Add(mPath + "\\DoNotDelete.bmp");
+
+
+
             string pResolution;
             Button newButton = new Button();
             newButton.Name = textBoxProjectName.Text;
@@ -184,7 +207,7 @@ namespace DropBox
 
             DirectoryInfo Info = new DirectoryInfo(mPath);
 
-            Info.Delete(true);
+            //Info.Delete(true);
 
             form1.flowLayoutPanel1.Controls.Remove(main.TempDeleteButton);
 

@@ -15,6 +15,9 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml;
+using Manina.Windows.Forms;
+using System.Reflection;
+
 
 namespace DropBox
 {
@@ -23,6 +26,8 @@ namespace DropBox
         private string CurrentPath = "/";
         public static Button TempDeleteButton;
         public string id;
+        private ContextMenu cm;
+
 
         public main()
         {
@@ -134,6 +139,38 @@ namespace DropBox
 
         public void init()
         {
+            /*
+             *                IMAGE LIST VIEW CODE *** BEGIN
+             */
+
+            Assembly assembly = Assembly.GetAssembly(typeof(ImageListView));
+
+            imageListView_Main.SetRenderer(new ImageListViewRenderers.DefaultRenderer());
+            imageListView_Main.SortColumn = 0;
+            imageListView_Main.SortOrder = Manina.Windows.Forms.SortOrder.AscendingNatural;
+
+            string cacheDir = Path.Combine(
+                Path.GetDirectoryName(new Uri(assembly.GetName().CodeBase).LocalPath),
+                "Cache"
+                );
+            if (!Directory.Exists(cacheDir))
+                Directory.CreateDirectory(cacheDir);
+            imageListView_Main.PersistentCacheDirectory = cacheDir;
+            imageListView_Main.Columns.Add(ColumnType.Name);
+            imageListView_Main.Columns.Add(ColumnType.Dimensions);
+            imageListView_Main.Columns.Add(ColumnType.FileSize);
+            imageListView_Main.Columns.Add(ColumnType.FolderName);
+
+
+
+            /*
+             *                IMAGE LIST VIEW CODE *** END
+             */
+            cm = new ContextMenu();
+            cm.MenuItems.Add("Delete", new System.EventHandler(this.imageListView_menuItem_delete_click));
+            imageListView_Main.ContextMenu = cm;
+
+
             string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE";
             string pResolution = "";
             DirectoryInfo Info = new DirectoryInfo(mPath);
@@ -153,6 +190,23 @@ namespace DropBox
                     XmlNode nodeDevice = xmlDoc.DocumentElement.SelectSingleNode("/LinkTable");
                     pResolution = (nodeDevice.SelectSingleNode("DeviceResolution").InnerText);
 
+
+                    
+                    if (Directory.GetFiles(eachInfo.FullName).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg")).Count() > 1)
+                    {
+                        // @@@@ imageListView
+                        imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("*.png")[0]);
+                    }
+
+                    if (Directory.GetFiles(eachInfo.FullName).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg")).Count() == 0)
+                    {
+                        // @@@@ imageListView
+                        imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("DoNotDelete.bmp")[0]);
+                    }
+
+
+
+
                     Button newButton = new Button();
                     newButton.Name = eachInfo.Name;
                     pResolution = pResolution.Replace(" (", System.Environment.NewLine + "(");
@@ -162,10 +216,11 @@ namespace DropBox
                     newButton.Margin = new Padding(10, 10, 10, 10);
                     newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
 
-                    if (eachInfo.GetFiles().Length > 1)
+                    /*if (eachInfo.GetFiles().Length > 1)
                     {
+                        //!@#$ 첫번째 이미지 불러오는 곳. 에러 잡기 필요
                         Image img;
-                        using (var bmpTemp = new Bitmap(eachInfo.FullName + "\\" + eachInfo.GetFiles()[0]))
+                        using (var bmpTemp = new Bitmap(eachInfo.FullName + "\\" + eachInfo.GetFiles("*.png")[0]))
                         {
                             img = new Bitmap(bmpTemp);
                         }
@@ -188,9 +243,33 @@ namespace DropBox
                         newPicture.SizeMode = PictureBoxSizeMode.StretchImage;
 
                         newButton.Controls.Add(newPicture);
-                    }
+                    }*/
                     flowLayoutPanel1.Controls.Add(newButton);
                 }
+            }
+        }
+
+        // imagelistView_main double click 시에 반응
+        private void imageListView1_itemDoubleClick(object sender, ItemClickEventArgs e)
+        {
+            ImageListViewItem item = imageListView_Main.SelectedItems[0];
+
+            string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + item.FolderName + "\\";
+
+            MessageBox.Show(mPath);
+
+            EditProject editProject = new EditProject(mPath, id);
+            editProject.Show();
+
+        }
+
+        private void imageListView1_itemClick(object sender, ItemClickEventArgs e)
+        {
+            if ((e.Buttons & MouseButtons.Right) != MouseButtons.None)
+            {
+                /*ContextMenu cm = new ContextMenu();
+                cm.MenuItems.Add("Delete", new System.EventHandler(this.imageListView_menuItem_delete_click));*/
+                imageListView_Main.ContextMenu = cm;
             }
         }
 
@@ -232,6 +311,23 @@ namespace DropBox
             }
 
         }
+
+        private void imageListView_menuItem_delete_click(object sender, EventArgs e)
+        {
+            foreach (ImageListViewItem item in imageListView_Main.SelectedItems)
+            {
+                
+
+                MessageBox.Show(item.FilePath, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                DirectoryInfo Info = new DirectoryInfo(item.FilePath);
+                Info.Delete(true);
+
+                imageListView_Main.Items.Remove(item);
+            }            
+
+        }
+
 
         private void menuItem_delete_click(object sender, EventArgs e)
         {
@@ -424,6 +520,8 @@ namespace DropBox
             if (!mCreateNewProject.Visible)
                 mCreateNewProject.Show();
         }
+
+
 
     }
 }
