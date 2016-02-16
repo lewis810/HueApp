@@ -237,7 +237,6 @@ namespace DropBox
                 btn_link[i].Font = new Font(btn_link[i].Font.Name, 10, FontStyle.Bold);
                 btn_link[i].BackgroundImage = Image.FromFile(imageInfo[i].str_image);
                 btn_link[i].BackgroundImageLayout = ImageLayout.Stretch;
-
             }
         }
 
