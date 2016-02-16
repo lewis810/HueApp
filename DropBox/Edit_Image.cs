@@ -213,7 +213,7 @@ namespace DropBox
             //프로젝트 내에 있는 파일이름 가져오기
             DirectoryInfo dinfo = new DirectoryInfo(mPath);
 
-            string[] extensions = new[] { ".jpg", ".tiff", ".bmp", ".png" };
+            string[] extensions = new[] { ".jpg", ".tiff", ".png" };
 
             FileInfo[] files =
                 dinfo.EnumerateFiles()
@@ -589,8 +589,8 @@ namespace DropBox
 
         private void Edit_Image_FormClosed(object sender, FormClosedEventArgs e)
         {
-            EditProject editProject = new EditProject(mPath, pData, sData, user_id);
-            editProject.Show();
+            /*EditProject editProject = new EditProject(mPath, pData, sData, user_id);
+            editProject.Show();*/
         }
 
         private void BACK_btn_Click(object sender, EventArgs e)

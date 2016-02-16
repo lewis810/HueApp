@@ -101,7 +101,30 @@ namespace DropBox
                 return;
             }
             //Image mImage = Image.FromFile((string)di.GetFiles()[0].Name);
-            string pResolution;
+
+            //@@@@ imagelistview
+            //System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(CreateNewProject));
+            //(System.Drawing.Image)(resources.GetObject("jiyong"));
+
+            using (Stream resource = GetType().Assembly.GetManifestResourceStream("DropBox.Resources.DoNotDelete.bmp"))
+            {
+                if (resource == null)
+                {
+                    throw new ArgumentException("No such resource", "resourceName");
+                }
+                using (Stream output = File.OpenWrite(mPath + "\\DoNotDelete.bmp"))
+                {
+                    resource.CopyTo(output);
+                }
+                //File.Copy(DropBox.Properties.Resources.jiyong.bmp, mPath);
+
+                File.SetAttributes(mPath + "\\DoNotDelete.bmp", FileAttributes.Hidden);
+            }
+            form1.imageListView_Main.Items.Add(mPath + "\\DoNotDelete.bmp");
+
+
+
+            /*string pResolution;
             Button newButton = new Button();
             newButton.Name = textBoxProjectName.Text;
             pResolution = comboBox1.Text.Replace(" (", System.Environment.NewLine + "(");
@@ -111,7 +134,7 @@ namespace DropBox
             newButton.Margin = new Padding(10, 10, 10, 10);
             newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
 
-            form1.flowLayoutPanel1.Controls.Add(newButton);
+            form1.flowLayoutPanel1.Controls.Add(newButton);*/
             this.Dispose();
         }
 
@@ -175,7 +198,7 @@ namespace DropBox
 
         private void menuItem_delete_click(object sender, EventArgs e)
         {
-            string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + main.TempDeleteButton.Name + "\\";
+            /*string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + main.TempDeleteButton.Name + "\\";
 
             //get control hovered with mouse
             //Button buttonToRemove = (this.GetChildAtPoint(this.PointToClient(Cursor.Position)) as Button);
@@ -184,11 +207,11 @@ namespace DropBox
 
             DirectoryInfo Info = new DirectoryInfo(mPath);
 
-            Info.Delete(true);
+            //Info.Delete(true);
 
             form1.flowLayoutPanel1.Controls.Remove(main.TempDeleteButton);
 
-            //$$$$$$
+            //$$$$$$*/
         }
 
         private string GetDeviceName(string user_selection)

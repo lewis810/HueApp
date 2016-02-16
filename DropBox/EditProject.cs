@@ -13,6 +13,8 @@ using System.Xml.Linq;
 using System.Xml;
 using System.Text.RegularExpressions;
 using System.IO.Compression;
+using System.Reflection;
+using Manina.Windows.Forms;
 
 namespace DropBox
 {
@@ -23,6 +25,9 @@ namespace DropBox
 
         private string myPath;
         private Button TempDeleteButton;
+        private ContextMenu cm;
+
+        main _main;
 
         public struct SCENARIO
         {
@@ -59,12 +64,30 @@ namespace DropBox
         public ListBox listBox;
         string user_id;
 
-        public EditProject()
+        private EditProject()
         {
             InitializeComponent();
+
+            Assembly assembly = Assembly.GetAssembly(typeof(ImageListView));
+
+            imageListView_EditProject.SetRenderer(new ImageListViewRenderers.DefaultRenderer());
+            imageListView_EditProject.SortColumn = 0;
+            imageListView_EditProject.SortOrder = Manina.Windows.Forms.SortOrder.AscendingNatural;
+
+            string cacheDir = Path.Combine(
+                Path.GetDirectoryName(new Uri(assembly.GetName().CodeBase).LocalPath),
+                "Cache"
+                );
+            if (!Directory.Exists(cacheDir))
+                Directory.CreateDirectory(cacheDir);
+            imageListView_EditProject.PersistentCacheDirectory = cacheDir;
+            imageListView_EditProject.Columns.Add(ColumnType.Name);
+            imageListView_EditProject.Columns.Add(ColumnType.Dimensions);
+            imageListView_EditProject.Columns.Add(ColumnType.FileSize);
+            imageListView_EditProject.Columns.Add(ColumnType.FolderName);
         }
 
-        public EditProject(string _myPath, LinkData _pData, ScenarioData _sData, string _user_id)
+        public EditProject(string _myPath, LinkData _pData, ScenarioData _sData, string _user_id, main temp)
         {
             InitializeComponent();
 
@@ -72,6 +95,7 @@ namespace DropBox
             pData = _pData;
             sData = _sData;
             user_id = _user_id;
+            _main = temp;
 
             SetupButton();
             
@@ -79,6 +103,27 @@ namespace DropBox
             {
                 listBox1.Items.Add(sData.getSData()[i].title);
             }
+
+            Assembly assembly = Assembly.GetAssembly(typeof(ImageListView));
+
+            imageListView_EditProject.SetRenderer(new ImageListViewRenderers.DefaultRenderer());
+            imageListView_EditProject.SortColumn = 0;
+            imageListView_EditProject.SortOrder = Manina.Windows.Forms.SortOrder.AscendingNatural;
+
+            string cacheDir = Path.Combine(
+                Path.GetDirectoryName(new Uri(assembly.GetName().CodeBase).LocalPath),
+                "Cache"
+                );
+            if (!Directory.Exists(cacheDir))
+                Directory.CreateDirectory(cacheDir);
+            imageListView_EditProject.PersistentCacheDirectory = cacheDir;
+            imageListView_EditProject.Columns.Add(ColumnType.Name);
+            imageListView_EditProject.Columns.Add(ColumnType.Dimensions);
+            imageListView_EditProject.Columns.Add(ColumnType.FileSize);
+            imageListView_EditProject.Columns.Add(ColumnType.FolderName);
+
+            cm = new ContextMenu();
+            cm.MenuItems.Add("Delete", new System.EventHandler(this.imageListView_menuItem_delete_click));
         }
 
         public EditProject(string _myPath, string _id)
@@ -91,7 +136,29 @@ namespace DropBox
             SetupButton();
             ReadLink();
             ReadScenario();
+
+            Assembly assembly = Assembly.GetAssembly(typeof(ImageListView));
+
+            imageListView_EditProject.SetRenderer(new ImageListViewRenderers.DefaultRenderer());
+            imageListView_EditProject.SortColumn = 0;
+            imageListView_EditProject.SortOrder = Manina.Windows.Forms.SortOrder.AscendingNatural;
+
+            string cacheDir = Path.Combine(
+                Path.GetDirectoryName(new Uri(assembly.GetName().CodeBase).LocalPath),
+                "Cache"
+                );
+            if (!Directory.Exists(cacheDir))
+                Directory.CreateDirectory(cacheDir);
+            imageListView_EditProject.PersistentCacheDirectory = cacheDir;
+            imageListView_EditProject.Columns.Add(ColumnType.Name);
+            imageListView_EditProject.Columns.Add(ColumnType.Dimensions);
+            imageListView_EditProject.Columns.Add(ColumnType.FileSize);
+            imageListView_EditProject.Columns.Add(ColumnType.FolderName);
+
+            cm = new ContextMenu();
+            cm.MenuItems.Add("Delete", new System.EventHandler(this.imageListView_menuItem_delete_click));
         }
+
 
         private void SetupButton()
         {
@@ -110,6 +177,8 @@ namespace DropBox
             {
                 foreach (System.IO.FileInfo _file in Info.GetFiles())
                 {
+
+
                     string fileName = _file.Name.Substring(0, _file.Name.LastIndexOf('.'));
                     string fileExt = _file.Name.Substring(_file.Name.LastIndexOf('.'));
                     string overName = String.Empty;
@@ -125,6 +194,9 @@ namespace DropBox
                     if (Regex.IsMatch(_file.Extension, "jpg", RegexOptions.IgnoreCase) ||
                         Regex.IsMatch(_file.Extension, "png", RegexOptions.IgnoreCase))             //여기서 extension 추가하기
                     {
+
+                        imageListView_EditProject.Items.Add(_file.FullName);
+
                         //temp = _file.Name;
                         Button newButton = new Button();
                         newButton.Name = _file.Name;
@@ -296,6 +368,10 @@ namespace DropBox
                         System.IO.Directory.CreateDirectory(myPath);
                     }
                     System.IO.File.Copy(temp, destFile);
+
+
+                    imageListView_EditProject.Items.Add(destFile);
+
 
                     Image img;
                     using (var bmpTemp = new Bitmap(destFile))
@@ -544,6 +620,51 @@ namespace DropBox
             MessageBox.Show("Deleted!");
             sData.getSData().RemoveAt(listBox1.SelectedIndex);
             this.listBox1.Items.Remove(listBox1.SelectedItem);
+        }
+
+
+        private void imageListView1_itemDoubleClick(object sender, ItemClickEventArgs e)
+        {
+            ImageListViewItem item = imageListView_EditProject.SelectedItems[0];
+
+            //string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + item.FolderName + "\\";
+
+            MessageBox.Show(item.FileName);
+
+            Edit_Image editImage = new Edit_Image(myPath, item.FileName, pData, sData, user_id);
+            this.Dispose();
+            editImage.Show();
+
+        }
+
+        private void imageListView1_itemClick(object sender, ItemClickEventArgs e)
+        {
+            if ((e.Buttons & MouseButtons.Right) != MouseButtons.None)
+            {
+                
+                imageListView_EditProject.ContextMenu = cm;
+            }
+        }
+
+        private void imageListView_menuItem_delete_click(object sender, EventArgs e)
+        {
+            foreach (ImageListViewItem item in imageListView_EditProject.SelectedItems)
+            {
+                if (File.Exists(item.FileName))
+                {
+                    
+                    //MessageBox.Show(item.FileName, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    File.Delete(item.FileName);
+                    imageListView_EditProject.Items.Remove(item);
+                    
+                }
+            }
+
+        }
+
+        private void EditProject_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _main.refresh();
         }
     }
 }

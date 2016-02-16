@@ -24,7 +24,7 @@ namespace DropBox
         const int EDIT = 1;
         const int SHOW = 2;
 
-        EditProject editProject = new EditProject();
+        //EditProject editProject = new EditProject();
 
         struct image_info
         {
