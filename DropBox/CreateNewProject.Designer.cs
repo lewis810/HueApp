@@ -62,34 +62,24 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.IntegralHeight = false;
             this.comboBox1.Items.AddRange(new object[] {
-            "iPhone4 (640 x 960)",
             "iPhone5 (640 x 1136)",
             "iPhone6 (750 x 1334)",
             "iPhone6S (750 x 1334)",
             "iPhone6+ (1080 x 1920)",
             "iPhone6S+ (1080 x 1920)",
-            "GalaxyS2 (480 x 800)",
             "GalaxyS2_HD (720 x 1280)",
             "GalaxyS3 (720 x 1280)",
             "GalaxyS4 (1080 x 1920)",
             "GalaxyS5 (1080 x 1920)",
             "GalaxyS6 (1440 x 2560)",
-            "GalaxyNote1 (800 x 1280)",
             "GalaxyNote2 (720 x 1280)",
             "GalaxyNote3 (1080 x 1920)",
             "GalaxyNote4 (1440 x 2560)",
             "GalaxyNote5 (1440 x 2560)",
-            "GalaxyTabS (1600 x 2560)",
             "OptimusG_Pro (1080 x 1920)",
             "G2 (1080 x 1920)",
             "G3 (1440 x 2560)",
-            "G4 (1440 x 2560)",
-            "GalaxyNexus (720 x 1280)",
-            "Nexus4 (768 x 1280)",
-            "Nexus5 (1080 x 1920)",
-            "Nexus7(2013) (1200 x 1920)",
-            "Nexus7 (800 x 1280)",
-            "Nexus10 (1600 x 2560)"});
+            "G4 (1440 x 2560)"});
             this.comboBox1.Location = new System.Drawing.Point(82, 162);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.comboBox1.Name = "comboBox1";

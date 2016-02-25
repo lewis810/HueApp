@@ -14,15 +14,22 @@ namespace DropBox
             public string title;
             public string time;
             public string purpose;
-            public string start_img;
-            public string end_img;
+            public string level;
+            public List<PATH_DATA> paths;
+        }
+
+        public struct PATH_DATA
+        {
+            public int tag;
+            public string path;
+            public string time;
         }
 
         List<SCENARIO_DATA> sData = new List<SCENARIO_DATA>();
 
-        public void AddScenario(int sTag, string sTitle, string sPurpose, string sTime, string sStartImg, string sEndImg)
+        public void AddScenario(int sTag, string sTitle, string sPurpose, string sTime, string sLevel, List<PATH_DATA> sPaths)
         {
-            sData.Add(new SCENARIO_DATA() { tag = sTag, title = sTitle, purpose = sPurpose, time = sTime, start_img = sStartImg, end_img = sEndImg });
+            sData.Add(new SCENARIO_DATA() { tag = sTag, title = sTitle, purpose = sPurpose, time = sTime, level = sLevel, paths = sPaths });
         }
 
         public List<SCENARIO_DATA> getSData()
@@ -41,6 +48,18 @@ namespace DropBox
                 }
             }
             return last_index;
+        }
+
+        public void resetTime(int index, string pTime, string pPath, int pTag)
+        {
+            for(int i = 0; i < sData[index].paths.Count; i++)
+            {
+                if(sData[index].paths[i].tag == pTag)
+                {
+                    sData[index].paths.RemoveAt(i);
+                    sData[index].paths.Insert(i, new PATH_DATA() { tag = pTag, path = pPath, time = pTime });
+                }
+            }
         }
 
     }

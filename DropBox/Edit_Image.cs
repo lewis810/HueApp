@@ -50,19 +50,11 @@ namespace DropBox
             public float image_height;
         };
 
-        struct image_info
-        {
-            public int Tag;
-            public string str_image;
-            public string str_name;
-        };
-
         LinkData pData;
         ScenarioData sData;
 
         bool swipe = false;
         string image_name;
-        int image_tag;
         string work_message;
         int btn_id_to_add = -1;
         int click_init = 0;
@@ -71,7 +63,6 @@ namespace DropBox
         link_info link_temp;
         List<string> str_work = new List<string>();             //화면 우측에 출력되는 링크정보
 
-        List<image_info> imageInfo = new List<image_info>();
         List<Button> btnOnScreen = new List<Button>();
 
         Control[] btn_link;
@@ -163,6 +154,8 @@ namespace DropBox
                 MessageBox.Show("Landscape는 추후 추가 예정");
             }
 
+            fpanel_editImage_link.Height = (int)(this.Height * 0.4);
+
             //메인이미지를 pictureBox1의 배경으로 설정
             listBox1.Height = listBox1.PreferredHeight;
             pictureBox1.BackgroundImage = mainImage;
@@ -175,13 +168,30 @@ namespace DropBox
             double ratio = 0;
             switch (deviceType)
             {
+                case "gPro":
+                case "g2":
+                case "g3":
+                case "g4":
                 case "galaxyS2HD":
-                case "galaxyS3":
-                case "note2":
-                case "iphone5":
-                case "iphone6": ratio = 0.5625; break;  // 9 : 16l
-            }
 
+                case "galaxyS3":
+                case "galaxyS4":
+                case "galaxyS5":
+                case "galaxyS6":
+                case "note2":
+
+                case "note3":
+                case "note4":
+                case "note5":
+                case "iphone5": 
+                case "iphone6":
+
+                case "iphone6s":
+                case "iphone6p":
+                case "iphone6sp": ratio = 0.5625; break;  // 9 : 16
+
+                // 기타 비율은 탭이나 현재 거의 쓰지 않는 기종들. 나중에 비율 다른 기종이 나오면 여기에 추가
+            }
             return ratio;
         }
 
@@ -190,25 +200,6 @@ namespace DropBox
             //디렉토리 주소를 받아와서 저장
             string path_folder;
             path_folder = mPath; //지용이가 넘겨준 주소값
-
-            int k = 0;
-            //반복문을 통해 디렉토리 내부의 이미지 파일 경로 얻어오기
-            foreach (var path in Directory.GetFiles(path_folder))
-            {
-                //이미지 파일만 불러오도록 필터링
-                if (Regex.IsMatch(path.ToString(), "jpg", RegexOptions.IgnoreCase) ||
-                    Regex.IsMatch(path.ToString(), "png", RegexOptions.IgnoreCase))
-                {
-                    imageInfo.Add(new image_info() { Tag = k, str_image = path.ToString(), str_name = Path.GetFileName(path) });
-                    if (Path.GetFileName(path).CompareTo(image_name) == 0)
-                    {
-                        image_tag = k; //여기서 태그정보가 무조건 나와야함.
-                    }
-                    k++;
-                }
-            }
-
-            btn_link = new Control[imageInfo.Count];
 
             //프로젝트 내에 있는 파일이름 가져오기
             DirectoryInfo dinfo = new DirectoryInfo(mPath);
@@ -220,14 +211,14 @@ namespace DropBox
                      .Where(f => extensions.Contains(f.Extension.ToLower()))
                      .ToArray();
 
+            btn_link = new Control[files.Length];
+
             for (int i = 0; i < files.Length; i++)
             {
                 //링크연결을 위한 이미지
                 btn_link[i] = new Button();
                 btn_link[i].Parent = this;
-                btn_link[i].Location = new Point(10 + i * 110, 10);
-                btn_link[i].Size = new Size(100, 120);
-                panel_image_link.Controls.Add(btn_link[i]);                         //패널에 버튼을 추가
+                btn_link[i].Size = new Size((int)(GetWidthOverHeight(pData.GetDeviceType()) * (int)(fpanel_editImage_link.Height * 0.9)), (int)(fpanel_editImage_link.Height * 0.9));
                 btn_link[i].Tag = i.ToString();
 
                 btn_link[i].Click += new EventHandler(ButtonClickToLink);
@@ -235,8 +226,10 @@ namespace DropBox
                 btn_link[i].Text = i.ToString();
                 btn_link[i].ForeColor = Color.Lime;
                 btn_link[i].Font = new Font(btn_link[i].Font.Name, 10, FontStyle.Bold);
-                btn_link[i].BackgroundImage = Image.FromFile(imageInfo[i].str_image);
+                btn_link[i].BackgroundImage = Image.FromFile(mPath + files[i].Name);
                 btn_link[i].BackgroundImageLayout = ImageLayout.Stretch;
+
+                fpanel_editImage_link.Controls.Add(btn_link[i]);
             }
         }
 
@@ -245,8 +238,6 @@ namespace DropBox
         {
             Control ctl = sender as Control;
             Button btn = sender as Button;
-
-            //MessageBox.Show(btn.TabIndex.ToString());
 
             if (e.Button == MouseButtons.Right)
             {
@@ -271,7 +262,7 @@ namespace DropBox
                 //    isDragged = false;
                 //}
 
-                panel_image_link.Visible = false;
+                fpanel_editImage_link.Visible = false;
 
                 if (btn != null)
                 {
@@ -319,11 +310,15 @@ namespace DropBox
             //this.isDragged = true;
             this.myPress = true; //마우스가 눌러짐
             this.link_alloc.Visible = false;
-            this.panel_image_link.Visible = false;
+            this.fpanel_editImage_link.Visible = false;
             this.myPointStart.X = e.X; //마우스가 눌러진 X 좌표
             this.myPointStart.Y = e.Y; //마우스가 눌러진 Y 좌표
             this.click_init = 1;
+            //pictureBox1.BringToFront();
             this.g = Graphics.FromHwnd(pictureBox1.Handle);
+            //MessageBox.Show(pictureBox1.Width.ToString() + "//" + pictureBox1.Height.ToString());
+            //MessageBox.Show(panel1.Width.ToString() + "//" + panel1.Height.ToString());
+
         }
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
@@ -431,8 +426,8 @@ namespace DropBox
         //링크연동버튼
         private void button5_Click(object sender, EventArgs e)
         {
-            this.panel_image_link.Visible = true;
-            this.panel_image_link.BringToFront();
+            this.fpanel_editImage_link.Visible = true;
+            this.fpanel_editImage_link.BringToFront();
             this.link_alloc.Visible = false;
         }
 
@@ -441,10 +436,10 @@ namespace DropBox
             //콤보박스에서 선택한 것이 리스트 박스 안에 없다면 추가한다.
             if(!listBox1.Items.Contains(comboBox1.SelectedItem))
             {
-                panel_image_link.Visible = true;
-                panel_image_link.BringToFront();
+                fpanel_editImage_link.Visible = true;
+                fpanel_editImage_link.BringToFront();
                 swipe = true;
-                MessageBox.Show("swipe3");
+                //MessageBox.Show("swipe3");
                 //밑에 링크박스 열리면서 선택할 경우 추가하도록
                 //listBox1.Items.Add(comboBox1.SelectedItem);
                 //ADD하면서 pData에도 추가
@@ -487,7 +482,7 @@ namespace DropBox
                 }
             }
             link_alloc.Visible = false;
-            panel_image_link.Visible = false;
+            fpanel_editImage_link.Visible = false;
         }
 
         //delete
@@ -589,8 +584,8 @@ namespace DropBox
 
         private void Edit_Image_FormClosed(object sender, FormClosedEventArgs e)
         {
-            /*EditProject editProject = new EditProject(mPath, pData, sData, user_id);
-            editProject.Show();*/
+            EditProject editProject = new EditProject(mPath, pData, sData, user_id);
+            editProject.Show();
         }
 
         private void BACK_btn_Click(object sender, EventArgs e)
@@ -854,7 +849,7 @@ namespace DropBox
                 {
                     this.label1.Text += str_work[j - 1];
                 }
-                panel_image_link.Visible = false;
+                fpanel_editImage_link.Visible = false;
 
                 //MessageBox.Show(pData.GetLinks()[fileIndex).link_data.Count.ToString());
             }

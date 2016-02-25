@@ -256,9 +256,9 @@ namespace DropBox
 
             string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + item.FolderName + "\\";
 
-            MessageBox.Show(mPath);
+            //MessageBox.Show(mPath);
 
-            EditProject editProject = new EditProject(mPath, id);
+            EditProject editProject = new EditProject(mPath, id, item.FolderName);
             editProject.Show();
 
         }
@@ -292,7 +292,7 @@ namespace DropBox
                     //MessageBox.Show(temp, "Warning",
                     //        MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    EditProject editProject = new EditProject(mPath, id);
+                    EditProject editProject = new EditProject(mPath, id, temp_btn_left.Name);
                     editProject.Show();
                     //MessageBox.Show("Left click", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;

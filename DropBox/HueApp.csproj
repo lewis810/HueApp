@@ -50,8 +50,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ImageListView">
-      <HintPath>..\..\imagelistview-master\ImageListView\bin\DesignerDebug\ImageListView.dll</HintPath>
+    <Reference Include="ImageListView, Version=11.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageListView.11.0.4.0\lib\net35\ImageListView.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Nemiro.OAuth, Version=1.10.45.895, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nemiro.OAuth.1.10\lib\net45\Nemiro.OAuth.dll</HintPath>
@@ -81,6 +82,12 @@
     </Compile>
     <Compile Include="CreateNewProject.Designer.cs">
       <DependentUpon>CreateNewProject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Delete.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Delete.Designer.cs">
+      <DependentUpon>Delete.cs</DependentUpon>
     </Compile>
     <Compile Include="LinkData.cs" />
     <Compile Include="EditProject.cs">
@@ -113,6 +120,9 @@
     <EmbeddedResource Include="CreateNewProject.resx">
       <DependentUpon>CreateNewProject.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Delete.resx">
+      <DependentUpon>Delete.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditProject.resx">
       <DependentUpon>EditProject.cs</DependentUpon>
@@ -163,6 +173,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\DoNotDelete.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\arrow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

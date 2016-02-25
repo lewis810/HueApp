@@ -43,6 +43,7 @@
             this.save_btn = new System.Windows.Forms.Button();
             this.del_btn = new System.Windows.Forms.Button();
             this.BACK_btn = new System.Windows.Forms.Button();
+            this.fpanel_editImage_link = new System.Windows.Forms.FlowLayoutPanel();
             this.tsBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
@@ -54,10 +55,11 @@
             this.tsBar.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.tsBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbtnLine04});
-            this.tsBar.Location = new System.Drawing.Point(615, 0);
+            this.tsBar.Location = new System.Drawing.Point(1040, 0);
             this.tsBar.Name = "tsBar";
+            this.tsBar.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
             this.tsBar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.tsBar.Size = new System.Drawing.Size(24, 654);
+            this.tsBar.Size = new System.Drawing.Size(25, 906);
             this.tsBar.TabIndex = 3;
             this.tsBar.Text = "tsBar";
             // 
@@ -66,16 +68,16 @@
             this.tsbtnLine04.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.tsbtnLine04.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbtnLine04.Name = "tsbtnLine04";
-            this.tsbtnLine04.Size = new System.Drawing.Size(21, 4);
+            this.tsbtnLine04.Size = new System.Drawing.Size(20, 4);
             this.tsbtnLine04.Text = "toolStripButton1";
             this.tsbtnLine04.ToolTipText = "사각형";
             // 
             // link_alloc
             // 
-            this.link_alloc.Location = new System.Drawing.Point(373, 246);
-            this.link_alloc.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.link_alloc.Location = new System.Drawing.Point(622, 341);
+            this.link_alloc.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.link_alloc.Name = "link_alloc";
-            this.link_alloc.Size = new System.Drawing.Size(56, 20);
+            this.link_alloc.Size = new System.Drawing.Size(93, 28);
             this.link_alloc.TabIndex = 6;
             this.link_alloc.Text = "링크연동";
             this.link_alloc.UseVisualStyleBackColor = true;
@@ -88,10 +90,10 @@
             this.panel_image_link.AutoSize = true;
             this.panel_image_link.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panel_image_link.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel_image_link.Location = new System.Drawing.Point(0, 654);
-            this.panel_image_link.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.panel_image_link.Location = new System.Drawing.Point(0, 906);
+            this.panel_image_link.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel_image_link.Name = "panel_image_link";
-            this.panel_image_link.Size = new System.Drawing.Size(615, 0);
+            this.panel_image_link.Size = new System.Drawing.Size(1040, 0);
             this.panel_image_link.TabIndex = 7;
             this.panel_image_link.Visible = false;
             // 
@@ -101,9 +103,9 @@
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(243, 481);
+            this.pictureBox1.Size = new System.Drawing.Size(405, 666);
             this.pictureBox1.TabIndex = 9;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
@@ -114,20 +116,18 @@
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Location = new System.Drawing.Point(201, 9);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Location = new System.Drawing.Point(335, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(243, 481);
+            this.panel1.Size = new System.Drawing.Size(405, 666);
             this.panel1.TabIndex = 10;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.label1.Location = new System.Drawing.Point(615, 0);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(1040, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(0, 13);
+            this.label1.Size = new System.Drawing.Size(0, 18);
             this.label1.TabIndex = 11;
             // 
             // comboBox1
@@ -138,10 +138,9 @@
             "Swipe_Left",
             "Swipe_Up",
             "Swipe_Down"});
-            this.comboBox1.Location = new System.Drawing.Point(7, 43);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBox1.Location = new System.Drawing.Point(12, 60);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(140, 21);
+            this.comboBox1.Size = new System.Drawing.Size(231, 26);
             this.comboBox1.TabIndex = 12;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -150,19 +149,18 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.listBox1.IntegralHeight = false;
-            this.listBox1.Location = new System.Drawing.Point(7, 73);
-            this.listBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.listBox1.ItemHeight = 18;
+            this.listBox1.Location = new System.Drawing.Point(12, 101);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(140, 87);
+            this.listBox1.Size = new System.Drawing.Size(231, 119);
             this.listBox1.TabIndex = 13;
             this.listBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseUp);
             // 
             // save_btn
             // 
-            this.save_btn.Location = new System.Drawing.Point(8, 172);
-            this.save_btn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.save_btn.Location = new System.Drawing.Point(13, 238);
             this.save_btn.Name = "save_btn";
-            this.save_btn.Size = new System.Drawing.Size(52, 43);
+            this.save_btn.Size = new System.Drawing.Size(87, 60);
             this.save_btn.TabIndex = 14;
             this.save_btn.Text = "SAVE";
             this.save_btn.UseVisualStyleBackColor = true;
@@ -170,10 +168,9 @@
             // 
             // del_btn
             // 
-            this.del_btn.Location = new System.Drawing.Point(64, 172);
-            this.del_btn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.del_btn.Location = new System.Drawing.Point(107, 238);
             this.del_btn.Name = "del_btn";
-            this.del_btn.Size = new System.Drawing.Size(54, 42);
+            this.del_btn.Size = new System.Drawing.Size(90, 58);
             this.del_btn.TabIndex = 15;
             this.del_btn.Text = "UNLINK";
             this.del_btn.UseVisualStyleBackColor = true;
@@ -181,22 +178,30 @@
             // 
             // BACK_btn
             // 
-            this.BACK_btn.Location = new System.Drawing.Point(8, 9);
-            this.BACK_btn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.BACK_btn.Location = new System.Drawing.Point(13, 12);
             this.BACK_btn.Name = "BACK_btn";
-            this.BACK_btn.Size = new System.Drawing.Size(85, 30);
+            this.BACK_btn.Size = new System.Drawing.Size(142, 42);
             this.BACK_btn.TabIndex = 16;
             this.BACK_btn.Text = "<--";
             this.BACK_btn.UseVisualStyleBackColor = true;
             this.BACK_btn.Click += new System.EventHandler(this.BACK_btn_Click);
             // 
+            // fpanel_editImage_link
+            // 
+            this.fpanel_editImage_link.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.fpanel_editImage_link.Location = new System.Drawing.Point(0, 774);
+            this.fpanel_editImage_link.Name = "fpanel_editImage_link";
+            this.fpanel_editImage_link.Size = new System.Drawing.Size(1040, 132);
+            this.fpanel_editImage_link.TabIndex = 17;
+            // 
             // Edit_Image
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ClientSize = new System.Drawing.Size(639, 654);
+            this.ClientSize = new System.Drawing.Size(1065, 906);
+            this.Controls.Add(this.fpanel_editImage_link);
             this.Controls.Add(this.BACK_btn);
             this.Controls.Add(this.del_btn);
             this.Controls.Add(this.save_btn);
@@ -208,7 +213,7 @@
             this.Controls.Add(this.link_alloc);
             this.Controls.Add(this.tsBar);
             this.DoubleBuffered = true;
-            this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "Edit_Image";
             this.Text = "Form1";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -238,6 +243,7 @@
         private System.Windows.Forms.Button save_btn;
         private System.Windows.Forms.Button del_btn;
         private System.Windows.Forms.Button BACK_btn;
+        private System.Windows.Forms.FlowLayoutPanel fpanel_editImage_link;
     }
 }
 

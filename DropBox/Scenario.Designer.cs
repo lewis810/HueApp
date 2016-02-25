@@ -36,11 +36,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.EndImage_btn = new System.Windows.Forms.Button();
-            this.StartImage_btn = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this.Path_btn = new System.Windows.Forms.Button();
+            this.fpanel_scenario_image = new System.Windows.Forms.FlowLayoutPanel();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -106,11 +103,9 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.EndImage_btn);
+            this.panel1.AutoSize = true;
             this.panel1.Controls.Add(this.CONFIRM_btn);
-            this.panel1.Controls.Add(this.StartImage_btn);
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.Path_btn);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label3);
@@ -120,63 +115,36 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1045, 329);
+            this.panel1.Size = new System.Drawing.Size(1032, 306);
             this.panel1.TabIndex = 11;
             // 
-            // EndImage_btn
+            // Path_btn
             // 
-            this.EndImage_btn.Location = new System.Drawing.Point(164, 208);
-            this.EndImage_btn.Name = "EndImage_btn";
-            this.EndImage_btn.Size = new System.Drawing.Size(855, 27);
-            this.EndImage_btn.TabIndex = 14;
-            this.EndImage_btn.Text = "Click to set end image";
-            this.EndImage_btn.UseVisualStyleBackColor = true;
-            this.EndImage_btn.Click += new System.EventHandler(this.EndImage_btn_Click);
+            this.Path_btn.Location = new System.Drawing.Point(15, 175);
+            this.Path_btn.Name = "Path_btn";
+            this.Path_btn.Size = new System.Drawing.Size(1004, 27);
+            this.Path_btn.TabIndex = 13;
+            this.Path_btn.Text = "경로만들기";
+            this.Path_btn.UseVisualStyleBackColor = true;
+            this.Path_btn.Click += new System.EventHandler(this.Path_btn_Click);
             // 
-            // StartImage_btn
+            // fpanel_scenario_image
             // 
-            this.StartImage_btn.Location = new System.Drawing.Point(164, 175);
-            this.StartImage_btn.Name = "StartImage_btn";
-            this.StartImage_btn.Size = new System.Drawing.Size(855, 27);
-            this.StartImage_btn.TabIndex = 13;
-            this.StartImage_btn.Text = "Click to set start image";
-            this.StartImage_btn.UseVisualStyleBackColor = true;
-            this.StartImage_btn.Click += new System.EventHandler(this.StartImage_btn_Click);
-            // 
-            // label5
-            // 
-            this.label5.Location = new System.Drawing.Point(12, 211);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(149, 31);
-            this.label5.TabIndex = 12;
-            this.label5.Text = "END IMAGE";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label4
-            // 
-            this.label4.Location = new System.Drawing.Point(12, 171);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(149, 31);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "START IMAGE";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // panel2
-            // 
-            this.panel2.AutoSize = true;
-            this.panel2.Location = new System.Drawing.Point(0, 329);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(10, 10);
-            this.panel2.TabIndex = 12;
-            this.panel2.Visible = false;
+            this.fpanel_scenario_image.AutoScroll = true;
+            this.fpanel_scenario_image.Location = new System.Drawing.Point(0, 306);
+            this.fpanel_scenario_image.Name = "fpanel_scenario_image";
+            this.fpanel_scenario_image.Size = new System.Drawing.Size(1032, 14);
+            this.fpanel_scenario_image.TabIndex = 15;
+            this.fpanel_scenario_image.Visible = false;
+            this.fpanel_scenario_image.WrapContents = false;
             // 
             // Scenario
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1045, 344);
-            this.Controls.Add(this.panel2);
+            this.ClientSize = new System.Drawing.Size(1032, 320);
+            this.Controls.Add(this.fpanel_scenario_image);
             this.Controls.Add(this.panel1);
             this.Name = "Scenario";
             this.Text = "Scenario";
@@ -196,10 +164,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button CONFIRM_btn;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button EndImage_btn;
-        private System.Windows.Forms.Button StartImage_btn;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button Path_btn;
+        private System.Windows.Forms.FlowLayoutPanel fpanel_scenario_image;
     }
 }

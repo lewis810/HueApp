@@ -11,6 +11,7 @@ namespace DropBox
 {
     public class LinkData
     {
+        private string project_name;
         private string device_type;
         private string device_resolution;
 
@@ -38,8 +39,10 @@ namespace DropBox
         public List<LINK> GetLinks(){ return this.links;}
         public string GetDeviceType(){ return this.device_type;}
         public string GetDeviceResolution() { return this.device_resolution; }
+        public string GetProjectName() { return this.project_name; }
 
         //setters
+        public void SetProjectName(string _project_name) { this.project_name = _project_name; }
         public void SetDeviceType(string new_device_type) { this.device_type = new_device_type; }
         public void SetDeviceResolution(string new_device_resolution) { this.device_resolution = new_device_resolution; }
         public void SetLink(string new_file_name, int pTag, string pDstFile, Point pImage_xy, int pImage_width, int pImage_height, string pInput_type)

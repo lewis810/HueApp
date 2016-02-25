@@ -158,7 +158,7 @@ namespace DropBox
                     //MessageBox.Show(temp, "Warning",
                     //        MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    EditProject editProject = new EditProject(mPath, user_id);
+                    EditProject editProject = new EditProject(mPath, user_id, temp_btn_left.Name);
                     editProject.Show();
                     //MessageBox.Show("Left click", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
@@ -218,116 +218,116 @@ namespace DropBox
         {
             if (user_selection.CompareTo("iPhone4 (640 x 960)") == 0)
             {
-                return "iphone4";
+                return "iphone4";//거의 안 씀
             }
             else if (user_selection.CompareTo("iPhone5 (640 x 1136)") == 0)
             {
-                return "iphone5";
+                return "iphone5";//
             }
             else if(user_selection.CompareTo("iPhone6 (750 x 1334)") == 0)
             {
-                return "iphone6";
+                return "iphone6";//
             }
             else if (user_selection.CompareTo("iPhone6S (750 x 1334)") == 0)
             {
-                return "iphone6s";
+                return "iphone6s";//
             }
             else if (user_selection.CompareTo("iPhone6 + (1080 x 1920)") == 0)
             {
-                return "iphone6p";
+                return "iphone6p";//
             }
             else if (user_selection.CompareTo("iPhone6S+ (1080 x 1920)") == 0)
             {
-                return "iphone6sp";
+                return "iphone6sp";//
             }
             else if (user_selection.CompareTo("GalaxyS2 (480 x 800)") == 0)
             {
-                return "galaxyS2";
+                return "galaxyS2";//거의 안 씀
             }
             else if (user_selection.CompareTo("GalaxyS2_HD (720 x 1280)") == 0)
             {
-                return "galaxyS2HD";
+                return "galaxyS2HD";//
             }
 
             else if (user_selection.CompareTo("GalaxyS3 (720 x 1280)") == 0)
             {
-                return "galaxyS3";
+                return "galaxyS3";//
             }
             else if (user_selection.CompareTo("GalaxyS4 (1080 x 1920)") == 0)
             {
-                return "galaxyS4";
+                return "galaxyS4";//
             }
             else if (user_selection.CompareTo("GalaxyS5 (1080 x 1920)") == 0)
             {
-                return "galaxyS5";
+                return "galaxyS5";//
             }
             else if (user_selection.CompareTo("GalaxyS6 (1440 x 2560)") == 0)
             {
-                return "galaxyS6";
+                return "galaxyS6";//
             }
             else if (user_selection.CompareTo("GalaxyNote1 (800 x 1280)") == 0)
             {
-                return "note1";
+                return "note1";//거의 안 씀
             }
             else if (user_selection.CompareTo("GalaxyNote2 (720 x 1280)") == 0)
             {
-                return "note2";
+                return "note2";//
             }
             else if (user_selection.CompareTo("GalaxyNote3 (1080 x 1920)") == 0)
             {
-                return "note3";
+                return "note3";//
             }
             else if (user_selection.CompareTo("GalaxyNote4 (1440 x 2560)") == 0)
             {
-                return "note4";
+                return "note4";//
             }
             else if (user_selection.CompareTo("GalaxyNote5 (1440 x 2560)") == 0)
             {
-                return "note5";
+                return "note5";//
             }
             else if (user_selection.CompareTo("GalaxyTabS (1600 x 2560)") == 0)
             {
-                return "tabS";
+                return "tabS";//거의 안 씀
             }
             else if (user_selection.CompareTo("OptimusG_Pro (1080 x 1920)") == 0)
             {
-                return "gPro";
+                return "gPro";//
             }
             else if (user_selection.CompareTo("G2 (1080 x 1920)") == 0)
             {
-                return "g2";
+                return "g2";//
             }
             else if (user_selection.CompareTo("G3 (1440 x 2560)") == 0)
             {
-                return "g3";
+                return "g3";//
             }
             else if (user_selection.CompareTo("G4 (1440 x 2560)") == 0)
             {
-                return "g4";
+                return "g4";//
             }
             else if (user_selection.CompareTo("GalaxyNexus (720 x 1280)") == 0)
             {
-                return "galaxyNexus";
+                return "galaxyNexus";//거의 안 씀
             }
             else if (user_selection.CompareTo("Nexus4 (768 x 1280)") == 0)
             {
-                return "nexus4";
+                return "nexus4";//거의 안 씀
             }
             else if (user_selection.CompareTo("Nexus5(1080 x 1920)") == 0)
             {
-                return "nexus5";
+                return "nexus5";//거의 안 씀
             }
             else if (user_selection.CompareTo("Nexus7(2013) (1200 x 1920)") == 0)
             {
-                return "nexus7_2013";
+                return "nexus7_2013";//거의 안 씀
             }
             else if (user_selection.CompareTo("Nexus7 (800 x 1280)") == 0)
             {
-                return "nexus7";
+                return "nexus7";//거의 안 씀
             }
             else if (user_selection.CompareTo("Nexus10 (1600 x 2560)") == 0)
             {
-                return "nexus10";
+                return "nexus10";//거의 안 씀
             }
 
             return "undefined";
