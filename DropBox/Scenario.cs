@@ -129,7 +129,7 @@ namespace DropBox
                 //MessageBox.Show("머라도 떠라");
             Button button1 = new Button();
             Control ctl = GetControlByName(path_btn);
-            //MessageBox.Show(ctl.TabIndex.ToString());
+            MessageBox.Show(path_btn.Name);
 
             //Label label1 = this.Controls.Get
 
@@ -267,8 +267,20 @@ namespace DropBox
             //this.Height = panel1.Height;
             if (ctl != null)
             {
+                fpanel_path2 = new FlowLayoutPanel();
+                fpanel_path2.FlowDirection = FlowDirection.TopDown;
+
+
                 //여기서 에러나면 맨 처음은 0으로 설정
-                sPath.Add(new ScenarioData.PATH_DATA() { tag = sPath[sPath.Count - 1].tag + 1, path = btn.Name, time = "-1"});
+                try
+                {
+                    sPath.Add(new ScenarioData.PATH_DATA() { tag = sPath[sPath.Count - 1].tag + 1, path = btn.Name, time = "-1" });
+                }
+                catch(ArgumentOutOfRangeException ae)
+                {
+                    sPath.Add(new ScenarioData.PATH_DATA() { tag = 1, path = btn.Name, time = "-1" });
+                }
+
                 Button path_pic = new Button();
                 path_pic.Size = new Size((int)(temp_height * 0.5625), temp_height);
                 path_pic.BackgroundImage = Image.FromFile(mPath + sPath[sPath.Count-1].path);
@@ -276,19 +288,40 @@ namespace DropBox
                 path_pic.Click += new EventHandler(this.picture_click);
                 path_pic.FlatStyle = FlatStyle.Flat;
                 path_pic.FlatAppearance.BorderSize = 0;
+                path_pic.Name = "path_pic" + sPath[sPath.Count - 1].tag.ToString();
                 path_pic.TabIndex = sPath[sPath.Count - 1].tag;
 
-                //label은 입력 아직 안 된것.
-                
-                fpanel_path.Controls.Add(path_pic);
+                fpanel_path2.Controls.Add(path_pic);
+
+                //label
+                Label path_name, path_time;
+                path_name = new Label();
+                path_name.Text = sPath[sPath.Count - 1].path;
+                fpanel_path2.Controls.Add(path_name);
+
+                path_time = new Label();
+                path_time.Text = sPath[sPath.Count - 1].time;
+                path_time.TabIndex = sPath[sPath.Count - 1].tag;
+                path_time.Name = "path_time" + sPath[sPath.Count - 1].tag.ToString();
+                fpanel_path2.Controls.Add(path_time);
+
                 fpanel_path.Width = this.Width - 25;
 
+                fpanel_path2.WrapContents = false;
+                fpanel_path2.Size = fpanel_path2.PreferredSize;
+                fpanel_path2.Height = (int)(fpanel_path2.Height * 1.2);
+                fpanel_path2.Name = "path_pic" + sPath[sPath.Count - 1].tag.ToString();
+                fpanel_path2.TabIndex = sPath[sPath.Count - 1].tag;
+                fpanel_path.Controls.Add(fpanel_path2);
             }
             //완료 버튼 누르면 종료하는 것으로.
         }
 
         private void Path_btn_Click(object sender, EventArgs e)
         {
+            panel1.Controls.Remove(fpanel_path);
+            fpanel_scenario_image.Height = 0;
+
             //모든 이미지 다 보여주고 선택하기
             this.Height = panel1.Height;
             fpanel_scenario_image.Visible = true;
@@ -310,7 +343,6 @@ namespace DropBox
             fpanel_path.WrapContents = false;
             fpanel_path.AutoScroll = true;
             panel1.Controls.Add(fpanel_path);
-
 
             Button path_pic;
             Label path_name, path_time;
@@ -388,6 +420,10 @@ namespace DropBox
 
             if (show_type == NEW)
             {
+                for (int i = 0; i < sPath.Count; i++)
+                {
+                    Console.WriteLine(sPath[i].path);
+                }
                 sData.AddScenario((sData.getSLastIndex() + 1), pTitle, pPurpose, pTime, "1", sPath);
                 MessageBox.Show("등록되었습니다.");
                 listBox.Items.Add(pTitle);

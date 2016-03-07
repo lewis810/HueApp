@@ -58,12 +58,9 @@ namespace DropBox
 
             if (login.IsSuccessfully)
             {
-                
-
                 Properties.Settings.Default.AccessToken = login.AccessToken.Value;
                 Properties.Settings.Default.Save();
                 this.GetFiles();                                //초기 로그인 하고 나서 정보 받아오기
-                
             }
             else
             {
@@ -111,6 +108,7 @@ namespace DropBox
                 this.Invoke(new Action<RequestResult>(GetFiles_Result), result);
                 return;
             }
+            //새로 파일 만들어서 했는데 계속 에러남.. 원인분석 필요
 
             //if (result.StatusCode == 200)
             //{
@@ -118,23 +116,6 @@ namespace DropBox
             //listBox1.DisplayMember = "path";
             this.GetID();
             init();
-
-
-                //foreach (UniValue file in result["contents"])
-                //{
-                //    //MessageBox.Show(file["path"].ToString());
-                //    //listBox1.Items.Add(file);
-                //}
-
-                //if (this.CurrentPath != "/")
-                //{
-                //    listBox1.Items.Insert(0, UniValue.ParseJson("{path: '..'}"));
-                //}
-            //}
-            //else
-            //{
-            //    MessageBox.Show("error...GetFile");
-            //}
         }
 
         public void init()
@@ -144,7 +125,7 @@ namespace DropBox
              */
 
             Assembly assembly = Assembly.GetAssembly(typeof(ImageListView));
-
+            imageListView_Main.Width = this.Width;
             imageListView_Main.SetRenderer(new ImageListViewRenderers.DefaultRenderer());
             imageListView_Main.SortColumn = 0;
             imageListView_Main.SortOrder = Manina.Windows.Forms.SortOrder.AscendingNatural;
@@ -160,8 +141,6 @@ namespace DropBox
             imageListView_Main.Columns.Add(ColumnType.Dimensions);
             imageListView_Main.Columns.Add(ColumnType.FileSize);
             imageListView_Main.Columns.Add(ColumnType.FolderName);
-
-
 
             /*
              *                IMAGE LIST VIEW CODE *** END
@@ -190,8 +169,6 @@ namespace DropBox
                     XmlNode nodeDevice = xmlDoc.DocumentElement.SelectSingleNode("/LinkTable");
                     pResolution = (nodeDevice.SelectSingleNode("DeviceResolution").InnerText);
 
-
-                    
                     if (Directory.GetFiles(eachInfo.FullName).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg")).Count() > 1)
                     {
                         // @@@@ imageListView
@@ -203,9 +180,6 @@ namespace DropBox
                         // @@@@ imageListView
                         imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("DoNotDelete.bmp")[0]);
                     }
-
-
-
 
                     /*Button newButton = new Button();
                     newButton.Name = eachInfo.Name;
@@ -260,7 +234,6 @@ namespace DropBox
 
             EditProject editProject = new EditProject(mPath, id, item.FolderName);
             editProject.Show();
-
         }
 
         private void imageListView1_itemClick(object sender, ItemClickEventArgs e)

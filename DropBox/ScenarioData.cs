@@ -25,11 +25,21 @@ namespace DropBox
             public string time;
         }
 
+        
+
         List<SCENARIO_DATA> sData = new List<SCENARIO_DATA>();
 
         public void AddScenario(int sTag, string sTitle, string sPurpose, string sTime, string sLevel, List<PATH_DATA> sPaths)
         {
             sData.Add(new SCENARIO_DATA() { tag = sTag, title = sTitle, purpose = sPurpose, time = sTime, level = sLevel, paths = sPaths });
+            for (int i = 0; i < sData.Count; i++)
+            {
+                for(int j = 0; j < sData[i].paths.Count; j++)
+                {
+                    Console.WriteLine(sData[i].paths[j].path);
+                }
+            }
+            Console.WriteLine("\n");
         }
 
         public List<SCENARIO_DATA> getSData()
@@ -37,6 +47,7 @@ namespace DropBox
             return sData;
         }
 
+        
         public int getSLastIndex()
         {
             int last_index = 0;

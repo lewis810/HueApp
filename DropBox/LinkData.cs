@@ -14,6 +14,7 @@ namespace DropBox
         private string project_name;
         private string device_type;
         private string device_resolution;
+        private string user_id;
 
         public struct LINK
         {
@@ -40,8 +41,10 @@ namespace DropBox
         public string GetDeviceType(){ return this.device_type;}
         public string GetDeviceResolution() { return this.device_resolution; }
         public string GetProjectName() { return this.project_name; }
+        public string GetUserId() { return this.user_id; }
 
         //setters
+        public void SetUserId(string _user_id){ this.user_id = _user_id; }
         public void SetProjectName(string _project_name) { this.project_name = _project_name; }
         public void SetDeviceType(string new_device_type) { this.device_type = new_device_type; }
         public void SetDeviceResolution(string new_device_resolution) { this.device_resolution = new_device_resolution; }

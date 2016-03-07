@@ -109,9 +109,10 @@
             this.panel1.Controls.Add(this.btCreateProject);
             this.panel1.Controls.Add(this.lblMyProjects);
             this.panel1.Controls.Add(this.button3);
-            this.panel1.Location = new System.Drawing.Point(0, 26);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1888, 134);
+            this.panel1.Size = new System.Drawing.Size(1059, 821);
             this.panel1.TabIndex = 7;
             // 
             // btCreateProject
@@ -143,14 +144,15 @@
             this.imageListView_Main.AllowDrop = true;
             this.imageListView_Main.CheckBoxAlignment = System.Drawing.ContentAlignment.TopLeft;
             this.imageListView_Main.ColumnHeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.imageListView_Main.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.imageListView_Main.GroupHeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.imageListView_Main.Location = new System.Drawing.Point(0, 168);
+            this.imageListView_Main.Location = new System.Drawing.Point(0, 181);
             this.imageListView_Main.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.imageListView_Main.Name = "imageListView_Main";
             this.imageListView_Main.PersistentCacheDirectory = "";
             this.imageListView_Main.PersistentCacheSize = ((long)(100));
             this.imageListView_Main.ShowCheckBoxes = true;
-            this.imageListView_Main.Size = new System.Drawing.Size(1888, 637);
+            this.imageListView_Main.Size = new System.Drawing.Size(1059, 640);
             this.imageListView_Main.TabIndex = 8;
             this.imageListView_Main.ItemClick += new Manina.Windows.Forms.ItemClickEventHandler(this.imageListView1_itemClick);
             this.imageListView_Main.ItemDoubleClick += new Manina.Windows.Forms.ItemDoubleClickEventHandler(this.imageListView1_itemDoubleClick);
@@ -169,6 +171,7 @@
             this.Controls.Add(this.listBox1);
             this.Name = "main";
             this.Text = "Form1";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

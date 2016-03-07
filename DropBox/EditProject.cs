@@ -12,9 +12,9 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml;
 using System.Text.RegularExpressions;
-using System.IO.Compression;
 using System.Reflection;
 using Manina.Windows.Forms;
+using Ionic.Zip;
 
 namespace DropBox
 {
@@ -22,6 +22,8 @@ namespace DropBox
     {
         LinkData pData = new LinkData();
         ScenarioData sData = new ScenarioData();
+        AnalysisData aData = new AnalysisData();
+        ResultData rData = new ResultData();
 
         private string myPath;
         private Button TempDeleteButton;
@@ -74,7 +76,6 @@ namespace DropBox
 
         public struct EventData
         {
-            public string div;
             public int xcoord;
             public int ycoord;
             public string event_info;
@@ -114,6 +115,7 @@ namespace DropBox
         }
 
         List<TotalData> total_data;
+        List<string> sName;
 
         float width, height;
         int w_count, h_count;
@@ -174,15 +176,9 @@ namespace DropBox
             //_main = temp;
 
             SetupButton();
-
-            for(int i = 0; i < sData.getSData().Count; i++)
-            {
-                listBox1.Items.Add(sData.getSData()[i].title);
-                cb_analysis_dots_selectScenario.Items.Add(sData.getSData()[i].title);
-                cb_analysis_partition_selectScenario.Items.Add(sData.getSData()[i].title);
-                cb_analysis_route_selectScenario.Items.Add(sData.getSData()[i].title);
-                cb_analysis_survey_selectScenario.Items.Add(sData.getSData()[i].title);
-            }
+            ReadLink();
+            ReadScenario();
+            Analysis_Setup();
 
             Assembly assembly = Assembly.GetAssembly(typeof(ImageListView));
 
@@ -206,26 +202,34 @@ namespace DropBox
             cm.MenuItems.Add("Delete", new System.EventHandler(this.imageListView_menuItem_delete_click));
         }
 
+        //from main
         public EditProject(string _myPath, string _id, string _project_name)
         {
+            
             InitializeComponent();
 
             _main = new main();             // 2/17 이거만 추가했음
             myPath = _myPath;
             user_id = _id;
             pData.SetProjectName(_project_name);
+            pData.SetUserId(_id);
 
             SetupButton();
             ReadLink();
             ReadScenario();
+            Analysis_Setup();
 
-            panel_analysis_dot_main.Visible = true;
-            panel_analysis_partition_main.Visible = false;
-            panel_analysis_route_main.Visible = false;
-            panel_analysis_survey_main.Visible = false;
+            for(int i = 0; i < sData.getSData().Count; i++)
+            {
+                Console.WriteLine("받아온거 : " + sData.getSData()[i].title);
+                for (int j = 0; j < sData.getSData()[i].paths.Count; j++)
+                {
+                    Console.WriteLine("받아온거 : " + sData.getSData()[i].paths[j].path);
+                }
+            }
 
             Assembly assembly = Assembly.GetAssembly(typeof(ImageListView));
-
+            //imageListView_EditProject.Width = this.Width;
             imageListView_EditProject.SetRenderer(new ImageListViewRenderers.DefaultRenderer());
             imageListView_EditProject.SortColumn = 0;
             imageListView_EditProject.SortOrder = Manina.Windows.Forms.SortOrder.AscendingNatural;
@@ -241,6 +245,10 @@ namespace DropBox
             imageListView_EditProject.Columns.Add(ColumnType.Dimensions);
             imageListView_EditProject.Columns.Add(ColumnType.FileSize);
             imageListView_EditProject.Columns.Add(ColumnType.FolderName);
+            
+            //imageListView_EditProject.Location = new Point(0, imageListView_EditProject.Location.Y);
+            //imageListView_EditProject.Width = this.Width;
+            //MessageBox.Show(imageListView_EditProject.Location.X.ToString() + "//" + imageListView_EditProject.Location.Y.ToString());
 
             cm = new ContextMenu();
             cm.MenuItems.Add("Delete", new System.EventHandler(this.imageListView_menuItem_delete_click));
@@ -259,12 +267,13 @@ namespace DropBox
             //프로젝트 이름
             ProjectName_label.Text = Info.Name;
 
+            //flowLayoutPanel_home.Visible = false;
+
+
             if (Info.Exists)
             {
                 foreach (System.IO.FileInfo _file in Info.GetFiles())
                 {
-
-
                     string fileName = _file.Name.Substring(0, _file.Name.LastIndexOf('.'));
                     string fileExt = _file.Name.Substring(_file.Name.LastIndexOf('.'));
                     string overName = String.Empty;
@@ -284,41 +293,41 @@ namespace DropBox
                         imageListView_EditProject.Items.Add(_file.FullName);
 
                         //temp = _file.Name;
-                        Button newButton = new Button();
-                        newButton.Name = _file.Name;
+                        //Button newButton = new Button();
+                        //newButton.Name = _file.Name;
 
-                        //image_list에 이미지 이름 다 넣기
-                        image_list.Add(_file.Name);
+                        ////image_list에 이미지 이름 다 넣기
+                        //image_list.Add(_file.Name);
 
-                        newButton.Text = overName;
-                        newButton.TextAlign = ContentAlignment.BottomCenter;
-                        newButton.Size = new Size(128, 128);
-                        newButton.Margin = new Padding(10, 10, 10, 10);
-                        newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
-                        newButton.Parent = flowLayoutPanel_home;
+                        //newButton.Text = overName;
+                        //newButton.TextAlign = ContentAlignment.BottomCenter;
+                        //newButton.Size = new Size(128, 128);
+                        //newButton.Margin = new Padding(10, 10, 10, 10);
+                        //newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
+                        ////newButton.Parent = flowLayoutPanel_home;
 
-                        Image img;
-                        using (var bmpTemp = new Bitmap(_file.DirectoryName + "\\" + _file.Name))
-                        {
-                            img = new Bitmap(bmpTemp);
-                        }
+                        //Image img;
+                        //using (var bmpTemp = new Bitmap(_file.DirectoryName + "\\" + _file.Name))
+                        //{
+                        //    img = new Bitmap(bmpTemp);
+                        //}
 
-                        using (Graphics gr = Graphics.FromImage(img))
-                        {
-                            gr.SmoothingMode = SmoothingMode.HighQuality;
-                            gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                            gr.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                            gr.DrawImage(img, new Rectangle(0, 0, 64, 64));
-                        }
+                        //using (Graphics gr = Graphics.FromImage(img))
+                        //{
+                        //    gr.SmoothingMode = SmoothingMode.HighQuality;
+                        //    gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        //    gr.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                        //    gr.DrawImage(img, new Rectangle(0, 0, 64, 64));
+                        //}
 
-                        PictureBox newPicture = new PictureBox();
-                        newPicture.Image = img;
-                        newPicture.Size = new Size(90, 80);
-                        newPicture.Location = new Point(20, 10);
-                        newPicture.SizeMode = PictureBoxSizeMode.StretchImage;
+                        //PictureBox newPicture = new PictureBox();
+                        //newPicture.Image = img;
+                        //newPicture.Size = new Size(90, 80);
+                        //newPicture.Location = new Point(20, 10);
+                        //newPicture.SizeMode = PictureBoxSizeMode.StretchImage;
 
-                        newButton.Controls.Add(newPicture);
-                        flowLayoutPanel_home.Controls.Add(newButton);
+                        //newButton.Controls.Add(newPicture);
+                        //flowLayoutPanel_home.Controls.Add(newButton);
                     }
                 }
             }
@@ -416,7 +425,7 @@ namespace DropBox
 
                 foreach (XmlNode child_node in nodeList)
                 {
-                    sPath.Clear();
+                    sPath = new List<ScenarioData.PATH_DATA>();
                     sTag = Convert.ToInt32(child_node.SelectSingleNode("Tag").InnerText);
                     sTitle = child_node.SelectSingleNode("Title").InnerText;
                     sPurpose = child_node.SelectSingleNode("Purpose").InnerText;
@@ -432,14 +441,10 @@ namespace DropBox
                         sPath.Add(new ScenarioData.PATH_DATA() { tag = j, path = pPath, time = pPathTime });
                     }
                     sTime = child_node.SelectSingleNode("TotalTime").InnerText;
+                    Console.WriteLine("추가");
                     sData.AddScenario(sTag, sTitle, sPurpose, sTitle, sLevel, sPath);
+                    
                     listBox1.Items.Add(sTitle);
-
-                    //시나리오 정보 읽어오면서 목록 콤보박스에 저장
-                    cb_analysis_dots_selectScenario.Items.Add(sTitle);
-                    cb_analysis_partition_selectScenario.Items.Add(sTitle);
-                    cb_analysis_route_selectScenario.Items.Add(sTitle);
-                    cb_analysis_survey_selectScenario.Items.Add(sTitle);
 
                     if (last_index > sTag)
                     {
@@ -466,22 +471,29 @@ namespace DropBox
                     fileName = System.IO.Path.GetFileName(temp);
                     destFile = System.IO.Path.Combine(myPath, fileName);
 
+                    pData.GetLinks().Add(new LinkData.LINK() { file_name = fileName, link_data = new List<LinkData.link_info>() });
+
                     if (!System.IO.Directory.Exists(myPath))
                     {
                         System.IO.Directory.CreateDirectory(myPath);
                     }
-                    System.IO.File.Copy(temp, destFile);
 
+                    try
+                    {
+                        System.IO.File.Copy(temp, destFile);
+                    }catch(IOException ie)
+                    {
+                        MessageBox.Show("파일이름이 중복되거나 이미 파일이 있습니다.");
+                    }
+                    
 
                     imageListView_EditProject.Items.Add(destFile);
-
 
                     Image img;
                     using (var bmpTemp = new Bitmap(destFile))
                     {
                         img = new Bitmap(bmpTemp);
                     }
-
 
                     //Bitmap tempImage = new Bitmap(destFile);
                     using (Graphics gr = Graphics.FromImage(img))
@@ -520,12 +532,11 @@ namespace DropBox
                     newPicture.Size = new Size(90, 80);
                     newPicture.Location = new Point(20, 10);
 
-
                     newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
 
                     newButton.Controls.Add(newPicture);
                     newPicture.Anchor = AnchorStyles.None;
-                    flowLayoutPanel_home.Controls.Add(newButton);
+                    //flowLayoutPanel_home.Controls.Add(newButton);
                 }
             }
         }
@@ -591,13 +602,14 @@ namespace DropBox
 
             //Info.Delete();
 
-            this.flowLayoutPanel_home.Controls.Remove(TempDeleteButton);
+            //this.flowLayoutPanel_home.Controls.Remove(TempDeleteButton);
         }
 
         private void Scenario_btn_Click(object sender, EventArgs e)
         {
             panel_scenario.Visible = true;
-            flowLayoutPanel_home.Visible = false;
+            imageListView_EditProject.Visible = false;
+            //flowLayoutPanel_home.Visible = false;
             panel_analysis.Visible = false;
             btnAddImages.Visible = false;
 
@@ -608,20 +620,41 @@ namespace DropBox
 
         private void Project_btn_Click(object sender, EventArgs e)
         {
-            flowLayoutPanel_home.Visible = true;
+            //flowLayoutPanel_home.Visible = true;
             panel_scenario.Visible = false;
             panel_analysis.Visible = false;
+            imageListView_EditProject.Visible = true;
             btnAddImages.Visible = true;
         }
 
         private void Analysis_btn_Click(object sender, EventArgs e)
         {
             panel_analysis.Visible = true;
-            flowLayoutPanel_home.Visible = false;
+            imageListView_EditProject.Visible = false;
+            //flowLayoutPanel_home.Visible = false;
             panel_scenario.Visible = false;
             btnAddImages.Visible = false;
 
-            Analysis_Setup();
+            string front = panel_analysis.Controls[0].Name;
+
+            //원래 열려있던 창 다시 열기
+            //현재 해당 창이 다시 열리긴 하는데 초기화 되어버려서 보던 자료가 뜨지 않음.
+            if (front.CompareTo("Dots") == 0 || front.CompareTo("Partition") == 0 ||
+                front.CompareTo("Route") == 0 || front.CompareTo("Survey") == 0)
+            {
+                panel_analysis.Controls[0].Show();
+            }
+            else
+            {
+                Dots dots = new Dots(total_data, pData.GetProjectName(), sData);
+                dots.TopLevel = false;
+                dots.AutoScroll = true;
+                this.panel_analysis.Controls.Add(dots);
+                dots.FormBorderStyle = FormBorderStyle.None;
+                dots.Dock = DockStyle.Fill;
+                dots.Show();
+                dots.BringToFront();
+            }
         }
 
         private void EDIT_btn_Click(object sender, EventArgs e)
@@ -658,7 +691,16 @@ namespace DropBox
 
         private void SAVE_btn_Click(object sender, EventArgs e)
         {
-            //xml 만들기
+
+            for (int a = 0; a < sData.getSData().Count; a++)
+            {
+                for (int b = 0; b < sData.getSData()[a].paths.Count; b++)
+                {
+                    Console.WriteLine(a.ToString() + " : " + sData.getSData()[a].paths[b].path);
+                }
+            }
+
+            ////xml 만들기
             DirectoryInfo difo = new DirectoryInfo(myPath);
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
             xmlWriterSettings.Indent = true;
@@ -671,8 +713,6 @@ namespace DropBox
                 //xmlWriter.WriteStartElement("ProjectName");
                 //xmlWriter.WriteString(pData.GetDeviceType());               //project name
                 //xmlWriter.WriteEndElement();
-                //MessageBox.Show(pData.GetDeviceType());
-                //GetDeviceType(pData.GetDeviceType());
 
                 CreateNode(xmlWriter);
 
@@ -688,13 +728,14 @@ namespace DropBox
                     File.Delete(myPath + difo.Name + ".zip");
                 }
 
-                //이미 프로그램 상에서 이미지 파일을 사용하고 있기 때문에 사용중이라는 에러가 뜨는데 실제로는 ZIP파일이 생성이 됨. 에러메시지 차단.
-                try
+                string[] filenames = Directory.GetFiles(myPath, "*.*");
+
+                bool zipped = false;
+                using (ZipFile zip = new ZipFile(myPath))
                 {
-                    ZipFile.CreateFromDirectory(myPath, myPath + difo.Name + ".zip");
-                }
-                catch (IOException IOE)
-                {
+                    zip.AddFiles(filenames, false, "");
+                    zip.Save(string.Format("{0}{1}.zip", myPath, difo.Name));
+                    zipped = true;
                 }
             }
         }
@@ -704,6 +745,9 @@ namespace DropBox
             //editProject에서 받아온 정보(create_links)에서 전체 링크 정보를 저장, 파일명으로 링크 구분
             int i = 0, j = 0, totalTime = 0;
             //해당 인덱스에 링크정보가 하나도 없으면 저장하지 않는다.
+
+            
+
             if (sData.getSData().Count != 0)
             {
                 for (j = 0; j < sData.getSData().Count; j++)
@@ -799,7 +843,7 @@ namespace DropBox
 
         private void EditProject_FormClosed(object sender, FormClosedEventArgs e)
         {
-            _main.refresh();
+            //_main.refresh();
         }
 
         private void Analysis_Setup()
@@ -812,41 +856,19 @@ namespace DropBox
             under_bar_index = new List<int>();
             route_data = new List<RouteData>();
             survey_data = new List<SurveyData>();
+            sName = new List<string>();
+
+            for(int i = 0; i < listBox1.Items.Count; i++)
+            {
+                Console.WriteLine(listBox1.Items[i].ToString());
+                sName.Add(listBox1.Items[i].ToString());
+            }
 
             scenario_name = "글 수정하기";           //combobox_scenario 에서 인덱스 0번으로 받아오기.
 
-            width = panel_analysis_picture.Width;
-            height = panel_analysis_picture.Height;
-
-            
-
-            //나중에 리사이즈 할 때도 적용해야함
-            panel_analysis_dot_main.Size = panel_analysis.Size;
-            panel_analysis_partition_main.Size = panel_analysis.Size;
-            panel_analysis_route_main.Size = panel_analysis.Size;
-            panel_analysis_survey_main.Size = panel_analysis.Size;
-
-            panel_analysis_picture.Height = (int)(panel_analysis.Height * 0.85);
-
-            //backgroundimage width height를 해상도 받아온 것으로 해야함 - 뒤에 숫자.
-            panel_analysis_picture.Width = (int)(panel_analysis_picture.Height * ((double)720 / (double)1280));
-            bitmap = new Bitmap(panel_analysis_picture.Width, panel_analysis_picture.Height);
-
-            panel_analysis_partition_picture.Size = panel_analysis_picture.Size; //여기 나중에 수정
-
-            g = Graphics.FromImage(bitmap);
-
-            filenames = Directory.GetFiles(@"C:\Users\" + Environment.UserName + "\\Nudge", "*.xml");
-
+            string[] download_filenames = Directory.GetFiles(@"C:\Users\" + Environment.UserName + "\\Nudge", "*.xml");
             //파일 다운로스 시작
-            //FileDownloader fd = new FileDownloader(filenames, scenario_name, project_name);
-
-            ratio = (double)panel_analysis_picture.Width / (double)720;
-
-            //이미지 가로 세로 분할 횟수 초기화
-            tb_analysis_partition_hori.Text = "10";     //가로
-            tb_analysis_partition_verti.Text = "20";    //세로
-
+            FileDownloader fd = new FileDownloader(download_filenames, scenario_name, pData.GetProjectName());
             XmlRead();        //다운로드 되어있는 Xml 읽어와서 데이터 저장
         }
 
@@ -855,6 +877,7 @@ namespace DropBox
             //Xml파일들이 저장되는 폴더 경로
             string mPath = @"C:\Users\" + Environment.UserName + "\\Nudge";
             DirectoryInfo dInfo = new DirectoryInfo(mPath);
+            List<ResultData.ImgTime> riData = new List<ResultData.ImgTime>();
 
             string div_temp;
             DateTime date_time;
@@ -894,6 +917,8 @@ namespace DropBox
                     //시나리오 추출 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
                     under_bar_index.Clear();
 
+                    riData = new List<ResultData.ImgTime>();
+
                     //xml 이름에서 underbar 위치 찾아내서 각 정보 불러올 때 사용
                     for (int k = 0; k < filenames[i].Length; k++)
                     {
@@ -904,12 +929,13 @@ namespace DropBox
                     }
 
                     //peer // user 구분
-                    div_temp = filenames[i].Substring(under_bar_index[0] + 1, (under_bar_index[1] - under_bar_index[0]) - 1);
-                    string temp_scenario_tag = filenames[i][0].ToString();
-                    string temp_scenario_name = filenames[i].Substring(under_bar_index[2] + 1, (under_bar_index[3] - under_bar_index[2]) - 1);
-                    string temp_devicie_id = filenames[i].Substring(under_bar_index[3] + 1, (under_bar_index[4] - under_bar_index[3]) - 1);
-                    string temp_project_name = filenames[i].Substring(under_bar_index[1] + 1, (under_bar_index[2] - under_bar_index[1]) - 1);
-                    string temp_test_type = filenames[i].Substring(under_bar_index[4] + 1, (under_bar_index[5] - under_bar_index[4]) - 1);
+                    string temp_scenario_tag = filenames[i].Substring(0, under_bar_index[0]);
+                    string temp_scenario_name = filenames[i].Substring(under_bar_index[1] + 1, (under_bar_index[2] - under_bar_index[1]) - 1);
+                    string temp_devicie_id = filenames[i].Substring(under_bar_index[2] + 1, (under_bar_index[3] - under_bar_index[2]) - 1);
+                    string temp_project_name = filenames[i].Substring(under_bar_index[0] + 1, (under_bar_index[1] - under_bar_index[0]) - 1);
+                    string temp_test_type = filenames[i].Substring(under_bar_index[3] + 1, (under_bar_index[4] - under_bar_index[3]) - 1);
+
+                    //Console.WriteLine(temp_scenario_name);
 
                     if (temp_test_type.CompareTo("userData") == 0)
                     {
@@ -932,7 +958,7 @@ namespace DropBox
                             && temp_project_name.CompareTo(pData.GetProjectName()) == 0
                             && temp_scenario_name.CompareTo(scenario_name) == 0)
                         {
-                            route_data.Add(new RouteData() { tag = Convert.ToInt32(temp_scenario_tag), div = div_temp, creation = date_time, scenario_name = temp_scenario_name, device_id = temp_devicie_id, images = new List<string>(), visit_time = new List<double>() });
+                            route_data.Add(new RouteData() { tag = Convert.ToInt32(temp_scenario_tag), creation = date_time, scenario_name = temp_scenario_name, device_id = temp_devicie_id, images = new List<string>(), visit_time = new List<double>() });
                         }
                         else continue;
                         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -948,10 +974,10 @@ namespace DropBox
                         xmlDoc.Load(mPath + "\\" + filenames[i]);
                         XmlNodeList nodeList = xmlDoc.DocumentElement.SelectNodes("/project/InputInfo");
                         //각 파일의 생성일자를 받아와서 이것을 기준으로 보여주는 순서 설정
+                        
 
                         foreach (XmlNode child_node in nodeList)
                         {
-
                             data_in = false;
                             x_cor = Convert.ToInt32(child_node.SelectSingleNode("xcoord").InnerText);
                             y_cor = Convert.ToInt32(child_node.SelectSingleNode("ycoord").InnerText);
@@ -965,7 +991,7 @@ namespace DropBox
                             {
                                 if (total_data[j].image_name.Equals(pImg))
                                 {
-                                    total_data[j].event_data.Add(new EventData() { div = div_temp, xcoord = x_cor, ycoord = y_cor, event_info = pEvent, img = pImg, timeEntire = pTimeEntire, timeImg = pTimeImg });
+                                    total_data[j].event_data.Add(new EventData() { xcoord = x_cor, ycoord = y_cor, event_info = pEvent, img = pImg, timeEntire = pTimeEntire, timeImg = pTimeImg });
                                     data_in = true;
                                     break;
                                 }
@@ -975,7 +1001,7 @@ namespace DropBox
                             if (data_in == false)
                             {
                                 total_data.Add(new TotalData() { image_name = pImg, event_data = new List<EventData>() });
-                                total_data[total_data.Count - 1].event_data.Add(new EventData() { div = div_temp, xcoord = x_cor, ycoord = y_cor, event_info = pEvent, img = pImg, timeEntire = pTimeEntire, timeImg = pTimeImg });
+                                total_data[total_data.Count - 1].event_data.Add(new EventData() { xcoord = x_cor, ycoord = y_cor, event_info = pEvent, img = pImg, timeEntire = pTimeEntire, timeImg = pTimeImg });
                             }
 
                             //시나리오 정보 입력
@@ -997,11 +1023,49 @@ namespace DropBox
                                 //리스트가 비어있을 경우 처리
                                 Console.WriteLine("초기값 입력");
                                 route_data[route_data.Count - 1].images.Add(pImg);
+                                
                             }
                             continue;
                         }
                         //마지막은 더 이상 이미지의 전환이 없기 때문에 해당 이미지에 머문 시간을 입력한다.
                         route_data[route_data.Count - 1].visit_time.Add(pTimeImg);
+
+                        Console.WriteLine("count : " + route_data[route_data.Count - 1].images.Count.ToString());
+                        for (int k = 0; k < route_data[route_data.Count - 1].images.Count; k++)
+                        {
+                            
+                            riData.Add(new ResultData.ImgTime() { imgName = route_data[route_data.Count - 1].images[k], timeImg = route_data[route_data.Count - 1].visit_time[k].ToString() });
+                        }
+
+                        bool isMin = false;
+                        for(int j = 0; j < sName.Count; j++)
+                        {
+                            Console.WriteLine("비교1 : " + sName[j] + "==" + temp_scenario_name);
+                            Console.WriteLine("비교2 : " + sData.getSData()[j].paths.Count.ToString() + "==" + riData.Count.ToString());
+                            if (sName[j].CompareTo(temp_scenario_name) == 0 && sData.getSData()[j].paths.Count == riData.Count)
+                            {
+                                isMin = true;
+                                for(int h = 0; h < riData.Count; h++)
+                                {
+                                    Console.WriteLine("비교3 : " + riData[h].imgName + "==" + sData.getSData()[j].paths[h].path);
+                                    if(riData[h].imgName.CompareTo(sData.getSData()[j].paths[h].path) == 0)
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        isMin = false;
+                                        break;
+                                    }
+                                }
+                                if (isMin == false) break;
+                            }
+                        }
+
+                        Console.WriteLine("입력한 것");
+                        Console.WriteLine(temp_scenario_name);
+                        rData.AddResultInfo(pData.GetProjectName(), temp_scenario_name, riData, isMin, Convert.ToInt16(temp_scenario_tag));
+
                     }
 
                     //설문조사 데이터에 대한 것
@@ -1026,7 +1090,7 @@ namespace DropBox
                             && temp_project_name.CompareTo(pData.GetProjectName()) == 0
                             && temp_scenario_name.CompareTo(scenario_name) == 0)
                         {
-                            survey_data.Add(new SurveyData() { tag = Convert.ToInt32(temp_scenario_tag), div = div_temp, creation = date_time, scenario_name = temp_scenario_name, device_id = temp_devicie_id, survey_info = new List<SurveyInternalInfo>()});
+                            survey_data.Add(new SurveyData() { tag = Convert.ToInt32(temp_scenario_tag), creation = date_time, scenario_name = temp_scenario_name, device_id = temp_devicie_id, survey_info = new List<SurveyInternalInfo>()});
                         }
                         else continue;
                         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -1070,159 +1134,66 @@ namespace DropBox
             { //MessageBox.Show("no Info");
             }
 
-            //해당 프로젝트에 있는 모든 사진들의 이름을 combobox에 넣기
-            //TODO 여기서 project폴더가 실제로 존재하지 않으면 에러 뜸. 예외처리필요.
-            string cPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + pData.GetProjectName();
-            IEnumerable<string> imagenames = Directory.GetFiles(cPath, "*.*", SearchOption.AllDirectories)
-                .Where(s => s.EndsWith(".jpg") || s.EndsWith(".jpeg") || s.EndsWith(".png"));
-
-            List<string> image_names = new List<string>();
-            image_names = imagenames.Cast<string>().ToList();
-
-            
-            //해당 프로젝트에 있는 모든 사진들의 이름을 combobox에 넣기 끝
-
-            //시나리오, 테스트, 이미지, 실험군 초기화
-            //콤보박스의 0번째로 정하면서 해당 이미지 배경으로 설정하고 dots, shading 호출
-            //시나리오
-            //for (int i = 0; i < sData.getSData().Count; i++)
-            //{
-            //    comboBox_analysis_selectScenario.Items.Add(sData.getSData()[i].title);
-            //}
-
-            //시나리오
-            cb_analysis_dots_selectScenario.SelectedIndex = 0;         //이거도 add다하고나서 사용
-            cb_analysis_partition_selectScenario.SelectedIndex = 0;
-            cb_analysis_route_selectScenario.SelectedIndex = 0;
-            cb_analysis_survey_selectScenario.SelectedIndex = 0;
-
-            //이미지
-            for (int i = 0; i < image_names.Count; i++)                       //이거 시나리오 콤보박스 인덱스 change에서 사용
+            for (int p = 0; p < rData.getRData().Count; p++)
             {
-                cb_analysis_dots_selectImage.Items.Add(Path.GetFileName(image_names[i]));
-                cb_analysis_partition_selectImage.Items.Add(Path.GetFileName(image_names[i]));
-            }
-            cb_analysis_dots_selectImage.Sorted = true;
-            cb_analysis_partition_selectImage.Sorted = true;
-
-            cb_analysis_dots_selectImage.SelectedIndex = 0;
-            cb_analysis_partition_selectImage.SelectedIndex = 0;
-
-            //실험군
-            cb_analysis_dots_selectGroup.SelectedIndex = 0;
-            cb_analysis_partition_selectGroup.SelectedIndex = 0;
-            cb_analysis_route_selectGroup.SelectedIndex = 0;
-            cb_analysis_survey_selectGroup.SelectedIndex = 0;
-
-            Image image;                                                          //상동
-            image = Image.FromFile(@"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + pData.GetProjectName() + "\\" + cb_analysis_dots_selectImage.SelectedItem);
-            panel_analysis_picture.BackgroundImage = image;
-            panel_analysis_partition_picture.BackgroundImage = image;
-
-            panel_analysis_picture.BackgroundImageLayout = ImageLayout.Stretch;
-            panel_analysis_partition_picture.BackgroundImageLayout = ImageLayout.Stretch;
-        }
-
-        private void comboBox_analysis_selectScenario_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //해당 시나리오와 같은 시나리오 정보만 불러오기
-            for(int i = 0; i < route_data.Count; i++)
-            {
-                if (route_data[i].scenario_name.CompareTo(cb_analysis_dots_selectScenario.SelectedItem) == 0)
+                Console.WriteLine("projectName : " + rData.getRData()[p].projectName);
+                Console.WriteLine("taskName : " + rData.getRData()[p].taskName);
+                Console.WriteLine("isMin : " + rData.getRData()[p].isMin);
+                Console.WriteLine("idx : " + rData.getRData()[p].idx);
+                for(int u = 0; u < rData.getRData()[p].pathInfo.Count; u++)
                 {
-                    cb_analysis_dots_selectTest.Items.Add(route_data[i].tag);
-                    cb_analysis_partition_selectTest.Items.Add(route_data[i].tag);
+                    Console.WriteLine("imgName : " + rData.getRData()[p].pathInfo[u].imgName);
+                    Console.WriteLine("timeImg : " + rData.getRData()[p].pathInfo[u].timeImg);
                 }
-            }
-            cb_analysis_dots_selectTest.SelectedIndex = 0;
-            cb_analysis_partition_selectTest.SelectedIndex = 0;
-        }
-
-        //dots//
-        public void Dots(string selected, string _div)
-        {
-            panel_analysis_picture.Location = new Point(((int)(panel_analysis.Width / 2) - (panel_analysis_picture.Width / 2)), 0);
-
-            //기존에 설정되어 있던 컨트롤 다 지우기
-            panel_analysis_picture_dot.Controls.Remove(pic);
-
-            pic = new PictureBox();
-            pic.Parent = panel_analysis_picture_dot;
-            panel_analysis_picture_dot.Controls.Add(pic);
-            pic.Location = new Point(0, 0);
-
-            pic.BackgroundImage = Bitmap.FromFile(@"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + pData.GetProjectName() + "\\" + selected);
-            pic.BackgroundImageLayout = ImageLayout.Stretch;
-            pic.Size = panel_analysis_picture.Size;
-
-            g = pic.CreateGraphics();
-            g = Graphics.FromImage(pic.BackgroundImage);
-
-            br = new SolidBrush(SetColor(30, Color.Red));
-
-            int index = 0;
-            for (int i = 0; i < total_data.Count; i++)
-            {
-                if (total_data[i].image_name.CompareTo(selected) == 0)
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            //전체 데이터중에 클릭들이 가지고 있는 이미지 이름과 현재 이미지 이름이 같은거만 그리기
-            //ALL / USER / PEER
-            switch (_div)
-            {
-                case "모두보기":
-                    for (int j = 0; j < total_data[index].event_data.Count; j++)
-                    {
-                        if (total_data[index].image_name.CompareTo(selected) == 0)
-                        {
-                            g.FillPie(br, new Rectangle(new Point(total_data[index].event_data[j].xcoord - 25, total_data[index].event_data[j].ycoord - 25), new Size(50, 50)), 0, 360);
-                        }
-                    }
-                    break;
-                case "유저만":
-                    for (int j = 0; j < total_data[index].event_data.Count; j++)
-                    {
-                        if (total_data[index].image_name.CompareTo(selected) == 0 && total_data[index].event_data[j].div.CompareTo("u") == 0)
-                        {
-                            g.FillPie(br, new Rectangle(new Point(total_data[index].event_data[j].xcoord - 25, total_data[index].event_data[j].ycoord - 25), new Size(50, 50)), 0, 360);
-                        }
-                    }
-                    break;
-                case "피어만":
-                    //p가 없을 때 null exception 뜸
-                    for (int j = 0; j < total_data[index].event_data.Count; j++)
-                    {
-                        if (total_data[index].image_name.CompareTo(selected) == 0 && total_data[index].event_data[j].div.CompareTo("p") == 0)
-                        {
-                            g.FillPie(br, new Rectangle(new Point(total_data[index].event_data[j].xcoord - 25, total_data[index].event_data[j].ycoord - 25), new Size(50, 50)), 0, 360);
-                        }
-                    }
-                    break;
-                default: break;
             }
         }
 
         private void Dots_btn_Click(object sender, EventArgs e)
         {
-            panel_analysis_dot_main.Visible = true;
-            panel_analysis_partition_main.Visible = false;
-            panel_analysis_route_main.Visible = false;
-            panel_analysis_survey_main.Visible = false;
-
-            //cb_analysis_dots_selectScenario.SelectedIndex = cb_analysis_partition_selectScenario.SelectedIndex;
-            //cb_analysis_dots_selectTest.SelectedIndex = cb_analysis_partition_selectTest.SelectedIndex;
-            //cb_analysis_dots_selectImage.SelectedIndex = cb_analysis_partition_selectImage.SelectedIndex;
-            //cb_analysis_dots_selectGroup.SelectedIndex = cb_analysis_partition_selectGroup.SelectedIndex;
-            //Dots(cb_analysis_dots_selectImage.SelectedItem.ToString(), cb_analysis_dots_selectGroup.SelectedItem.ToString());
+            Dots dots = new Dots(total_data, pData.GetProjectName(), sData);
+            dots.TopLevel = false;
+            dots.AutoScroll = true;
+            this.panel_analysis.Controls.Add(dots);
+            dots.FormBorderStyle = FormBorderStyle.None;
+            dots.Dock = DockStyle.Fill;
+            dots.Show();
+            dots.BringToFront();
+        }
+        
+        private void Partition_btn_Click(object sender, EventArgs e)
+        {
+            Partition partition = new Partition(total_data, pData.GetProjectName(), sData);
+            partition.TopLevel = false;
+            partition.AutoScroll = true;
+            this.panel_analysis.Controls.Add(partition);
+            partition.FormBorderStyle = FormBorderStyle.None;
+            partition.Dock = DockStyle.Fill;
+            partition.Show();
+            partition.BringToFront();
         }
 
-        private void btn_analysis_show_dot_Click(object sender, EventArgs e)
+        private void Route_btn_Click(object sender, EventArgs e)
         {
-            Dots(cb_analysis_dots_selectImage.SelectedItem.ToString(), cb_analysis_dots_selectGroup.SelectedItem.ToString());
+            Route route = new Route(route_data, pData.GetProjectName(), sData);
+            route.TopLevel = false;
+            route.AutoScroll = true;
+            this.panel_analysis.Controls.Add(route);
+            route.FormBorderStyle = FormBorderStyle.None;
+            route.Dock = DockStyle.Fill;
+            route.Show();
+            route.BringToFront();
+        }
+
+        private void Survey_btn_Click(object sender, EventArgs e)
+        {
+            Survey survey = new Survey(survey_data, pData.GetProjectName(), sData);
+            survey.TopLevel = false;
+            survey.AutoScroll = true;
+            this.panel_analysis.Controls.Add(survey);
+            survey.FormBorderStyle = FormBorderStyle.None;
+            survey.Dock = DockStyle.Fill;
+            survey.Show();
+            survey.BringToFront();
         }
 
         private void btn_analysis_dot_delete_Click(object sender, EventArgs e)
@@ -1239,502 +1210,14 @@ namespace DropBox
             //    //삭제하기전에 RouteData 수정하기
             //}
 
-            
-            Delete delete = new Delete(route_data, survey_data, filenames, pData.GetProjectName(), 
-                cb_analysis_route_selectGroup, cb_analysis_route_selectTest, cb_analysis_survey_selectGroup, cb_analysis_survey_selectTest,
-                cb_analysis_dots_selectGroup, cb_analysis_dots_selectTest, cb_analysis_dots_selectImage,
-                cb_analysis_partition_selectGroup, cb_analysis_partition_selectTest, cb_analysis_partition_selectImage);
-            delete.Show();
-        }
-        //dots//
 
-        //partition//
-        public void Partition(int _w_count, int _h_count, string selected, string _div)
-        {
-            panel_analysis_partition_picture.Location = new Point(((int)(panel_analysis.Width / 2) - (panel_analysis_partition_picture.Width / 2)), 0);
-            //초기화
-            panel_analysis_partition_picture2.Controls.Clear();
-            count.Clear();
-            pictures.Clear();
-
-            Image image;
-            image = Image.FromFile(@"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + pData.GetProjectName() + "\\" + cb_analysis_partition_selectImage.SelectedItem);
-            panel_analysis_partition_picture2.BackgroundImage = image;
-
-            //화면분할할 때 각 칸의 가로세로 길이
-            each_width = (float)panel_analysis_partition_picture.Width / (float)_w_count;
-            each_height = (float)panel_analysis_partition_picture.Height / (float)_h_count;
-
-            for (int i = 0; i < w_count; i++)
-            {
-                for (int j = 0; j < h_count; j++)
-                {
-                    panel_analysis_partition_picture2.BackgroundImageLayout = ImageLayout.Stretch;
-                    PictureBox pBox = new PictureBox();
-                    pBox.Parent = panel_analysis_partition_picture2;
-                    panel_analysis_partition_picture2.Controls.Add(pBox);
-                    pBox.Location = new Point((int)(each_width * i), (int)(each_height * j));
-                    pBox.BackColor = SetColor(50, Color.Black);
-                    pBox.Size = new Size((int)each_width, (int)each_height);
-                    pictures.Add(pBox);
-
-                    //네모칸의 횟수만큼 0 카운트 추가
-                    count.Add(0);
-                }
-            }
-
-            //combobox에서 정해준 이미지의 인덱스 찾기
-            int index = 0;
-            for (int i = 0; i < total_data.Count; i++)
-            {
-                if (total_data[i].image_name.CompareTo(selected) == 0)
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            int k = 0;
-            switch (_div)
-            {
-                case "모두보기":
-                    //각 포인트마다. 전체 박스를 돌면서 해당 박스에 도착하면 카운트를 올린다.
-                    for (int u = 0; u < total_data[index].event_data.Count; u++)
-                    {
-                        //선택한 이미지에 대한 정보만 읽어오기
-                        if (total_data[index].event_data[u].img.CompareTo(selected) == 0)
-                        {
-                            for (int i = 0; i < pictures.Count; i++)
-                            {
-                                if ((ratio * total_data[index].event_data[u].xcoord >= pictures[i].Location.X) && (ratio * total_data[index].event_data[u].xcoord <= pictures[i].Location.X + each_width))
-                                {
-                                    if ((ratio * total_data[index].event_data[u].ycoord >= pictures[i].Location.Y) && (ratio * total_data[index].event_data[u].ycoord <= pictures[i].Location.Y + each_height))
-                                    {
-                                        k++;
-                                        count[i]++;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case "유저만":
-                    for (int u = 0; u < total_data[index].event_data.Count; u++)
-                    {
-                        //선택한 이미지에 대한 정보만 읽어오기
-                        if (total_data[index].event_data[u].img.CompareTo(selected) == 0 && total_data[index].event_data[u].div.CompareTo("u") == 0)
-                        {
-                            for (int i = 0; i < pictures.Count; i++)
-                            {
-                                if ((ratio * total_data[index].event_data[u].xcoord >= pictures[i].Location.X) && (ratio * total_data[index].event_data[u].xcoord <= pictures[i].Location.X + each_width))
-                                {
-                                    if ((ratio * total_data[index].event_data[u].ycoord >= pictures[i].Location.Y) && (ratio * total_data[index].event_data[u].ycoord <= pictures[i].Location.Y + each_height))
-                                    {
-                                        k++;
-                                        count[i]++;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case "피어만":
-                    for (int u = 0; u < total_data[index].event_data.Count; u++)
-                    {
-                        //선택한 이미지에 대한 정보만 읽어오기
-                        if (total_data[index].event_data[u].img.CompareTo(selected) == 0 && total_data[index].event_data[u].div.CompareTo("p") == 0)
-                        {
-                            for (int i = 0; i < pictures.Count; i++)
-                            {
-                                if ((ratio * total_data[index].event_data[u].xcoord >= pictures[i].Location.X) && (ratio * total_data[index].event_data[u].xcoord <= pictures[i].Location.X + each_width))
-                                {
-                                    if ((ratio * total_data[index].event_data[u].ycoord >= pictures[i].Location.Y) && (ratio * total_data[index].event_data[u].ycoord <= pictures[i].Location.Y + each_height))
-                                    {
-                                        k++;
-                                        count[i]++;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-                default: break;
-            }
-
-            //횟수의 범위를 정해서 다른 색으로 구분
-            for (int i = 0; i < pictures.Count; i++)
-            {
-                if (count[i] > 0 && count[i] < 3)
-                {
-                    pictures[i].BackColor = SetColor(50, Color.Red);
-                }
-                else if (count[i] >= 3 && count[i] < 5)
-                {
-                    pictures[i].BackColor = SetColor(50, Color.Blue);
-                }
-                else if (count[i] >= 5)
-                {
-                    pictures[i].BackColor = SetColor(50, Color.Green);
-                }
-            }
+            //Delete delete = new Delete(route_data, survey_data, filenames, pData.GetProjectName(),
+            //    cb_analysis_route_selectGroup, cb_analysis_route_selectTest, cb_analysis_survey_selectGroup, cb_analysis_survey_selectTest,
+            //    cb_analysis_dots_selectGroup, cb_analysis_dots_selectTest, cb_analysis_dots_selectImage,
+            //    cb_analysis_partition_selectGroup, cb_analysis_partition_selectTest, cb_analysis_partition_selectImage);
+            //delete.Show();
         }
 
-        private void Partition_btn_Click(object sender, EventArgs e)
-        {
-            panel_analysis_partition_main.Visible = true;
-            panel_analysis_dot_main.Visible = false;
-            panel_analysis_route_main.Visible = false;
-            panel_analysis_survey_main.Visible = false;
-
-            //cb_analysis_partition_selectScenario.SelectedIndex = cb_analysis_dots_selectScenario.SelectedIndex;
-            //cb_analysis_partition_selectTest.SelectedIndex = cb_analysis_dots_selectTest.SelectedIndex;
-            //cb_analysis_partition_selectImage.SelectedIndex = cb_analysis_dots_selectImage.SelectedIndex;
-            //cb_analysis_partition_selectGroup.SelectedIndex = cb_analysis_dots_selectGroup.SelectedIndex;
-            //Shading(w_count, h_count, cb_analysis_partition_selectImage.SelectedItem.ToString(), cb_analysis_partition_selectGroup.SelectedItem.ToString());
-        }
-
-        private void btn_analysis_show_partition_Click(object sender, EventArgs e)
-        {
-            w_count = Convert.ToInt16(tb_analysis_partition_hori.Text);
-            h_count = Convert.ToInt16(tb_analysis_partition_verti.Text);
-
-            
-
-            Partition(w_count, h_count, cb_analysis_partition_selectImage.SelectedItem.ToString(), cb_analysis_partition_selectGroup.SelectedItem.ToString());
-        }
-        //partition//
-       
-        //route//
-        public void Route(int index)
-        {
-            //해당 패널의 모든 컨트롤을 클리어하고
-            fpanel_analysis_route.Controls.Clear();
-
-            //라우트 데이터의 특정 인덱스에 있는 이미지 파일들과 정보를 불러와서 저장한다.
-            //새로운 flow panel을 만들고 처음 만들 시 오른쪽 방향, 그 다음은 왼쪽 방향으로 가는 패널을 만든다.
-            //다음으로 넘어가는 조건은, 현재 아이템이 꽉 찼을 때.
-            FlowLayoutPanel temp_fp = new FlowLayoutPanel();
-            temp_fp.FlowDirection = FlowDirection.LeftToRight;
-            fpanel_analysis_route.Controls.Add(temp_fp);
-            int fp_height = (int)(fpanel_analysis_route.Height * 0.3);
-            temp_fp.Height = fp_height;
-            temp_fp.BackColor = SetColor(50, Color.Red);
-
-            
-            //for(int i = 0; i < route_data[index].images.Count; i++)
-            //{
-            //    PictureBox temp_pic = new PictureBox();
-
-            //}
-
-            PictureBox temp_pic = new PictureBox();
-            FlowLayoutPanel temp_fp2 = new FlowLayoutPanel();
-           
-
-            for (int j = 0; j < route_data[index].images.Count; j++)
-            {
-                //temp fp가 전체width - left panel 한 것보다 오버가 될 경우 다시 초기화 해서 새로운 fp생성 
-                if ((panel_analysis_route_main.Width - panel_analysis_route_left.Width) > (temp_fp.Width + 530)) //나중에 해상도 받아와서 설정 다시
-                {
-                    RouteAddImage(temp_fp, temp_fp2, temp_pic, index, j);
-                }
-                
-                //flowlayoutpanel이 parent의 길이를 초과할 경우
-                else
-                {
-                    temp_fp = new FlowLayoutPanel();
-                    temp_fp.FlowDirection = FlowDirection.LeftToRight;
-                    fpanel_analysis_route.Controls.Add(temp_fp);
-                    RouteAddImage(temp_fp, temp_fp2, temp_pic, index, j);
-                }
-
-            }
-
-        }
-
-        private void RouteAddImage(FlowLayoutPanel temp_fp, FlowLayoutPanel temp_fp2, PictureBox temp_pic, int index, int j)
-        {
-            temp_fp2 = new FlowLayoutPanel();
-            temp_fp.Controls.Add(temp_fp2);
-            temp_fp2.Parent = temp_fp;
-            temp_fp2.FlowDirection = FlowDirection.TopDown;
-
-            int temp_height = (int)(temp_fp.Height * 0.85);
-
-            temp_pic = new PictureBox();
-            try
-            {
-                temp_pic.BackgroundImage = Image.FromFile(@"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + pData.GetProjectName() + "\\" + route_data[index].images[j]);
-            }
-            catch (FileNotFoundException fe)
-            {
-                temp_pic.BackColor = Color.Gray;
-                Label notFound = new Label();
-                notFound.Text = route_data[index].images[j] + "\nnot found";
-                temp_pic.Controls.Add(notFound);
-                notFound.Anchor = AnchorStyles.None | AnchorStyles.Left;
-            }
-            temp_pic.Parent = temp_fp2;
-            temp_fp2.Controls.Add(temp_pic);
-            temp_pic.Size = new Size((int)(temp_height * 0.5625), temp_height);     //나중에 해상도 받아와서 설정 다시
-            temp_pic.BackgroundImageLayout = ImageLayout.Stretch;
-            temp_pic.Text = route_data[index].images[j];
-
-            Label temp_label = new Label();
-            temp_label.Text = route_data[index].images[j];
-            temp_fp2.Controls.Add(temp_label);
-            temp_label.Size = temp_label.PreferredSize;
-            temp_label.Width = temp_pic.Width;
-            temp_label.TextAlign = ContentAlignment.MiddleCenter;
-            
-            Label temp_time = new Label();
-            temp_time.Text = route_data[index].visit_time[j].ToString();
-            temp_fp2.Controls.Add(temp_time);
-            temp_time.Size = temp_time.PreferredSize;
-            temp_time.Width = temp_pic.Width;
-            temp_time.TextAlign = ContentAlignment.MiddleCenter;
-
-            temp_pic.BackColor = Color.Transparent;
-            temp_label.BackColor = Color.Transparent;
-            temp_time.BackColor = Color.Transparent;
-
-            temp_fp2.Size = temp_fp2.PreferredSize;
-
-            if (j != route_data[index].images.Count - 1)
-            {
-                Console.WriteLine("화살표");
-                PictureBox arrow = new PictureBox();
-                arrow.Parent = temp_fp;
-                temp_fp.Controls.Add(arrow);
-                arrow.Size = new Size(30, 30);
-                arrow.Anchor = AnchorStyles.None;
-
-                //arrow.BackgroundImage = new Bitmap(Properties.Resources.arrow);
-                arrow.BackgroundImage = Image.FromFile(@"C:\Users\lewis\Documents\Visual Studio 2015\Projects\DistributionWork\DistributionWork\Resources\arrow.png");
-                arrow.BackgroundImageLayout = ImageLayout.Stretch;
-            }
-            temp_fp.Size = temp_fp.PreferredSize;
-        }
-
-        private void Route_btn_Click(object sender, EventArgs e)
-        {
-            panel_analysis_route_main.Visible = true;
-            panel_analysis_partition_main.Visible = false;
-            panel_analysis_dot_main.Visible = false;
-            panel_analysis_survey_main.Visible = false;
-        }
-
-        private void btn_analysis_show_route_Click(object sender, EventArgs e)
-        {
-            bool exist = false;
-            int index = 0;
-            //여기서 인덱스 찾아서 넘겨야 할 듯
-            for (int i = 0; i < route_data.Count; i++)
-            {
-                //비교 : tag, div, scenario_name              //태그가 모두 다르다는게 확정이면 div는 비교할 필요 없음
-                if ((route_data[i].tag.CompareTo(cb_analysis_route_selectTest.SelectedItem) == 0)
-                    && (route_data[i].scenario_name.CompareTo(cb_analysis_route_selectScenario.SelectedItem) == 0))
-                {
-                    index = i;
-                    exist = true;
-                    break;
-                }
-            }
-
-            if (exist == true)
-            {
-                Route(index);
-            }
-        }
-
-        private void cb_analysis_route_selectGroup_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            cb_analysis_route_selectTest.Items.Clear();
-            //피어목록보여주기
-            if (cb_analysis_route_selectGroup.SelectedIndex == 0)
-            {
-                for (int i = 0; i < route_data.Count; i++)
-                {
-                    if (route_data[i].div.CompareTo("p") == 0)
-                    {
-                        cb_analysis_route_selectTest.Items.Add(route_data[i].tag);
-                    }
-                }
-            }
-            //유저
-            else
-            {
-                for (int i = 0; i < route_data.Count; i++)
-                {
-                    if (route_data[i].div.CompareTo("u") == 0)
-                    {
-                        cb_analysis_route_selectTest.Items.Add(route_data[i].tag);
-                    }
-                }
-            }
-
-            //데이터가 존재하지 않을 때. 
-            if(cb_analysis_route_selectTest.Items.Count == 0)
-            {
-                cb_analysis_route_selectTest.Items.Add("데이터없음");
-            }
-
-            cb_analysis_route_selectTest.Sorted = true;
-            cb_analysis_route_selectTest.SelectedIndex = 0;
-         
-        }
-        //route//
-
-        //survey//
-        private void Survey(int index)
-        {
-            fpanel_analysis_survey.Controls.Clear();
-            for(int i = 0; i < survey_data[index].survey_info.Count; i++)
-            {
-                if (survey_data[index].survey_info[i].question_type.CompareTo("resultTestQuestion_overTime") == 0)
-                {
-                    FlowLayoutPanel new_flowlayout = new FlowLayoutPanel();
-                    new_flowlayout.FlowDirection = FlowDirection.LeftToRight;
-                    fpanel_analysis_survey.Controls.Add(new_flowlayout);
-
-                    PictureBox pBeforeImg = new PictureBox();
-                    try
-                    {
-                        pBeforeImg.BackgroundImage = Image.FromFile(@"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + pData.GetProjectName() + "\\" + survey_data[index].survey_info[i].beforeImg);
-                    }
-                    catch (FileNotFoundException fe)
-                    {
-                        pBeforeImg.BackColor = Color.Gray;
-                        Label notFound = new Label();
-                        notFound.Text = survey_data[index].survey_info[i].beforeImg + "\nnot found";
-                        pBeforeImg.Controls.Add(notFound);
-                        notFound.Anchor = AnchorStyles.None | AnchorStyles.Left;
-                    }
-                    pBeforeImg.BackgroundImageLayout = ImageLayout.Stretch;
-                    pBeforeImg.Size = new Size((int)(200*0.5625), 200);
-
-                    PictureBox arrow = new PictureBox();
-                    //arrow.BackgroundImage = Properties.Resources.arrow;
-                    arrow.BackgroundImage = Image.FromFile(@"C:\Users\lewis\Documents\Visual Studio 2015\Projects\DistributionWork\DistributionWork\Resources\arrow.png");
-                    arrow.Size = new Size(20, 20);
-                    arrow.BackgroundImageLayout = ImageLayout.Stretch;
-                    
-
-                    PictureBox pAfterImg = new PictureBox();
-                    try
-                    {
-                        pAfterImg.BackgroundImage = Image.FromFile(@"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + pData.GetProjectName() + "\\" + survey_data[index].survey_info[i].afterImg);
-                    }
-                    catch (FileNotFoundException fe)
-                    {
-                        pAfterImg.BackColor = Color.Gray;
-                        Label notFound = new Label();
-                        notFound.Text = survey_data[index].survey_info[i].afterImg + "\nnot found";
-                        pAfterImg.Controls.Add(notFound);
-                        notFound.Anchor = AnchorStyles.None | AnchorStyles.Left;
-                    }
-                    pAfterImg.BackgroundImageLayout = ImageLayout.Stretch;
-                    pAfterImg.Size = new Size((int)(200 * 0.5625), 200);
-
-                    new_flowlayout.Controls.Add(pBeforeImg);
-                    new_flowlayout.Controls.Add(arrow);
-                    new_flowlayout.Controls.Add(pAfterImg);
-
-                    new_flowlayout.Size = new_flowlayout.PreferredSize;
-
-                    //가운데 화살표 위치 정할 때 상단 여백 주기
-                    arrow.Margin = new Padding(0, (int)(new_flowlayout.Height / 2 - arrow.Height / 2), 0, 0);
-                }
-                //general question
-                else
-                {
-
-                }
-                Label label_q = new Label();
-                label_q.Text = "Q. " + survey_data[index].survey_info[i].question;
-                fpanel_analysis_survey.Controls.Add(label_q);
-                label_q.Size = label_q.PreferredSize;
-
-                Label label_a = new Label();
-
-                label_a.Text = "A. " + survey_data[index].survey_info[i].answer + "\n -----------------------------------------------------------------";
-                label_a.ForeColor = Color.Red;
-                fpanel_analysis_survey.Controls.Add(label_a);
-                label_a.AutoSize = true;
-            }
-        }
-
-        private void cb_analysis_survey_selectGroup_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            cb_analysis_survey_selectTest.Items.Clear();
-            //피어목록보여주기
-            if (cb_analysis_survey_selectGroup.SelectedIndex == 0)
-            {
-                for (int i = 0; i < survey_data.Count; i++)
-                {
-                    if (survey_data[i].div.CompareTo("p") == 0)
-                    {
-                        cb_analysis_survey_selectTest.Items.Add(survey_data[i].tag);
-                    }
-                }
-            }
-            //유저
-            else
-            {
-                for (int i = 0; i < survey_data.Count; i++)
-                {
-                    if (survey_data[i].div.CompareTo("u") == 0)
-                    {
-                        cb_analysis_survey_selectTest.Items.Add(survey_data[i].tag);
-                    }
-                }
-            }
-            cb_analysis_survey_selectTest.Sorted = true;
-
-            try
-            {
-                cb_analysis_survey_selectTest.SelectedIndex = 0;
-            }catch(ArgumentOutOfRangeException ae)
-            {
-                cb_analysis_survey_selectTest.Items.Add("데이터없음");
-                cb_analysis_survey_selectTest.SelectedIndex = 0;
-            }
-
-        }
-
-        private void btn_analysis_show_survey_Click(object sender, EventArgs e)
-        {
-            bool exist = false;
-            int index = 0;
-            //여기서 인덱스 찾아서 넘겨야 할 듯
-            for (int i = 0; i < survey_data.Count; i++)
-            {
-                //비교 : tag, div, scenario_name              //태그가 모두 다르다는게 확정이면 div는 비교할 필요 없음
-                if ((survey_data[i].tag.CompareTo(cb_analysis_survey_selectTest.SelectedItem) == 0)
-                    && (survey_data[i].scenario_name.CompareTo(cb_analysis_survey_selectScenario.SelectedItem) == 0))
-                {
-                    index = i;
-                    exist = true;
-                    break;
-                }
-            }
-
-            if (exist == true)
-            {
-                Survey(index);
-            }
-        }
-
-        private void Survey_btn_Click(object sender, EventArgs e)
-        {
-            panel_analysis_survey_main.Visible = true;
-            panel_analysis_route_main.Visible = false;
-            panel_analysis_partition_main.Visible = false;
-            panel_analysis_dot_main.Visible = false;
-        }
 
         public void SetSurveyData(List<SurveyData> _survey_data)
         {
@@ -1748,16 +1231,8 @@ namespace DropBox
             //    MessageBox.Show(route_data[i].tag.ToString());
             //}
             //MessageBox.Show("완료");
-
-            cb_analysis_survey_selectGroup.SelectedIndex = 0;
         }
         //survey//
-
-        //배경색 + opacity
-        public Color SetColor(int A, Color color)
-        {
-            return Color.FromArgb(A, color.R, color.G, color.B);
-        }
 
         private void Graph_btn_Click(object sender, EventArgs e)
         {
@@ -1776,11 +1251,9 @@ namespace DropBox
             //    MessageBox.Show(route_data[i].tag.ToString());
             //}
             //MessageBox.Show("완료");
-
-            cb_analysis_route_selectGroup.SelectedIndex = 0;
         }
 
-       
+
 
         public List<RouteData> GetRouteData()
         {

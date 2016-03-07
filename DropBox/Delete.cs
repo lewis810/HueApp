@@ -197,7 +197,7 @@ namespace DropBox
 
         private void RefreshRoute()
         {
-            editProject.SetRouteData(temp_route_data);
+            //editProject.SetRouteData(temp_route_data);
             cb_route_test.Items.Clear();
             cb_partition_test.Items.Clear();                    //dots와 partition의 테스트별 정보는 지용이한테서 얻음
             cb_dots_test.Items.Clear();

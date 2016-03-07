@@ -79,5 +79,7 @@ namespace DropBox.Properties
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+
+        public static object Images { get; internal set; }
     }
 }

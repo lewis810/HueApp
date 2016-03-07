@@ -104,6 +104,7 @@
             // panel1
             // 
             this.panel1.AutoSize = true;
+            this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panel1.Controls.Add(this.CONFIRM_btn);
             this.panel1.Controls.Add(this.Path_btn);
             this.panel1.Controls.Add(this.label1);

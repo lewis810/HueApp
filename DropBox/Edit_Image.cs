@@ -11,7 +11,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml;
-using System.IO.Compression;
+using Ionic.Zip;
 
 namespace DropBox
 {
@@ -154,7 +154,7 @@ namespace DropBox
                 MessageBox.Show("Landscape는 추후 추가 예정");
             }
 
-            fpanel_editImage_link.Height = (int)(this.Height * 0.4);
+            fpanel_editImage_link.Height = (int)(this.Height * 0.5);
 
             //메인이미지를 pictureBox1의 배경으로 설정
             listBox1.Height = listBox1.PreferredHeight;
@@ -228,6 +228,8 @@ namespace DropBox
                 btn_link[i].Font = new Font(btn_link[i].Font.Name, 10, FontStyle.Bold);
                 btn_link[i].BackgroundImage = Image.FromFile(mPath + files[i].Name);
                 btn_link[i].BackgroundImageLayout = ImageLayout.Stretch;
+                fpanel_editImage_link.WrapContents = false;
+                fpanel_editImage_link.AutoScroll = true;
 
                 fpanel_editImage_link.Controls.Add(btn_link[i]);
             }
@@ -462,10 +464,11 @@ namespace DropBox
                 //resize시 원본대비 변경된 사이즈의 비율
                 resize_ratio =  (float)panel1.Width / (float)img.Width;
 
-                for (int i = 0, j = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
+                try
                 {
-                    try
+                    for (int i = 0, j = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
                     {
+                   
                         //해당 링크 정보가 터치일 경우에 버튼의 위치와 크기 resize.
                         if (pData.GetLinks()[fileIndex].link_data[i].input_type.Contains("Touch"))
                         {
@@ -475,10 +478,10 @@ namespace DropBox
                             btnOnScreen[j].Visible = true;
                             j++;
                         }
-                    }catch (ArgumentOutOfRangeException ae)
-                    {
-
+                  
                     }
+                }catch (ArgumentOutOfRangeException ae)
+                {
                 }
             }
             link_alloc.Visible = false;
@@ -604,15 +607,15 @@ namespace DropBox
             {
                 xmlWriter.WriteStartDocument();
                 xmlWriter.WriteStartElement("LinkTable");
-                xmlWriter.WriteStartElement("UserId");
-                xmlWriter.WriteString(pData.GetDeviceType());               //user id
-                xmlWriter.WriteEndElement();
-                xmlWriter.WriteStartElement("DeviceInfo");
-                xmlWriter.WriteString(pData.GetDeviceType());               //device info
-                xmlWriter.WriteEndElement();
-                xmlWriter.WriteStartElement("DeviceResolution");
-                xmlWriter.WriteString(pData.GetDeviceResolution());                      //ex) iPhone5 (640 x 1280)
-                xmlWriter.WriteEndElement();
+                    xmlWriter.WriteStartElement("UserId");
+                    xmlWriter.WriteString(pData.GetUserId());               //user id
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.WriteStartElement("DeviceInfo");
+                    xmlWriter.WriteString(pData.GetDeviceType());               //device info
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.WriteStartElement("DeviceResolution");
+                    xmlWriter.WriteString(pData.GetDeviceResolution());                      //ex) iPhone5 (640 x 1280)
+                    xmlWriter.WriteEndElement();
 
                 CreateNodeTemp(xmlWriter);
 
@@ -622,18 +625,21 @@ namespace DropBox
                 xmlWriter.Close();
                 MessageBox.Show("create");
 
+
                 //기존의 ZIP파일 지우고 다시 생성하기
-                if(File.Exists(mPath + difo.Name + ".zip"))
+                if (File.Exists(mPath + difo.Name + ".zip"))
                 {
                     File.Delete(mPath + difo.Name + ".zip");
                 }
 
-                //이미 프로그램 상에서 이미지 파일을 사용하고 있기 때문에 사용중이라는 에러가 뜨는데 실제로는 ZIP파일이 생성이 됨. 에러메시지 차단.
-                try {
-                    ZipFile.CreateFromDirectory(mPath, mPath + difo.Name + ".zip");
-                }
-                catch (IOException IOE)
+                string[] filenames = Directory.GetFiles(mPath, "*.*");
+
+                bool zipped = false;
+                using(ZipFile zip = new ZipFile(mPath))
                 {
+                    zip.AddFiles(filenames, false, "");
+                    zip.Save(string.Format("{0}{1}.zip", mPath, difo.Name));
+                    zipped = true;
                 }
             }
         }
@@ -701,6 +707,7 @@ namespace DropBox
 
             fileIndex = -1;
             //선택된 파일의 인덱스 찾기
+
             for (i = 0; i < pData.GetLinks().Count; i++)
             {
                 if (image_name.CompareTo(pData.GetLinks()[i].file_name) == 0)
