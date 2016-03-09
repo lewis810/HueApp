@@ -872,8 +872,14 @@ namespace DropBox
             }
 
             string[] download_filenames = Directory.GetFiles(@"C:\Users\" + Environment.UserName + "\\Nudge", "*.xml");
-            
-            if(pData.GetDownload() == true)
+            DirectoryInfo di = new DirectoryInfo(@"C:\Users\" + Environment.UserName + "\\Nudge");
+
+            if (di.Exists == false)
+            {
+                di.Create();
+            }
+
+            if (pData.GetDownload() == true)
             {
                 //파일 다운로스 시작
                 FileDownloader fd = new FileDownloader(download_filenames, sData, pData.GetProjectName(), user_id);
