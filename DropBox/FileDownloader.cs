@@ -12,17 +12,18 @@ namespace DropBox
     public class FileDownloader
     {
         string[] filenames;
-        string scenario_name;
-        string project_name;
+        string project_name, user_id;
         List<int> under_bar_index;
+        ScenarioData sData;
 
 
-        public FileDownloader(string[] _filenames, string _scenario_name, string _project_name)
+        public FileDownloader(string[] _filenames, ScenarioData _sData, string _project_name, string _user_id)
         {
             Console.WriteLine("다운로드 세션 시작");
 
             filenames = _filenames;
-            scenario_name = _scenario_name;
+            sData = _sData;
+            user_id = _user_id;
             project_name = _project_name;
             under_bar_index = new List<int>();
 
@@ -51,41 +52,52 @@ namespace DropBox
                 //시나리오 정보로 먼저 비교해서 반복문 로드 줄이기
 
                 Console.WriteLine(fileName);
-                if (fileName.Contains(scenario_name) && fileName.Contains(project_name))
+                if (fileName.Contains(project_name) && fileName.Contains(user_id))
                 {
-                    Console.WriteLine("있음1");
 
-                    //디바이스정보 추출
-                    under_bar_index.Clear();
-                    for (int k = 0, h = 0; k < fileName.Length; k++)
+                    for(int p = 0; p < sData.getSData().Count; p++)
                     {
-                        if (fileName[k].CompareTo('_') == 0)
+                        if(sData.getSData()[p].title.CompareTo(fileName) == 0)
                         {
-                            under_bar_index.Add(k);
-                            h++;
+                            Console.WriteLine("있음1");
+
+                            //디바이스정보 추출
+                            under_bar_index.Clear();
+                            for (int k = 0, h = 0; k < fileName.Length; k++)
+                            {
+                                if (fileName[k].CompareTo('_') == 0)
+                                {
+                                    under_bar_index.Add(k);
+                                    h++;
+                                }
+                            }
+                            string device_id = fileName.Substring(under_bar_index[3] + 1, (under_bar_index[4] - under_bar_index[3]) - 1);
+                            string scenario_tag = fileName.Substring(0, under_bar_index[0]);
+
+                            //같은 시나리오 데이터 중에 해당 디바이스 정보가 있으면 다운 x
+                            bool exist = false;
+                            for (int i = 0; i < filenames.Length; i++)
+                            {
+                                //번호 //device_id //
+                                if (filenames[i].Contains(device_id) && Path.GetFileName(filenames[i]).Substring(0, under_bar_index[0]).CompareTo(scenario_tag) == 0)
+                                {
+                                    Console.WriteLine("이미 다운로드 되어있음");
+                                    exist = true;
+                                }
+                            }
+
+                            if (exist == false)
+                            {
+                                //같은 시나리오 이름에 디바이스 정보가 없는 데이터
+                                Console.WriteLine("다운로드 목록에 추가.");
+                                fileNames.Add(fileName);
+                            }
+
+                            break;
                         }
                     }
-                    string device_id = fileName.Substring(under_bar_index[3] + 1, (under_bar_index[4] - under_bar_index[3]) - 1);
-                    string scenario_tag = fileName.Substring(0, under_bar_index[0]);
 
-                    //같은 시나리오 데이터 중에 해당 디바이스 정보가 있으면 다운 x
-                    bool exist = false;
-                    for (int i = 0; i < filenames.Length; i++)
-                    {
-                        //번호 //device_id //
-                        if (filenames[i].Contains(device_id) && Path.GetFileName(filenames[i]).Substring(0, under_bar_index[0]).CompareTo(scenario_tag) == 0)
-                        {
-                            Console.WriteLine("이미 다운로드 되어있음");
-                            exist = true;
-                        }
-                    }
-
-                    if (exist == false)
-                    {
-                        //같은 시나리오 이름에 디바이스 정보가 없는 데이터
-                        Console.WriteLine("다운로드 목록에 추가.");
-                        fileNames.Add(fileName);
-                    }
+                    
 
                 }
                 //fileNames.Add(fileName);

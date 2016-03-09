@@ -28,11 +28,23 @@ namespace DropBox
             {
                 cb_analysis_route_selectScenario.Items.Add(sData.getSData()[i].title);
             }
+
             if (sData.getSData().Count == 0)
             {
                 cb_analysis_route_selectScenario.Items.Add("데이터없음");
             }
             cb_analysis_route_selectScenario.SelectedIndex = 0;
+
+            for(int j = 0; j < pRoute_data.Count; j++)
+            {
+                cb_analysis_route_selectTest.Items.Add(pRoute_data[j].tag);
+            }
+
+            if (pRoute_data.Count == 0)
+            {
+                cb_analysis_route_selectTest.Items.Add("데이터없음");
+            }
+            cb_analysis_route_selectTest.SelectedIndex = 0;
         }
 
         public void DrawRoute(int index)

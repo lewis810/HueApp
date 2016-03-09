@@ -110,12 +110,37 @@ namespace DropBox
             }
             //새로 파일 만들어서 했는데 계속 에러남.. 원인분석 필요
 
+            if (result.StatusCode == 200)
+            {
+                listBox1.Items.Clear();
+                listBox1.DisplayMember = "path";
+
+                this.GetID();
+                init();
+
+                foreach (UniValue file in result["contents"])
+                {
+                    //MessageBox.Show(file["path"].ToString());
+                    listBox1.Items.Add(file);
+                }
+
+                if (this.CurrentPath != "/")
+                {
+                    listBox1.Items.Insert(0, UniValue.ParseJson("{path: '..'}"));
+                }
+            }
+            else
+            {
+                MessageBox.Show("error...GetFile");
+            }
+
             //if (result.StatusCode == 200)
             //{
-            //listBox1.Items.Clear();
-            //listBox1.DisplayMember = "path";
-            this.GetID();
-            init();
+            //    listBox1.Items.Clear();
+            //    listBox1.DisplayMember = "path";
+            //}
+            //this.GetID();
+            //init();
         }
 
         public void init()

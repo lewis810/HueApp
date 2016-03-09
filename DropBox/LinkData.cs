@@ -11,6 +11,7 @@ namespace DropBox
 {
     public class LinkData
     {
+        private bool download;
         private string project_name;
         private string device_type;
         private string device_resolution;
@@ -37,6 +38,7 @@ namespace DropBox
         List<LINK> links = new List<LINK>();
 
         //getters
+        public bool GetDownload() { return this.download; }
         public List<LINK> GetLinks(){ return this.links;}
         public string GetDeviceType(){ return this.device_type;}
         public string GetDeviceResolution() { return this.device_resolution; }
@@ -44,6 +46,7 @@ namespace DropBox
         public string GetUserId() { return this.user_id; }
 
         //setters
+        public void SetDownload(bool _download) { this.download = _download; }
         public void SetUserId(string _user_id){ this.user_id = _user_id; }
         public void SetProjectName(string _project_name) { this.project_name = _project_name; }
         public void SetDeviceType(string new_device_type) { this.device_type = new_device_type; }
