@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DropBox
 {
-    class ResultData
+    public class ResultData
     {
 
         public struct ResultInfo

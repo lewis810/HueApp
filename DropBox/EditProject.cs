@@ -1207,7 +1207,6 @@ namespace DropBox
 
         private void Route_btn_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(route_data.Count.ToString());
             Route route = new Route(route_data, pData.GetProjectName(), sData);
             route.TopLevel = false;
             route.AutoScroll = true;
@@ -1270,7 +1269,14 @@ namespace DropBox
 
         private void Graph_btn_Click(object sender, EventArgs e)
         {
-
+            Graph graph = new Graph(rData);
+            graph.TopLevel = false;
+            graph.AutoScroll = true;
+            this.panel_analysis.Controls.Add(graph);
+            graph.FormBorderStyle = FormBorderStyle.None;
+            graph.Dock = DockStyle.Fill;
+            graph.Show();
+            graph.BringToFront();
         }
 
         public void SetRouteData(List<RouteData> _route_data)
