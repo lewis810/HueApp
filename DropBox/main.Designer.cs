@@ -47,9 +47,9 @@
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 18;
-            this.listBox1.Location = new System.Drawing.Point(945, 12);
+            this.listBox1.Location = new System.Drawing.Point(852, 12);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(66, 40);
+            this.listBox1.Size = new System.Drawing.Size(159, 94);
             this.listBox1.TabIndex = 0;
             this.listBox1.Visible = false;
             this.listBox1.DoubleClick += new System.EventHandler(this.listBox1_doubleClick);
@@ -109,6 +109,7 @@
             this.panel1.Controls.Add(this.btCreateProject);
             this.panel1.Controls.Add(this.lblMyProjects);
             this.panel1.Controls.Add(this.button3);
+            this.panel1.Controls.Add(this.listBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
@@ -168,7 +169,6 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.listBox1);
             this.Name = "main";
             this.Text = "Form1";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;

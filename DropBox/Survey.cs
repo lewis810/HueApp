@@ -34,6 +34,16 @@ namespace DropBox
             }
             cb_analysis_survey_selectScenario.SelectedIndex = 0;
 
+            for (int i = 0; i < pSurvey_data.Count; i++)
+            {
+                cb_analysis_survey_selectTest.Items.Add(pSurvey_data[i].tag);
+            }
+            if (pSurvey_data.Count == 0)
+            {
+                cb_analysis_survey_selectTest.Items.Add("데이터없음");
+            }
+            cb_analysis_survey_selectTest.SelectedIndex = 0;
+
         }
 
         private void DrawSurvey(int index)

@@ -135,7 +135,6 @@ namespace DropBox
 
         string scenario_name;
         string[] filenames;
-        string delete_file = "test.txt";
 
         //data for analysis
 
@@ -172,13 +171,19 @@ namespace DropBox
             pData = _pData;
             sData = _sData;
             user_id = _user_id;
+            pData.SetDownload(false);       //edit image에서 edit project로 넘어오면 download를 다시 하지 않게 함
 
             //_main = temp;
 
             SetupButton();
-            ReadLink();
-            ReadScenario();
-            Analysis_Setup();
+            //ReadLink();
+            //ReadScenario();
+            //Analysis_Setup();
+
+            for(int i = 0; i < sData.getSData().Count; i++)
+            {
+                listBox1.Items.Add(sData.getSData()[i].title);
+            }
 
             Assembly assembly = Assembly.GetAssembly(typeof(ImageListView));
 
@@ -213,11 +218,13 @@ namespace DropBox
             user_id = _id;
             pData.SetProjectName(_project_name);
             pData.SetUserId(_id);
+            pData.SetDownload(true);        //main에서부터 올 경우 다운로드 하도록 함
 
             SetupButton();
             ReadLink();
             ReadScenario();
             Analysis_Setup();
+
 
             for(int i = 0; i < sData.getSData().Count; i++)
             {
@@ -517,25 +524,25 @@ namespace DropBox
                         _overName = _fileName + _fileExt;
                     }
 
-                    Button newButton = new Button();
-                    newButton.Name = fileName;
-                    newButton.Text = _overName;
-                    newButton.TextAlign = ContentAlignment.BottomCenter;
-                    newButton.Size = new Size(128, 128);
-                    newButton.Margin = new Padding(10, 10, 10, 10);
-                    //newButton.BackgroundImage = tempImage;
-                    //newButton.BackgroundImageLayout = ImageLayout.Stretch;
+                    //Button newButton = new Button();
+                    //newButton.Name = fileName;
+                    //newButton.Text = _overName;
+                    //newButton.TextAlign = ContentAlignment.BottomCenter;
+                    //newButton.Size = new Size(128, 128);
+                    //newButton.Margin = new Padding(10, 10, 10, 10);
+                    ////newButton.BackgroundImage = tempImage;
+                    ////newButton.BackgroundImageLayout = ImageLayout.Stretch;
 
-                    PictureBox newPicture = new PictureBox();
-                    newPicture.Image = img;
-                    newPicture.SizeMode = PictureBoxSizeMode.StretchImage;
-                    newPicture.Size = new Size(90, 80);
-                    newPicture.Location = new Point(20, 10);
+                    //PictureBox newPicture = new PictureBox();
+                    //newPicture.Image = img;
+                    //newPicture.SizeMode = PictureBoxSizeMode.StretchImage;
+                    //newPicture.Size = new Size(90, 80);
+                    //newPicture.Location = new Point(20, 10);
 
-                    newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
+                    //newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
 
-                    newButton.Controls.Add(newPicture);
-                    newPicture.Anchor = AnchorStyles.None;
+                    //newButton.Controls.Add(newPicture);
+                    //newPicture.Anchor = AnchorStyles.None;
                     //flowLayoutPanel_home.Controls.Add(newButton);
                 }
             }
@@ -864,11 +871,14 @@ namespace DropBox
                 sName.Add(listBox1.Items[i].ToString());
             }
 
-            scenario_name = "글 수정하기";           //combobox_scenario 에서 인덱스 0번으로 받아오기.
-
             string[] download_filenames = Directory.GetFiles(@"C:\Users\" + Environment.UserName + "\\Nudge", "*.xml");
-            //파일 다운로스 시작
-            FileDownloader fd = new FileDownloader(download_filenames, scenario_name, pData.GetProjectName());
+            
+            if(pData.GetDownload() == true)
+            {
+                //파일 다운로스 시작
+                FileDownloader fd = new FileDownloader(download_filenames, sData, pData.GetProjectName(), user_id);
+            }
+
             XmlRead();        //다운로드 되어있는 Xml 읽어와서 데이터 저장
         }
 
@@ -935,7 +945,12 @@ namespace DropBox
                     string temp_project_name = filenames[i].Substring(under_bar_index[0] + 1, (under_bar_index[1] - under_bar_index[0]) - 1);
                     string temp_test_type = filenames[i].Substring(under_bar_index[3] + 1, (under_bar_index[4] - under_bar_index[3]) - 1);
 
-                    //Console.WriteLine(temp_scenario_name);
+                    Console.WriteLine("시작");
+                    Console.WriteLine(temp_scenario_tag);
+                    Console.WriteLine(temp_scenario_name);
+                    Console.WriteLine(temp_devicie_id);
+                    Console.WriteLine(temp_project_name);
+                    Console.WriteLine(temp_test_type);
 
                     if (temp_test_type.CompareTo("userData") == 0)
                     {
@@ -952,13 +967,21 @@ namespace DropBox
                                 break;
                             }
                         }
+                        Console.WriteLine("add" + scenario_add.ToString());
+                        Console.WriteLine(pData.GetProjectName());
+                        Console.WriteLine(scenario_name);
 
                         //위에서 중복된 정보가 아니더라도 tag, scenario_name, project_name 중 하나라도 다르면 입력 x
-                        if (scenario_add == false
-                            && temp_project_name.CompareTo(pData.GetProjectName()) == 0
-                            && temp_scenario_name.CompareTo(scenario_name) == 0)
+                        if (scenario_add == false && temp_project_name.CompareTo(pData.GetProjectName()) == 0)
                         {
-                            route_data.Add(new RouteData() { tag = Convert.ToInt32(temp_scenario_tag), creation = date_time, scenario_name = temp_scenario_name, device_id = temp_devicie_id, images = new List<string>(), visit_time = new List<double>() });
+                            for(int p = 0; p < sData.getSData().Count; p++)
+                            {
+                                if(temp_scenario_name.CompareTo(sData.getSData()[p].title) == 0)
+                                {
+                                    route_data.Add(new RouteData() { tag = Convert.ToInt32(temp_scenario_tag), creation = date_time, scenario_name = temp_scenario_name, device_id = temp_devicie_id, images = new List<string>(), visit_time = new List<double>() });
+                                    break;
+                                }
+                            }
                         }
                         else continue;
                         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -974,7 +997,6 @@ namespace DropBox
                         xmlDoc.Load(mPath + "\\" + filenames[i]);
                         XmlNodeList nodeList = xmlDoc.DocumentElement.SelectNodes("/project/InputInfo");
                         //각 파일의 생성일자를 받아와서 이것을 기준으로 보여주는 순서 설정
-                        
 
                         foreach (XmlNode child_node in nodeList)
                         {
@@ -1085,14 +1107,19 @@ namespace DropBox
                             }
                         }
 
-                        //위에서 중복된 정보가 아니더라도 tag, scenario_name, project_name 중 하나라도 다르면 입력 x
-                        if (scenario_add == false
-                            && temp_project_name.CompareTo(pData.GetProjectName()) == 0
-                            && temp_scenario_name.CompareTo(scenario_name) == 0)
+                        if (scenario_add == false && temp_project_name.CompareTo(pData.GetProjectName()) == 0)
                         {
-                            survey_data.Add(new SurveyData() { tag = Convert.ToInt32(temp_scenario_tag), creation = date_time, scenario_name = temp_scenario_name, device_id = temp_devicie_id, survey_info = new List<SurveyInternalInfo>()});
+                            for (int p = 0; p < sData.getSData().Count; p++)
+                            {
+                                if (temp_scenario_name.CompareTo(sData.getSData()[p].title) == 0)
+                                {
+                                    survey_data.Add(new SurveyData() { tag = Convert.ToInt32(temp_scenario_tag), creation = date_time, scenario_name = temp_scenario_name, device_id = temp_devicie_id, survey_info = new List<SurveyInternalInfo>() });
+                                    break;
+                                }
+                            }
                         }
                         else continue;
+
                         //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
                         XmlDocument xmlDoc = new XmlDocument();
@@ -1174,6 +1201,7 @@ namespace DropBox
 
         private void Route_btn_Click(object sender, EventArgs e)
         {
+            MessageBox.Show(route_data.Count.ToString());
             Route route = new Route(route_data, pData.GetProjectName(), sData);
             route.TopLevel = false;
             route.AutoScroll = true;
