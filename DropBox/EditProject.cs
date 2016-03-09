@@ -1174,6 +1174,7 @@ namespace DropBox
 
         private void Route_btn_Click(object sender, EventArgs e)
         {
+            MessageBox.Show(route_data.Count.ToString());
             Route route = new Route(route_data, pData.GetProjectName(), sData);
             route.TopLevel = false;
             route.AutoScroll = true;
