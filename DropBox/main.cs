@@ -23,7 +23,7 @@ namespace DropBox
 {
     public partial class main : Form
     {
-        private string CurrentPath = "/";
+        private string CurrentPath = "/IMAGE";
         public static Button TempDeleteButton;
         public string id;
         private ContextMenu cm;
@@ -117,17 +117,21 @@ namespace DropBox
 
                 this.GetID();
                 init();
-
+                
                 foreach (UniValue file in result["contents"])
                 {
-                    //MessageBox.Show(file["path"].ToString());
+                    //MessageBox.Show(file.ToString());
                     listBox1.Items.Add(file);
+                    //if(file["is_dir"] == 1)
+                    //{
+                    //    MessageBox.Show("폴더");
+                    //}
                 }
 
-                if (this.CurrentPath != "/")
-                {
-                    listBox1.Items.Insert(0, UniValue.ParseJson("{path: '..'}"));
-                }
+                //if (this.CurrentPath != "/")
+                //{
+                //    listBox1.Items.Insert(0, UniValue.ParseJson("{path: '..'}"));
+                //}
             }
             else
             {
