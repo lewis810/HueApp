@@ -1269,7 +1269,10 @@ namespace DropBox
 
         private void Graph_btn_Click(object sender, EventArgs e)
         {
-            Graph graph = new Graph(rData, pData.GetProjectName(), sName);
+            //MessageBox.Show(rData.getRData().Count.ToString());
+
+            Graph graph = new Graph(rData);
+            //Graph graph = new Graph(rData, pData.GetProjectName(), sName);
             graph.TopLevel = false;
             graph.AutoScroll = true;
             this.panel_analysis.Controls.Add(graph);

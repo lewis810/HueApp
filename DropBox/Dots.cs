@@ -136,35 +136,45 @@ namespace DropBox
             br = new SolidBrush(SetColor(30, Color.Red));
 
             int index = 0;
-            for (int i = 0; i < pTotal_data.Count; i++)
-            {
-                if (pTotal_data[i].image_name.CompareTo(selected) == 0)
-                {
-                    index = i;
-                    break;
-                }
-            }
 
-            if(test.CompareTo("모두보기") == 0)
+            try
             {
-                //MessageBox.Show("창 크기: " + panel_analysis_picture_dot.Width.ToString() + ", " + panel_analysis_picture_dot.Height.ToString());
-                try
+                for (int i = 0; i < pTotal_data.Count; i++)
                 {
-                    for (int j = 0; j < pTotal_data[index].event_data.Count; j++)
+                    if (pTotal_data[i].image_name.CompareTo(selected) == 0)
                     {
-                        if (pTotal_data[index].image_name.CompareTo(selected) == 0)
-                        {
-                            //gr.FillPie(br, new Rectangle(new Point(((int)((pTotal_data[index].event_data[j].xcoord*ratio) - 15)), (int)((pTotal_data[index].event_data[j].ycoord * ratio) - 15)), new Size(30, 30)), 0, 360);
-                            gr.FillPie(br, new Rectangle(new Point(((int)(pTotal_data[index].event_data[j].xcoord) - 25), (int)(pTotal_data[index].event_data[j].ycoord) - 25), new Size(50, 50)), 0, 360);
-                            //MessageBox.Show(((pTotal_data[index].event_data[j].xcoord * ratio) - 15).ToString() + ", "+ ((pTotal_data[index].event_data[j].ycoord * ratio) - 15).ToString());
-                        }
+                        index = i;
+                        break;
                     }
                 }
-                catch (ArgumentOutOfRangeException ae)
-                {
 
+                if (test.CompareTo("모두보기") == 0)
+                {
+                    //MessageBox.Show("창 크기: " + panel_analysis_picture_dot.Width.ToString() + ", " + panel_analysis_picture_dot.Height.ToString());
+                    try
+                    {
+                        for (int j = 0; j < pTotal_data[index].event_data.Count; j++)
+                        {
+                            if (pTotal_data[index].image_name.CompareTo(selected) == 0)
+                            {
+                                //gr.FillPie(br, new Rectangle(new Point(((int)((pTotal_data[index].event_data[j].xcoord*ratio) - 15)), (int)((pTotal_data[index].event_data[j].ycoord * ratio) - 15)), new Size(30, 30)), 0, 360);
+                                gr.FillPie(br, new Rectangle(new Point(((int)(pTotal_data[index].event_data[j].xcoord) - 25), (int)(pTotal_data[index].event_data[j].ycoord) - 25), new Size(50, 50)), 0, 360);
+                                //MessageBox.Show(((pTotal_data[index].event_data[j].xcoord * ratio) - 15).ToString() + ", "+ ((pTotal_data[index].event_data[j].ycoord * ratio) - 15).ToString());
+                            }
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException ae)
+                    {
+
+                    }
                 }
             }
+            catch (NullReferenceException ne)
+            {
+                MessageBox.Show("null");
+            }
+
+            
 
             //전체 데이터중에 클릭들이 가지고 있는 이미지 이름과 현재 이미지 이름이 같은거만 그리기
             //ALL / USER / PEER

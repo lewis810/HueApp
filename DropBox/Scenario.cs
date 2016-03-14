@@ -93,7 +93,7 @@ namespace DropBox
                 fpanel_path.FlowDirection = FlowDirection.LeftToRight;
                 fpanel_path.Size = new Size(this.Width - 25, (int)(temp_height * 1.2));
                 fpanel_path.Location = new Point(0, temp_label.Location.Y + temp_label.Height);
-                fpanel_path.BackColor = Color.Red;
+                fpanel_path.BackColor = Color.Wheat;
                 this.Height = this.Height + (int)(temp_height);
                 fpanel_path.WrapContents = false;
                 fpanel_path.AutoScroll = true;
@@ -129,7 +129,7 @@ namespace DropBox
                 //MessageBox.Show("머라도 떠라");
             Button button1 = new Button();
             Control ctl = GetControlByName(path_btn);
-            MessageBox.Show(path_btn.Name);
+            //MessageBox.Show(path_btn.Name);
 
             //Label label1 = this.Controls.Get
 
@@ -189,10 +189,10 @@ namespace DropBox
             Button btnok = new Button { DialogResult = System.Windows.Forms.DialogResult.OK, Top = 25 };
             Button btncn = new Button { DialogResult = System.Windows.Forms.DialogResult.Cancel, Top = 25 };
 
-            btnok.Text = "O";
-            btncn.Text = "X";
-            btnok.BackColor = Color.Red;
-            btncn.BackColor = Color.Red;
+            btnok.Text = "확인";
+            btncn.Text = "취소";
+            btnok.BackColor = Color.Wheat;
+            btncn.BackColor = Color.Wheat;
             btnok.Location = new Point(btncn.Location.X + btncn.Width, btncn.Location.Y);
 
             Form frm = new Form { ControlBox = false, AcceptButton = btnok, CancelButton = btncn, StartPosition = FormStartPosition.Manual, Location = ctrlpt };
@@ -327,7 +327,7 @@ namespace DropBox
             fpanel_scenario_image.Visible = true;
             fpanel_scenario_image.Size = new Size(this.Width -25 ,(int)(temp_height * 1.2));
             this.Height = panel1.Height + (int)(temp_height * 1.8);
-            fpanel_scenario_image.BackColor = Color.Aqua;
+            fpanel_scenario_image.BackColor = Color.Wheat;
 
             Label temp_label = new Label();
             temp_label.Text = "경로";
@@ -338,7 +338,7 @@ namespace DropBox
             fpanel_path.FlowDirection = FlowDirection.LeftToRight;
             fpanel_path.Size = new Size(this.Width - 25, fpanel_scenario_image.Height);
             fpanel_path.Location = new Point(0, temp_label.Location.Y + temp_label.Height);
-            fpanel_path.BackColor = Color.Red;
+            fpanel_path.BackColor = Color.Wheat;
             this.Height = this.Height + (int)(temp_height);
             fpanel_path.WrapContents = false;
             fpanel_path.AutoScroll = true;
