@@ -64,7 +64,7 @@ namespace DropBox
             }
             else
             {
-                MessageBox.Show("error...");
+                //MessageBox.Show("error...");
             }
         }
 
@@ -119,7 +119,7 @@ namespace DropBox
                 init();
                 
                 foreach (UniValue file in result["contents"])
-                {
+                { 
                     //MessageBox.Show(file.ToString());
                     listBox1.Items.Add(file);
                     //if(file["is_dir"] == 1)
@@ -547,10 +547,14 @@ namespace DropBox
                         // @@@@ imageListView
                         imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("DoNotDelete.bmp")[0]);
                     }
-
                 }
             }
         }
 
+        private void main_SizeChanged(object sender, EventArgs e)
+        {
+            //panel1.Size = new Size(this.Width, 180);
+            //imageListView_Main.Location = new Point(0, 180);
+        }
     }
 }

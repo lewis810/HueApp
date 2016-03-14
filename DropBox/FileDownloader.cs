@@ -54,25 +54,35 @@ namespace DropBox
                 Console.WriteLine(fileName);
                 if (fileName.Contains(project_name) && fileName.Contains(user_id))
                 {
+                    Console.WriteLine("들어옴 : " + fileName + "\n" + sData.getSData().Count.ToString());
+                    
 
-                    for(int p = 0; p < sData.getSData().Count; p++)
+                    for (int p = 0; p < sData.getSData().Count; p++)
                     {
-                        if(sData.getSData()[p].title.CompareTo(fileName) == 0)
+                        Console.WriteLine("제목 : " + sData.getSData()[p].title + "// fileName : " + fileName);
+                        under_bar_index.Clear();
+                        for (int k = 0, h = 0; k < fileName.Length; k++)
+                        {
+                            if (fileName[k].CompareTo('_') == 0)
+                            {
+                                under_bar_index.Add(k);
+                                h++;
+                            }
+                        }
+
+                        string device_id = fileName.Substring(under_bar_index[3] + 1, (under_bar_index[4] - under_bar_index[3]) - 1);
+                        string scenario = fileName.Substring(under_bar_index[1] + 1, (under_bar_index[2] - under_bar_index[1]) - 1);
+                        string scenario_tag = fileName.Substring(0, under_bar_index[0]);
+
+                        Console.WriteLine("시나리오 : " + scenario);
+
+                        if (sData.getSData()[p].title.CompareTo(scenario) == 0)
                         {
                             Console.WriteLine("있음1");
 
                             //디바이스정보 추출
-                            under_bar_index.Clear();
-                            for (int k = 0, h = 0; k < fileName.Length; k++)
-                            {
-                                if (fileName[k].CompareTo('_') == 0)
-                                {
-                                    under_bar_index.Add(k);
-                                    h++;
-                                }
-                            }
-                            string device_id = fileName.Substring(under_bar_index[3] + 1, (under_bar_index[4] - under_bar_index[3]) - 1);
-                            string scenario_tag = fileName.Substring(0, under_bar_index[0]);
+                            
+                            
 
                             //같은 시나리오 데이터 중에 해당 디바이스 정보가 있으면 다운 x
                             bool exist = false;

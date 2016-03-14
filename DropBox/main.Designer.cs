@@ -46,18 +46,21 @@
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 18;
-            this.listBox1.Location = new System.Drawing.Point(852, 12);
+            this.listBox1.ItemHeight = 12;
+            this.listBox1.Location = new System.Drawing.Point(596, 8);
+            this.listBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(159, 94);
+            this.listBox1.Size = new System.Drawing.Size(112, 64);
             this.listBox1.TabIndex = 0;
+            this.listBox1.Visible = false;
             this.listBox1.DoubleClick += new System.EventHandler(this.listBox1_doubleClick);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(407, 28);
+            this.button1.Location = new System.Drawing.Point(285, 19);
+            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(168, 30);
+            this.button1.Size = new System.Drawing.Size(118, 20);
             this.button1.TabIndex = 1;
             this.button1.Text = "Create Folder";
             this.button1.UseVisualStyleBackColor = true;
@@ -65,17 +68,19 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(770, 12);
+            this.textBox1.Location = new System.Drawing.Point(539, 8);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(169, 28);
+            this.textBox1.Size = new System.Drawing.Size(119, 21);
             this.textBox1.TabIndex = 2;
             this.textBox1.Visible = false;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(597, 26);
+            this.button2.Location = new System.Drawing.Point(418, 17);
+            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(138, 35);
+            this.button2.Size = new System.Drawing.Size(97, 23);
             this.button2.TabIndex = 3;
             this.button2.Text = "Upload File";
             this.button2.UseVisualStyleBackColor = true;
@@ -87,17 +92,19 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(945, 58);
+            this.progressBar1.Location = new System.Drawing.Point(661, 39);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(65, 17);
+            this.progressBar1.Size = new System.Drawing.Size(45, 11);
             this.progressBar1.TabIndex = 4;
             this.progressBar1.Visible = false;
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(265, 59);
+            this.button3.Location = new System.Drawing.Point(185, 39);
+            this.button3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 35);
+            this.button3.Size = new System.Drawing.Size(52, 23);
             this.button3.TabIndex = 5;
             this.button3.Text = "logout";
             this.button3.UseVisualStyleBackColor = true;
@@ -105,23 +112,24 @@
             // 
             // panel1
             // 
+            this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panel1.Controls.Add(this.btCreateProject);
             this.panel1.Controls.Add(this.lblMyProjects);
             this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.listBox1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1059, 821);
+            this.panel1.Size = new System.Drawing.Size(741, 120);
             this.panel1.TabIndex = 7;
             // 
             // btCreateProject
             // 
             this.btCreateProject.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btCreateProject.Location = new System.Drawing.Point(348, 28);
-            this.btCreateProject.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.btCreateProject.Location = new System.Drawing.Point(244, 19);
             this.btCreateProject.Name = "btCreateProject";
-            this.btCreateProject.Size = new System.Drawing.Size(265, 66);
+            this.btCreateProject.Size = new System.Drawing.Size(185, 44);
             this.btCreateProject.TabIndex = 3;
             this.btCreateProject.Text = "+ Create Project";
             this.btCreateProject.UseVisualStyleBackColor = true;
@@ -131,10 +139,9 @@
             // 
             this.lblMyProjects.AutoSize = true;
             this.lblMyProjects.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMyProjects.Location = new System.Drawing.Point(38, 57);
-            this.lblMyProjects.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblMyProjects.Location = new System.Drawing.Point(27, 38);
             this.lblMyProjects.Name = "lblMyProjects";
-            this.lblMyProjects.Size = new System.Drawing.Size(182, 37);
+            this.lblMyProjects.Size = new System.Drawing.Size(125, 25);
             this.lblMyProjects.TabIndex = 2;
             this.lblMyProjects.Text = "My Projects";
             // 
@@ -144,34 +151,35 @@
             this.imageListView_Main.AllowDrop = true;
             this.imageListView_Main.CheckBoxAlignment = System.Drawing.ContentAlignment.TopLeft;
             this.imageListView_Main.ColumnHeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.imageListView_Main.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.imageListView_Main.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imageListView_Main.GroupHeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.imageListView_Main.Location = new System.Drawing.Point(0, 181);
-            this.imageListView_Main.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.imageListView_Main.Location = new System.Drawing.Point(0, 120);
             this.imageListView_Main.Name = "imageListView_Main";
             this.imageListView_Main.PersistentCacheDirectory = "";
             this.imageListView_Main.PersistentCacheSize = ((long)(100));
             this.imageListView_Main.ShowCheckBoxes = true;
-            this.imageListView_Main.Size = new System.Drawing.Size(1059, 640);
+            this.imageListView_Main.Size = new System.Drawing.Size(741, 427);
             this.imageListView_Main.TabIndex = 8;
             this.imageListView_Main.ItemClick += new Manina.Windows.Forms.ItemClickEventHandler(this.imageListView1_itemClick);
             this.imageListView_Main.ItemDoubleClick += new Manina.Windows.Forms.ItemDoubleClickEventHandler(this.imageListView1_itemDoubleClick);
             // 
             // main
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1059, 821);
+            this.ClientSize = new System.Drawing.Size(741, 547);
             this.Controls.Add(this.imageListView_Main);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "main";
             this.Text = "Form1";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.SizeChanged += new System.EventHandler(this.main_SizeChanged);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
