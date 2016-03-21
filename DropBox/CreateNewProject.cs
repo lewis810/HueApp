@@ -120,9 +120,8 @@ namespace DropBox
 
                 File.SetAttributes(mPath + "\\DoNotDelete.bmp", FileAttributes.Hidden);
             }
-            form1.imageListView_Main.Items.Add(mPath + "\\DoNotDelete.bmp");
-
-
+            form1.imageListView_Main.Items.Add(mPath + "\\DoNotDelete.bmp", textBoxProjectName.Text, comboBox1.Text);
+            form1.imageListView_Main.ThumbnailSize = new Size(120, 120);
 
             /*string pResolution;
             Button newButton = new Button();

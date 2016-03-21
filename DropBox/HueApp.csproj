@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{16F47A80-38E4-4885-A788-DEE61FDDC51D}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DropBox</RootNamespace>
     <AssemblyName>DropBox</AssemblyName>
@@ -51,8 +51,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ImageListView, Version=11.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ImageListView.11.0.4.0\lib\net35\ImageListView.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\imagelistview-master\ImageListView\bin\DesignerDebug\ImageListView.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip, Version=1.9.8.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetZip.1.9.8\lib\net20\Ionic.Zip.dll</HintPath>
@@ -65,6 +65,22 @@
     <Reference Include="Nemiro.OAuth.LoginForms, Version=1.4.45.1485, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nemiro.OAuth.LoginForms.1.4\lib\net45\Nemiro.OAuth.LoginForms.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Nevron.Chart, Version=16.1.5.12, Culture=neutral, PublicKeyToken=2961c51bb98125d2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Nevron Software\Nevron .NET Vision 2015.1 for VS2013\Bin\Nevron.Chart.dll</HintPath>
+    </Reference>
+    <Reference Include="Nevron.Chart.WinForm, Version=16.1.5.12, Culture=neutral, PublicKeyToken=c9bd8998e981e4ee, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Nevron Software\Nevron .NET Vision 2015.1 for VS2013\Bin\Nevron.Chart.WinForm.dll</HintPath>
+    </Reference>
+    <Reference Include="Nevron.Presentation, Version=16.1.5.12, Culture=neutral, PublicKeyToken=6656c5d1103e75cc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Nevron Software\Nevron .NET Vision 2015.1 for VS2013\Bin\Nevron.Presentation.dll</HintPath>
+    </Reference>
+    <Reference Include="Nevron.System, Version=16.1.5.12, Culture=neutral, PublicKeyToken=6a987feae5e496fd, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Nevron Software\Nevron .NET Vision 2015.1 for VS2013\Bin\Nevron.System.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -126,6 +142,7 @@
     <Compile Include="main.Designer.cs">
       <DependentUpon>main.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyRenderer.cs" />
     <Compile Include="Partition.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -179,6 +196,7 @@
     <EmbeddedResource Include="Partition.resx">
       <DependentUpon>Partition.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

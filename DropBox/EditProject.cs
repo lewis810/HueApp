@@ -1272,8 +1272,8 @@ namespace DropBox
         {
             //MessageBox.Show(rData.getRData().Count.ToString());
 
-            Graph graph = new Graph(rData);
-            //Graph graph = new Graph(rData, pData.GetProjectName(), sName);
+            //Graph graph = new Graph(rData,);
+            Graph graph = new Graph(rData, pData.GetProjectName(), sName);
             graph.TopLevel = false;
             graph.AutoScroll = true;
             this.panel_analysis.Controls.Add(graph);

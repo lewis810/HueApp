@@ -32,6 +32,7 @@ namespace DropBox
         public main()
         {
             InitializeComponent();
+            imageListView_Main.ThumbnailSize = new Size(120, 120);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -110,15 +111,15 @@ namespace DropBox
             }
             //새로 파일 만들어서 했는데 계속 에러남.. 원인분석 필요
 
-            if (result.StatusCode == 200)
+            /*if (result.StatusCode == 200)
             {
                 listBox1.Items.Clear();
-                listBox1.DisplayMember = "path";
+                listBox1.DisplayMember = "path";*/
 
                 this.GetID();
                 init();
                 
-                foreach (UniValue file in result["contents"])
+                /*foreach (UniValue file in result["contents"])
                 { 
                     //MessageBox.Show(file.ToString());
                     listBox1.Items.Add(file);
@@ -126,17 +127,18 @@ namespace DropBox
                     //{
                     //    MessageBox.Show("폴더");
                     //}
-                }
+                }*/
 
                 //if (this.CurrentPath != "/")
                 //{
                 //    listBox1.Items.Insert(0, UniValue.ParseJson("{path: '..'}"));
                 //}
-            }
+            /*}
             else
             {
                 MessageBox.Show("error...GetFile");
             }
+*/
 
             //if (result.StatusCode == 200)
             //{
@@ -178,9 +180,11 @@ namespace DropBox
             cm.MenuItems.Add("Delete", new System.EventHandler(this.imageListView_menuItem_delete_click));
             imageListView_Main.ContextMenu = cm;
 
+            imageListView_Main.SetRenderer(new MyCustomRenderer());
 
             string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE";
             string pResolution = "";
+            string projectName = "";
             DirectoryInfo Info = new DirectoryInfo(mPath);
 
             if (Info.Exists)
@@ -196,18 +200,19 @@ namespace DropBox
                     //각 폴더에 있는 link.xml에 접근하여 해상도를 읽어옴
                     xmlDoc.Load(mPath + "\\" + eachInfo + "\\" + "link.xml");
                     XmlNode nodeDevice = xmlDoc.DocumentElement.SelectSingleNode("/LinkTable");
+                    projectName = eachInfo.Name;
                     pResolution = (nodeDevice.SelectSingleNode("DeviceResolution").InnerText);
 
                     if (Directory.GetFiles(eachInfo.FullName).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg")).Count() > 1)
                     {
                         // @@@@ imageListView
-                        imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("*.png")[0]);
+                        imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("*.png")[0], projectName, pResolution);
                     }
 
                     if (Directory.GetFiles(eachInfo.FullName).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg")).Count() == 0)
                     {
                         // @@@@ imageListView
-                        imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("DoNotDelete.bmp")[0]);
+                        imageListView_Main.Items.Add(eachInfo.FullName + "\\" + eachInfo.GetFiles("DoNotDelete.bmp")[0], projectName, pResolution);
                     }
 
                     /*Button newButton = new Button();

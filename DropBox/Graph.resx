@@ -117,4 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="nChartControl1.State" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAFlOZXZyb24uQ2hhcnQuV2luRm9ybSwgVmVyc2lvbj0xNi4xLjUu
+        MTIsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49YzliZDg5OThlOTgxZTRlZQUBAAAAG05l
+        dnJvbi5DaGFydC5XaW5Gb3JtLk5TdGF0ZQEAAAAHbV9CeXRlcwcCAgAAAAoL
+</value>
+  </data>
 </root>
