@@ -15,12 +15,14 @@ using Nevron.Chart;
 using Nevron.Chart.Functions;
 using Nevron.Chart.Windows;
 using Nevron.Chart.WinForm;
+using System.Drawing.Text;
+using System.IO;
 
 namespace DropBox
 {
     public partial class Graph : Form
     {
-        ResultData rData;
+        private ResultData rData;
 
         private NChart m_Chart;
         private NBarSeries m_Bar;
@@ -29,11 +31,30 @@ namespace DropBox
 
         private NHighLowSeries m_HighLow;
 
+        private int curChartType;
+        private String curProjectName;
 
-       /* public Graph(ResultData _rData)
+
+        private List<ImgTime> ImgTimeInfo;
+
+        public class ImgTime
         {
+            public string imgName;
+            public float Low { get; set; }
+            public float High { get; set; }
+        }
 
-        }*/
+        private List<ImgAverageTime> ImgAverageInfo;
+
+        public class ImgAverageTime
+        {
+            public string imgName;
+            public float imgTime { get; set; }
+            public int count { get; set; }
+        }
+
+        PrivateFontCollection pfc = new PrivateFontCollection();
+
 
         public Graph(ResultData _rData, string projectName, List<string> scenarioNames)
         {
@@ -43,34 +64,44 @@ namespace DropBox
 
             InitializeComponent();
             rData = _rData;
+            curProjectName = projectName;
+
+            //font and location of left bar
+            pfc.AddFontFile(Path.Combine(Application.StartupPath, "KOPUBDOTUM_PRO_LIGHT.OTF"));
+            label_1.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_2.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_3.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            chartType.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+            taskNameBox.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+            personalBox.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
 
 
-            listBox1.Items.Add(projectName);
-            foreach(string temp in scenarioNames)
-            {
-                listBox1.Items.Add(temp);
-            }
+            chartType.SelectedIndex = 0;
 
-            if(rData == null)
+            ImgTimeInfo = new List<ImgTime>();
+            ImgAverageInfo = new List<ImgAverageTime>();
+
+            if (rData == null)
             {
                 MessageBox.Show("NULL!!!");
             }
 
             foreach (ResultData.ResultInfo temp in rData.getRData())
             {
-                foreach(ResultData.ImgTime time in temp.pathInfo)
+                if (ListBox.NoMatches == taskNameBox.FindStringExact(temp.taskName) && curProjectName == temp.projectName)
                 {
-                    listBox1.Items.Add(time.imgName + "  ||  " + time.timeImg);
+                    taskNameBox.Items.Add(temp.taskName);
                 }
             }
+
         }
 
-        private void button1_Click(object sender, EventArgs e)
+
+
+
+        private void callPersonalGraph(string projectName, string ScenarioName, int idx)
         {
-
             nChartControl1.Clear();
-
-            
 
             //rData.getRData()[0].taskName 이런식으로 인덱스 줘서 사용하면 될 듯
             m_FuncCalculator = new NFunctionCalculator();
@@ -81,7 +112,8 @@ namespace DropBox
 
             // set a chart title
             NLabel title = nChartControl1.Labels.AddHeader("Task x 소요 시간");
-            title.TextStyle.FontStyle = new NFontStyle("Times New Roman", 18, FontStyle.Italic);
+            //title.TextStyle.FontStyle = new NFontStyle("Times New Roman", 18, FontStyle.Regular);
+            title.TextStyle.FontStyle = new NFontStyle(pfc.Families[0].ToString(), 18, FontStyle.Regular);
             title.ContentAlignment = ContentAlignment.BottomCenter;
             title.Location = new NPointL(new NLength(50, NRelativeUnit.ParentPercentage), new NLength(2, NRelativeUnit.ParentPercentage));
 
@@ -90,7 +122,7 @@ namespace DropBox
             m_Chart.BoundsMode = BoundsMode.Stretch;
             m_Chart.Location = new NPointL(new NLength(10, NRelativeUnit.ParentPercentage), new NLength(15, NRelativeUnit.ParentPercentage));
             m_Chart.Size = new NSizeL(new NLength(80, NRelativeUnit.ParentPercentage), new NLength(75, NRelativeUnit.ParentPercentage));
-
+            
 
 
             //m_Chart.Axis(StandardAxis.Depth).Visible = false;
@@ -116,7 +148,6 @@ namespace DropBox
             m_Line.ShadowStyle.FadeLength = new NLength(5);
 
 
-
             // add the bar series
             m_Bar = (NBarSeries)m_Chart.Series.Add(SeriesType.Bar);
             m_Bar.Name = "Bar1";
@@ -132,14 +163,6 @@ namespace DropBox
             m_Bar.ShadowStyle.Offset = new NPointL(2, 2);
             m_Bar.ShadowStyle.Color = Color.FromArgb(80, 0, 0, 0);
             //m_Bar.Values.FillRandomRange(new Random(), 14, 0, 100);
-            m_Bar.Values.Add(2.3);
-            m_Bar.Values.Add(3.1);
-            m_Bar.Values.Add(1.2);
-            m_Bar.Values.Add(1.7);
-            m_Bar.Values.Add(4.2);
-            m_Bar.Values.Add(1.9);
-
-
 
             NLinearScaleConfigurator linearScale = new NLinearScaleConfigurator();
             //m_Chart.Axis(StandardAxis.PrimaryX).ScaleConfigurator = linearScale;
@@ -154,31 +177,70 @@ namespace DropBox
             scaleConfiguratorX.MajorTickMode = MajorTickMode.AutoMaxCount;
 
             scaleConfiguratorX.AutoLabels = false;
-            scaleConfiguratorX.Labels.Add("7_main-02.png");
-            scaleConfiguratorX.Labels.Add("10-06.png");
-            scaleConfiguratorX.Labels.Add("10-05.png");
-            scaleConfiguratorX.Labels.Add("7_main-02.png");
-            scaleConfiguratorX.Labels.Add("7_main-11.png");
-            scaleConfiguratorX.Labels.Add("scrap.jpg");
+
+            foreach (ResultData.ResultInfo temp in rData.getRData())
+            {
+                // 현재 찾고자 하는 프로젝트와 시나리오랑 같으면
+                if (temp.projectName == projectName && temp.taskName == ScenarioName)
+                {
+                    if (idx == -1 /*&& temp.isMin == true*/) // ***************************************************************************************************************** check
+                    {
+                        ImgAverageInfo.Clear();
+
+                        // 해당 시나리오 값에서 이동한 path 이미지들 값 가져오기
+                        foreach (ResultData.ImgTime imgTemp in temp.pathInfo)
+                        {
+                            bool inList = false;
+
+                            float timeValue = System.Convert.ToSingle(imgTemp.timeImg);
+
+                            // 리스트 내에 같은 값 찾기
+
+                            if (ImgAverageInfo.Count != 0)
+                            {
+                                foreach (ImgAverageTime inListImg in ImgAverageInfo)
+                                {
+                                    // 같은게 있다면
+                                    if (inListImg.imgName == imgTemp.imgName)
+                                    {
+                                        inListImg.count += 1;
+                                        inListImg.imgTime += timeValue;
+                                        inList = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // 리스트 내에 없다면
+                            if (inList == false)
+                                ImgAverageInfo.Add(new ImgAverageTime() { imgName = imgTemp.imgName, imgTime = timeValue, count = 1 });
+                        }
+                    }
+                    // Idx랑 같으면
+                    else if (temp.idx == idx)
+                    {
+                        // 해당 시나리오 값에서 이동한 path 이미지들 값 가져오기
+                        foreach (ResultData.ImgTime imgTemp in temp.pathInfo)
+                        {
+                            scaleConfiguratorX.Labels.Add(imgTemp.imgName);
+                            m_Bar.Values.Add(imgTemp.timeImg);
+                        }
+                    }
+                }
+            }
 
 
-            // add range selection (needed for zoom in)
-            //m_Chart.RangeSelections.Add(new NRangeSelection());
+            if (idx == -1)
+            {
+                foreach (ImgAverageTime listImg in ImgAverageInfo)
+                {
+                    scaleConfiguratorX.Labels.Add(listImg.imgName);
+                    m_Bar.Values.Add(listImg.imgTime / listImg.count);
+                }
+            }
 
 
-            //m_Bar.Values.Add(new NDataPoint(23.3, "main.png"));
-            //m_Bar.AddDataPoint(new NDataPoint(23.3, "main.png"));
 
-
-            /******************************************* 데이터 parse
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             *
-             *******************************************/
 
 
             //m_FuncCalculator.Arguments.Add(m_Line.Values);
@@ -195,18 +257,18 @@ namespace DropBox
             m_FunctionCombo.Items.Add("Exponential Average");
             m_FunctionCombo.SelectedIndex = 0;*/
 
-            
-            nChartControl1.Refresh();
 
+            nChartControl1.Refresh();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void callLowHighGraph(string projectName, string ScenarioName)
         {
             nChartControl1.Clear();
             nChartControl1.Legends.Clear();
 
-            NLabel title = nChartControl1.Labels.AddHeader("2D High Low Chart");
-            title.TextStyle.FontStyle = new NFontStyle("Times New Roman", 18, FontStyle.Italic);
+            NLabel title = nChartControl1.Labels.AddHeader("이미지별 최대 최소 시간");
+            //title.TextStyle.FontStyle = new NFontStyle("Times New Roman", 18, FontStyle.Bold);
+            title.TextStyle.FontStyle = new NFontStyle(pfc.Families[0].ToString(), 18, FontStyle.Regular);
             //title.TextStyle.FillStyle = new NColorFillStyle(GreyBlue);
 
             // configure the chart
@@ -221,18 +283,13 @@ namespace DropBox
             //m_HighLow.LowFillStyle = new NColorFillStyle(DarkOrange);
             m_HighLow.DataLabelStyle.Visible = true;
             m_HighLow.DataLabelStyle.Format = " <high_value>\n<low_value>";
-            m_HighLow.LowValues.ValueFormatter = new NNumericValueFormatter("0.#");
-            m_HighLow.HighValues.ValueFormatter = new NNumericValueFormatter("0.#");
+            m_HighLow.LowValues.ValueFormatter = new NNumericValueFormatter("0.##");
+            m_HighLow.HighValues.ValueFormatter = new NNumericValueFormatter("0.##");
 
 
             m_HighLow.DropLines = true;
 
             m_HighLow.ClearDataPoints();
-            for (int i = 0; i < 20; i++)
-            {
-                //m_HighLow.HighValues.Add(i);
-                //m_HighLow.LowValues.Add(i);
-            }
 
 
             NLinearScaleConfigurator linearScale = new NLinearScaleConfigurator();
@@ -248,35 +305,135 @@ namespace DropBox
             scaleConfiguratorX.MajorTickMode = MajorTickMode.AutoMaxCount;
 
             scaleConfiguratorX.AutoLabels = false;
-            scaleConfiguratorX.Labels.Add("7_main-02.png");
-            scaleConfiguratorX.Labels.Add("10-06.png");
-            scaleConfiguratorX.Labels.Add("10-05.png");
-            scaleConfiguratorX.Labels.Add("7_main-02.png");
-            scaleConfiguratorX.Labels.Add("7_main-11.png");
-            scaleConfiguratorX.Labels.Add("scrap.jpg");
 
+            // data 값을 다 불러와서
+            foreach (ResultData.ResultInfo temp in rData.getRData())
+            {
+                // 현재 찾고자 하는 프로젝트와 시나리오랑 같으면
+                if (temp.projectName == projectName && temp.taskName == ScenarioName)
+                {
+                    // 해당 시나리오 값에서 이동한 path 이미지들 값 가져오기
+                    foreach (ResultData.ImgTime imgTemp in temp.pathInfo)
+                    {
+                        bool inList = false;
 
-            m_HighLow.HighValues.Add(3.4);
-            m_HighLow.LowValues.Add(1.2);
+                        float timeValue = System.Convert.ToSingle(imgTemp.timeImg);
 
-            m_HighLow.HighValues.Add(2.5);
-            m_HighLow.LowValues.Add(2.1);
+                        // 리스트 내에 같은 값 찾기
 
-            m_HighLow.HighValues.Add(1.9);
-            m_HighLow.LowValues.Add(1.1);
+                        if (ImgTimeInfo.Count != 0)
+                        {
+                            foreach (ImgTime inListImg in ImgTimeInfo)
+                            {
+                                // 같은게 있다면
+                                if (inListImg.imgName == imgTemp.imgName)
+                                {
+                                    // 현재 값이 high 보다 크다면
+                                    if (inListImg.High <= timeValue)
+                                        inListImg.High = timeValue;
+                                    else if (inListImg.Low >= timeValue)
+                                        inListImg.Low = timeValue;
 
-            m_HighLow.HighValues.Add(4.2);
-            m_HighLow.LowValues.Add(2.3);
+                                    inList = true;
 
-            m_HighLow.HighValues.Add(3.1);
-            m_HighLow.LowValues.Add(1.4);
+                                    break;
+                                }
+                            }
+                        }
 
-            m_HighLow.HighValues.Add(5.2);
-            m_HighLow.LowValues.Add(3.4);
+                        // 리스트 내에 없다면
+                        if (inList == false)
+                            ImgTimeInfo.Add(new ImgTime() { imgName = imgTemp.imgName, High = timeValue, Low = timeValue });
+                    }
+                }
+            }
 
-            
+            foreach (ImgTime listImg in ImgTimeInfo)
+            {
+                scaleConfiguratorX.Labels.Add(listImg.imgName);
+                m_HighLow.HighValues.Add(listImg.High);
+                m_HighLow.LowValues.Add(listImg.Low);
+            }
+
             nChartControl1.Refresh();
+        }
+
+
+        private void chartType_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            if (chartType.SelectedIndex >= 0)
+            {
+                curChartType = chartType.SelectedIndex;
+                // 작업필요
+            }
+        }
+
+        private void projectNameBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            taskNameBox.Items.Clear();
+
+            foreach (ResultData.ResultInfo temp in rData.getRData())
+            {
+                if (ListBox.NoMatches == taskNameBox.FindStringExact(temp.taskName) && curProjectName == temp.projectName)
+                {
+                    taskNameBox.Items.Add(temp.taskName);
+                }
+            }
+        }
+
+        private void chartType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            taskNameBox.Items.Clear();
+
+            if (chartType.SelectedIndex == 1)
+            {
+                personalBox.Enabled = false;
+            }
+            else
+            {
+                personalBox.Enabled = true;
+            }
+
+            taskNameBox.Items.Clear();
+
+            foreach (ResultData.ResultInfo temp in rData.getRData())
+            {
+                if (ListBox.NoMatches == taskNameBox.FindStringExact(temp.taskName) && curProjectName == temp.projectName)
+                {
+                    taskNameBox.Items.Add(temp.taskName);
+                }
+            }
 
         }
+
+        private void taskNameBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            if (chartType.SelectedIndex == 0)
+            {
+                personalBox.Items.Clear();
+
+                personalBox.Items.Add("Entire Average");
+
+                foreach (ResultData.ResultInfo temp in rData.getRData())
+                {
+                    if (taskNameBox.SelectedItem == temp.taskName && personalBox.Enabled == true)
+                        personalBox.Items.Add("Tester " + temp.idx);
+                }
+            }
+            else
+            {
+                callLowHighGraph(curProjectName, taskNameBox.SelectedItem.ToString());
+            }
+        }
+
+        private void personalBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (personalBox.SelectedIndex == 0)
+                callPersonalGraph(curProjectName, taskNameBox.SelectedItem.ToString(), -1);
+            else
+                callPersonalGraph(curProjectName, taskNameBox.SelectedItem.ToString(), Int32.Parse(personalBox.SelectedItem.ToString().Split(' ')[1]));
+        }
+
     }
 }

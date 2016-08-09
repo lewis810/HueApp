@@ -11,6 +11,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Text;
+
 
 namespace DropBox
 {
@@ -33,13 +35,14 @@ namespace DropBox
         Regex rgbInputG;
         Regex rgbInputB;
 
-        Match R, G, B;
         int r;
         int g;
         int b;
 
 
         string colorX;
+
+        PrivateFontCollection pfc = new PrivateFontCollection();
 
         [DllImport("gdi32")]
         private static extern int GetPixel(IntPtr hdc, int x, int y);
@@ -61,6 +64,8 @@ namespace DropBox
             sData = _sData;
             project_name = _project_name;
 
+            pfc.AddFontFile(Path.Combine(Application.StartupPath, "KOPUBDOTUM_PRO_LIGHT.OTF"));
+
             string cPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + project_name;
             IEnumerable<string> imagenames = Directory.GetFiles(cPath, "*.*", SearchOption.AllDirectories)
                 .Where(s => s.EndsWith(".jpg") || s.EndsWith(".jpeg") || s.EndsWith(".png"));
@@ -70,6 +75,7 @@ namespace DropBox
             for(int i = 0; i < sData.getSData().Count; i++)
             {
                 cb_analysis_dots_selectScenario.Items.Add(sData.getSData()[i].title);
+
             }
             if (sData.getSData().Count == 0)
             {
@@ -87,21 +93,55 @@ namespace DropBox
             if (image_names.Count == 0)
             {
                 cb_analysis_dots_selectImage.Items.Add("데이터없음");
-            }
+            } 
             cb_analysis_dots_selectImage.SelectedIndex = 0;
 
-            cb_analysis_dots_selectTest.SelectedIndex = 0;
+         
+
+
+            btn_analysis_show_dot.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+
+            label_1.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_2.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_3.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            cb_analysis_dots_selectScenario.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+            cb_analysis_dots_selectTest.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+            cb_analysis_dots_selectImage.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+            label_detail_info_title.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_click.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_time.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_shortest.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_longest.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_visit.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_testdate.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+
+            cb_analysis_dots_selectScenario.Location = new Point(80, label_1.Location.Y + label_1.Height + 10);
+
+            label_2.Location = new Point(80, cb_analysis_dots_selectScenario.Location.Y + cb_analysis_dots_selectScenario.Height + 20);
+            cb_analysis_dots_selectTest.Location = new Point(80, label_2.Location.Y + label_2.Height + 10);
+
+            label_3.Location = new Point(80, cb_analysis_dots_selectTest.Location.Y + cb_analysis_dots_selectTest.Height + 20);
+            cb_analysis_dots_selectImage.Location = new Point(80, label_3.Location.Y + label_3.Height + 10);
+
+
+
+            label_click.Text = "클릭 수 : ";
+            label_time.Text = "체류 시간 : ";
+            label_visit.Text = "방문 횟수 : ";
+            label_shortest.Text = "최단 체류 시간 : ";
+            label_longest.Text = "최장 체류 시간 : ";
+            label_testdate.Text = "테스트 일자 : ";
+
         }
 
-        public void DrawDots(string selected, string test)
+        public void DrawDots(string selected, string test, string scenario)
         {
             panel_analysis_picture.Height = (int)(this.Height * 0.85);
 
             //backgroundimage width height를 해상도 받아온 것으로 해야함 - 뒤에 숫자.
             panel_analysis_picture.Width = (int)(panel_analysis_picture.Height * ((double)720 / (double)1280));
             bitmap = new Bitmap(panel_analysis_picture.Width, panel_analysis_picture.Height);
-
-            panel_analysis_picture.Location = new Point(((int)(this.Width / 2) - (panel_analysis_picture.Width / 2)), 0);
+            panel_analysis_picture.Location = new Point((int)(panel_analysis_dot_main.Width / 2) - panel_analysis_dots_left.Width, 20);
 
 
             //기존에 설정되어 있던 컨트롤 다 지우기
@@ -141,6 +181,7 @@ namespace DropBox
             {
                 for (int i = 0; i < pTotal_data.Count; i++)
                 {
+                    //MessageBox.Show(pTotal_data[i].image_name + "//" + selected + "//"+ pTotal_data.Count.ToString());
                     if (pTotal_data[i].image_name.CompareTo(selected) == 0)
                     {
                         index = i;
@@ -150,16 +191,14 @@ namespace DropBox
 
                 if (test.CompareTo("모두보기") == 0)
                 {
-                    //MessageBox.Show("창 크기: " + panel_analysis_picture_dot.Width.ToString() + ", " + panel_analysis_picture_dot.Height.ToString());
                     try
                     {
                         for (int j = 0; j < pTotal_data[index].event_data.Count; j++)
                         {
-                            if (pTotal_data[index].image_name.CompareTo(selected) == 0)
+                            //시나리오, 이미지 이름만 맞으면 다 보여주기
+                            if (pTotal_data[index].scenario_name.CompareTo(scenario) == 0 && pTotal_data[index].image_name.CompareTo(selected) == 0)
                             {
-                                //gr.FillPie(br, new Rectangle(new Point(((int)((pTotal_data[index].event_data[j].xcoord*ratio) - 15)), (int)((pTotal_data[index].event_data[j].ycoord * ratio) - 15)), new Size(30, 30)), 0, 360);
                                 gr.FillPie(br, new Rectangle(new Point(((int)(pTotal_data[index].event_data[j].xcoord) - 25), (int)(pTotal_data[index].event_data[j].ycoord) - 25), new Size(50, 50)), 0, 360);
-                                //MessageBox.Show(((pTotal_data[index].event_data[j].xcoord * ratio) - 15).ToString() + ", "+ ((pTotal_data[index].event_data[j].ycoord * ratio) - 15).ToString());
                             }
                         }
                     }
@@ -168,51 +207,22 @@ namespace DropBox
 
                     }
                 }
+
+                else
+                {
+                    for (int j = 0; j < pTotal_data[index].event_data.Count; j++)
+                    {
+                        if (pTotal_data[index].scenario_name.CompareTo(scenario) == 0 && pTotal_data[index].image_name.CompareTo(selected) == 0 && pTotal_data[index].event_data[j].test_num == Convert.ToInt16(test))
+                        {
+                            gr.FillPie(br, new Rectangle(new Point(((int)(pTotal_data[index].event_data[j].xcoord) - 25), (int)(pTotal_data[index].event_data[j].ycoord) - 25), new Size(50, 50)), 0, 360);
+                        }
+                    }
+                }
             }
             catch (NullReferenceException ne)
             {
                 MessageBox.Show("null");
             }
-
-            
-
-            //전체 데이터중에 클릭들이 가지고 있는 이미지 이름과 현재 이미지 이름이 같은거만 그리기
-            //ALL / USER / PEER
-            //switch (_div)
-            //{
-            //    case "모두보기":
-            //        //MessageBox.Show("창 크기: " + panel_analysis_picture_dot.Width.ToString() + ", " + panel_analysis_picture_dot.Height.ToString());
-            //        for (int j = 0; j < pTotal_data[index].event_data.Count; j++)
-            //        {
-            //            if (pTotal_data[index].image_name.CompareTo(selected) == 0)
-            //            {
-            //                //gr.FillPie(br, new Rectangle(new Point(((int)((pTotal_data[index].event_data[j].xcoord*ratio) - 15)), (int)((pTotal_data[index].event_data[j].ycoord * ratio) - 15)), new Size(30, 30)), 0, 360);
-            //                gr.FillPie(br, new Rectangle(new Point(((int)(pTotal_data[index].event_data[j].xcoord) - 25), (int)(pTotal_data[index].event_data[j].ycoord) - 25), new Size(50, 50)), 0, 360);
-            //                //MessageBox.Show(((pTotal_data[index].event_data[j].xcoord * ratio) - 15).ToString() + ", "+ ((pTotal_data[index].event_data[j].ycoord * ratio) - 15).ToString());
-            //            }
-            //        }
-            //        break;
-            //    case "유저만":
-            //        for (int j = 0; j < pTotal_data[index].event_data.Count; j++)
-            //        {
-            //            if (pTotal_data[index].image_name.CompareTo(selected) == 0 && pTotal_data[index].event_data[j].div.CompareTo("u") == 0)
-            //            {
-            //                gr.FillPie(br, new Rectangle(new Point(pTotal_data[index].event_data[j].xcoord - 25, pTotal_data[index].event_data[j].ycoord - 25), new Size(50, 50)), 0, 360);
-            //            }
-            //        }
-            //        break;
-            //    case "피어만":
-            //        //p가 없을 때 null exception 뜸
-            //        for (int j = 0; j < pTotal_data[index].event_data.Count; j++)
-            //        {
-            //            if (pTotal_data[index].image_name.CompareTo(selected) == 0 && pTotal_data[index].event_data[j].div.CompareTo("p") == 0)
-            //            {
-            //                gr.FillPie(br, new Rectangle(new Point(pTotal_data[index].event_data[j].xcoord - 25, pTotal_data[index].event_data[j].ycoord - 25), new Size(50, 50)), 0, 360);
-            //            }
-            //        }
-            //        break;
-            //    default: break;
-            //}
         }
         
         public static Bitmap AlterTransparency(Image image, Byte Alpha)
@@ -261,9 +271,51 @@ namespace DropBox
             return Color.FromArgb(A, color.R, color.G, color.B);
         }
 
+        private void cb_analysis_dots_selectScenario_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //테스트 콤보박스 리셋
+            cb_analysis_dots_selectTest.Items.Clear();
+            cb_analysis_dots_selectTest.Items.Add("모두보기");
+
+            //테스트 콤보박스에 해당하는 시나리오의 테스트만 추가
+            for (int i = 0; i < pTotal_data.Count; i++)
+            {
+                if (pTotal_data[i].scenario_name.CompareTo(cb_analysis_dots_selectScenario.SelectedItem.ToString()) == 0)
+                {
+                    for(int j = 0; j < pTotal_data[i].event_data.Count; j++)
+                    {
+                        if (!cb_analysis_dots_selectTest.Items.Contains(pTotal_data[i].event_data[j].test_num))
+                        {
+                            cb_analysis_dots_selectTest.Items.Add(pTotal_data[i].event_data[j].test_num);
+                        }
+                    }
+                }
+            }
+            cb_analysis_dots_selectTest.Sorted = true;
+            cb_analysis_dots_selectTest.SelectedIndex = 0;
+        }
+
+        private void Dots_SizeChanged(object sender, EventArgs e)
+        {
+            btn_analysis_show_dot.Location = new Point(80, (int)(this.Height * 0.7));
+        }
+
         private void btn_analysis_show_dot_Click_1(object sender, EventArgs e)
         {
-            DrawDots(cb_analysis_dots_selectImage.SelectedItem.ToString(), cb_analysis_dots_selectTest.SelectedItem.ToString());
+            string s = cb_analysis_dots_selectScenario.SelectedItem.ToString();
+            string t = cb_analysis_dots_selectTest.SelectedItem.ToString();
+            string i = cb_analysis_dots_selectImage.SelectedItem.ToString();
+
+            DrawDots(i, t, s);
+        }
+
+        public void getDetailInfo()
+        {
+            int click = 0;
+            int visit = 0;
+
+            
+
         }
     }
 }

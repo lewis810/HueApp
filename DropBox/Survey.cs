@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Text;
 
 namespace DropBox
 {
@@ -16,6 +17,7 @@ namespace DropBox
         List<EditProject.SurveyData> pSurvey_data;
         ScenarioData sData;
         string project_name;
+        PrivateFontCollection pfc = new PrivateFontCollection();
 
         public Survey(List<EditProject.SurveyData> _pSurvey_data, string _project_name, ScenarioData _sData)
         {
@@ -23,6 +25,7 @@ namespace DropBox
             pSurvey_data = _pSurvey_data;
             project_name = _project_name;
             sData = _sData;
+            pfc.AddFontFile(Path.Combine(Application.StartupPath, "KOPUBDOTUM_PRO_LIGHT.OTF"));
 
             for (int i = 0; i < sData.getSData().Count; i++)
             {
@@ -34,15 +37,21 @@ namespace DropBox
             }
             cb_analysis_survey_selectScenario.SelectedIndex = 0;
 
-            for (int i = 0; i < pSurvey_data.Count; i++)
-            {
-                cb_analysis_survey_selectTest.Items.Add(pSurvey_data[i].tag);
-            }
-            if (pSurvey_data.Count == 0)
-            {
-                cb_analysis_survey_selectTest.Items.Add("데이터없음");
-            }
-            cb_analysis_survey_selectTest.SelectedIndex = 0;
+
+            btn_analysis_show_survey.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+
+            //font
+            label_1.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_2.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_result.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            cb_analysis_survey_selectScenario.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+            cb_analysis_survey_selectTest.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+
+            //location
+            cb_analysis_survey_selectScenario.Location = new Point(80, label_1.Location.Y + label_1.Height + 10);
+
+            label_2.Location = new Point(80, cb_analysis_survey_selectScenario.Location.Y + cb_analysis_survey_selectScenario.Height + 20);
+            cb_analysis_survey_selectTest.Location = new Point(80, label_2.Location.Y + label_2.Height + 10);
 
         }
 
@@ -70,12 +79,14 @@ namespace DropBox
                         pBeforeImg.Controls.Add(notFound);
                         notFound.Anchor = AnchorStyles.None | AnchorStyles.Left;
                     }
+                    pBeforeImg.Margin = new Padding(30, 0, 50, 0);
                     pBeforeImg.BackgroundImageLayout = ImageLayout.Stretch;
                     pBeforeImg.Size = new Size((int)(200 * 0.5625), 200);
 
                     PictureBox arrow = new PictureBox();
                     //arrow.BackgroundImage = Properties.Resources.arrow;
-                    arrow.BackgroundImage = Image.FromFile(@"C:\Users\lewis\Documents\Visual Studio 2015\Projects\DistributionWork\DistributionWork\Resources\arrow.png");
+                    arrow.BackgroundImage = ((System.Drawing.Image)(Properties.Resources._9_arrow));
+                    //arrow.Margin = new Padding(50);
                     arrow.Size = new Size(20, 20);
                     arrow.BackgroundImageLayout = ImageLayout.Stretch;
 
@@ -93,6 +104,7 @@ namespace DropBox
                         pAfterImg.Controls.Add(notFound);
                         notFound.Anchor = AnchorStyles.None | AnchorStyles.Left;
                     }
+                    pAfterImg.Margin = new Padding(50, 0, 0, 0);
                     pAfterImg.BackgroundImageLayout = ImageLayout.Stretch;
                     pAfterImg.Size = new Size((int)(200 * 0.5625), 200);
 
@@ -112,16 +124,32 @@ namespace DropBox
                 }
                 Label label_q = new Label();
                 label_q.Text = "Q. " + pSurvey_data[index].survey_info[i].question;
+                label_q.Margin = new Padding(30, 10, 0, 0);
+                label_q.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+                label_q.ForeColor = Color.Black;
                 fpanel_analysis_survey.Controls.Add(label_q);
                 label_q.Size = label_q.PreferredSize;
 
                 Label label_a = new Label();
-
-                label_a.Text = "A. " + pSurvey_data[index].survey_info[i].answer + "\n -----------------------------------------------------------------";
-                label_a.ForeColor = Color.Red;
+                label_a.Text = "A. " + pSurvey_data[index].survey_info[i].answer;
+                label_a.ForeColor = Color.FromArgb(162, 29, 33);
+                label_a.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+                label_a.Margin = new Padding(30, 10, 0, 0);
                 fpanel_analysis_survey.Controls.Add(label_a);
                 label_a.AutoSize = true;
+
+                PictureBox line = new PictureBox();
+                line.Size = new Size(this.Width - panel_analysis_survey_left.Width - 200, 1);
+                line.BackColor = Color.Silver;
+                line.Margin = new Padding(30, 20, 0, 10);
+                fpanel_analysis_survey.Controls.Add(line);
+
             }
+
+            PictureBox margin = new PictureBox();
+            margin.Size = new Size(200, 50);
+            margin.BackColor = Color.Transparent;
+            fpanel_analysis_survey.Controls.Add(margin);
         }
 
         private void btn_analysis_show_survey_Click(object sender, EventArgs e)
@@ -147,42 +175,37 @@ namespace DropBox
             }
         }
 
-        //private void cb_analysis_survey_selectGroup_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    cb_analysis_survey_selectTest.Items.Clear();
-        //    //피어목록보여주기
-        //    if (cb_analysis_survey_selectGroup.SelectedIndex == 0)
-        //    {
-        //        for (int i = 0; i < pSurvey_data.Count; i++)
-        //        {
-        //            if (pSurvey_data[i].div.CompareTo("p") == 0)
-        //            {
-        //                cb_analysis_survey_selectTest.Items.Add(pSurvey_data[i].tag);
-        //            }
-        //        }
-        //    }
-        //    //유저
-        //    else
-        //    {
-        //        for (int i = 0; i < pSurvey_data.Count; i++)
-        //        {
-        //            if (pSurvey_data[i].div.CompareTo("u") == 0)
-        //            {
-        //                cb_analysis_survey_selectTest.Items.Add(pSurvey_data[i].tag);
-        //            }
-        //        }
-        //    }
-        //    cb_analysis_survey_selectTest.Sorted = true;
+        private void cb_analysis_survey_selectScenario_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //테스트 콤보박스 리셋
+            cb_analysis_survey_selectTest.Items.Clear();
 
-        //    try
-        //    {
-        //        cb_analysis_survey_selectTest.SelectedIndex = 0;
-        //    }
-        //    catch (ArgumentOutOfRangeException ae)
-        //    {
-        //        cb_analysis_survey_selectTest.Items.Add("데이터없음");
-        //        cb_analysis_survey_selectTest.SelectedIndex = 0;
-        //    }
-        //}
+
+            //테스트 콤보박스에 해당하는 시나리오의 테스트만 추가
+            for (int i = 0; i < pSurvey_data.Count; i++)
+            {
+                if (pSurvey_data[i].scenario_name.CompareTo(cb_analysis_survey_selectScenario.SelectedItem.ToString()) == 0)
+                {
+                    if (!cb_analysis_survey_selectTest.Items.Contains(pSurvey_data[i].tag))
+                    {
+                        cb_analysis_survey_selectTest.Items.Add(pSurvey_data[i].tag);
+                    }
+                }
+                cb_analysis_survey_selectTest.Sorted = true;
+            }
+
+            if (cb_analysis_survey_selectTest.Items.Count == 0)
+            {
+                cb_analysis_survey_selectTest.Items.Add("no data");
+            }
+            cb_analysis_survey_selectTest.SelectedIndex = 0;
+        }
+
+        private void Survey_SizeChanged(object sender, EventArgs e)
+        {
+            btn_analysis_show_survey.Location = new Point(80, (int)(this.Height * 0.7));
+            fpanel_analysis_survey.Width = this.Width;
+            fpanel_analysis_survey.Height = this.Height - 100;
+        }
     }
 }

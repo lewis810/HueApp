@@ -51,12 +51,11 @@ namespace DropBox
                 //시나리오 이름(받아온 거) 디바이스 정보(새로 추출)를 가지고 조건 걸기
                 //시나리오 정보로 먼저 비교해서 반복문 로드 줄이기
 
-                Console.WriteLine(fileName);
+                Console.WriteLine("@@@@@@" + fileName);
                 if (fileName.Contains(project_name) && fileName.Contains(user_id))
                 {
                     Console.WriteLine("들어옴 : " + fileName + "\n" + sData.getSData().Count.ToString());
                     
-
                     for (int p = 0; p < sData.getSData().Count; p++)
                     {
                         Console.WriteLine("제목 : " + sData.getSData()[p].title + "// fileName : " + fileName);
@@ -70,9 +69,12 @@ namespace DropBox
                             }
                         }
 
-                        string device_id = fileName.Substring(under_bar_index[3] + 1, (under_bar_index[4] - under_bar_index[3]) - 1);
+                        string device_id = fileName.Substring(under_bar_index[2] + 1, (under_bar_index[3] - under_bar_index[2]) - 1);
                         string scenario = fileName.Substring(under_bar_index[1] + 1, (under_bar_index[2] - under_bar_index[1]) - 1);
                         string scenario_tag = fileName.Substring(0, under_bar_index[0]);
+
+                        Console.WriteLine("대박" + device_id);
+
 
                         Console.WriteLine("시나리오 : " + scenario);
 
@@ -82,14 +84,14 @@ namespace DropBox
 
                             //디바이스정보 추출
                             
-                            
-
                             //같은 시나리오 데이터 중에 해당 디바이스 정보가 있으면 다운 x
                             bool exist = false;
                             for (int i = 0; i < filenames.Length; i++)
                             {
                                 //번호 //device_id //
-                                if (filenames[i].Contains(device_id) && Path.GetFileName(filenames[i]).Substring(0, under_bar_index[0]).CompareTo(scenario_tag) == 0)
+                                Console.WriteLine("비교 : " + filenames[i] + " == " + device_id +",, "+ scenario_tag);
+
+                                if (filenames[i].Contains(scenario) && filenames[i].Contains(device_id) && Path.GetFileName(filenames[i]).Substring(0, under_bar_index[0]).CompareTo(scenario_tag) == 0)
                                 {
                                     Console.WriteLine("이미 다운로드 되어있음");
                                     exist = true;
@@ -125,7 +127,7 @@ namespace DropBox
 
             for (int i = 0; i < fileNames.Count; i++)
             {
-                Console.WriteLine("in " + fileNames[i]);
+                //Console.WriteLine("in " + fileNames[i]);
 
                 if (fileNames[i].Contains(".xml"))
                 {

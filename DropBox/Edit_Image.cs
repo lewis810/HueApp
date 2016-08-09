@@ -12,12 +12,10 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml;
 using Ionic.Zip;
+using System.Drawing.Text;
 
 namespace DropBox
 {
-    //ToDo
-    //가로로 긴 이미지 처리
-    //
     public partial class Edit_Image : Form
     {
         //%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,6 +50,7 @@ namespace DropBox
 
         LinkData pData;
         ScenarioData sData;
+        List<EditProject.TotalData> pTotal_data;
 
         bool swipe = false;
         string image_name;
@@ -91,23 +90,25 @@ namespace DropBox
 
         private string mPath;
         private string mfilePath;
-        private string deviceType;
         string user_id;
+        PrivateFontCollection pfc = new PrivateFontCollection();
+        FileInfo[] files;
 
         public Edit_Image() { InitializeComponent(); }
 
-        public Edit_Image(string _mPath, string _filePath, LinkData _Data, ScenarioData _sData, string _user_id)
+        public Edit_Image(string _mPath, string _filePath, LinkData _Data, ScenarioData _sData, string _user_id, List<EditProject.TotalData> _pTotal_data)
         {
             InitializeComponent();
-
+            pfc.AddFontFile(Path.Combine(Application.StartupPath, "KOPUBDOTUM_PRO_LIGHT.OTF"));
             this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             this.UpdateStyles();
-            pictureBox1.Parent = panel1;
+            pictureBox_main.Parent = panel_for_pic;
             mPath = _mPath;
             mfilePath = _filePath;
             pData = _Data;
             sData = _sData;
             user_id = _user_id;
+            pTotal_data = _pTotal_data;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -141,24 +142,31 @@ namespace DropBox
 
             btnOnScreen.Clear();
 
+            label_detail_info_title.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_info.Font = new Font(pfc.Families[0], 16, FontStyle.Regular);
+            panel_detail_info.Height = (int)(this.Height * 0.8);
+
+            label_swipe.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_zoom.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+
             //Edit_Image 처음 호출 했을 때 panel1의 사이즈 정하기
             if (img != null && (img.Height >= img.Width))
             {
-                panel1.Height = (int)(this.Height * 0.9);
-                panel1.Width = (int)(GetWidthOverHeight(pData.GetDeviceType()) * (this.Height * 0.9));      //여기에 디바이스정보 넣기
-                panel1.Location = new Point(((this.Width / 2) - (panel1.Width / 2)), 0);
-                resize_ratio = (float)panel1.Width / (float)img.Width;
+                panel_for_pic.Height = (int)(this.Height * 0.9);
+                panel_for_pic.Width = (int)(GetWidthOverHeight(pData.GetDeviceType()) * (this.Height * 0.9));      //여기에 디바이스정보 넣기
+                panel_for_pic.Location = new Point(((this.Width / 2) - (panel_for_pic.Width / 2)), 0);
+                resize_ratio = (float)panel_for_pic.Width / (float)img.Width;
             }
             else if(img != null && (img.Height < img.Width))
             {
                 MessageBox.Show("Landscape는 추후 추가 예정");
             }
 
-            fpanel_editImage_link.Height = (int)(this.Height * 0.5);
+            //fpanel_editImage_link.Height = (int)(this.Height * 0.5);
 
             //메인이미지를 pictureBox1의 배경으로 설정
             listBox1.Height = listBox1.PreferredHeight;
-            pictureBox1.BackgroundImage = mainImage;
+            pictureBox_main.BackgroundImage = mainImage;
             groupBox1_Load();
             SetLinks();
         }
@@ -206,7 +214,7 @@ namespace DropBox
 
             string[] extensions = new[] { ".jpg", ".tiff", ".png" };
 
-            FileInfo[] files =
+            files =
                 dinfo.EnumerateFiles()
                      .Where(f => extensions.Contains(f.Extension.ToLower()))
                      .ToArray();
@@ -248,7 +256,6 @@ namespace DropBox
             }
             else
             {
-
                 //if (e.Button == MouseButtons.Left)
                 //{
                 //    isDragged = true;
@@ -264,7 +271,7 @@ namespace DropBox
                 //    isDragged = false;
                 //}
 
-                fpanel_editImage_link.Visible = false;
+                panel_editImage_link.Visible = false;
 
                 if (btn != null)
                 {
@@ -273,8 +280,8 @@ namespace DropBox
                         if (btn.TabIndex == pData.GetLinks()[fileIndex].link_data[i].btn_id)
                         {
                             work_message =
-                                     "Destination Index : " + pData.GetLinks()[fileIndex].link_data[i].dst_file
-                                    + "\nXY coordination : " + pData.GetLinks()[fileIndex].link_data[i].image_xy.X + ", " + pData.GetLinks()[fileIndex].link_data[i].image_xy.Y
+                                     "Destination Image : " + pData.GetLinks()[fileIndex].link_data[i].dst_file
+                                    + "\nXY coordinate : " + pData.GetLinks()[fileIndex].link_data[i].image_xy.X + ", " + pData.GetLinks()[fileIndex].link_data[i].image_xy.Y
                                     + "\nRectangle Width : " + pData.GetLinks()[fileIndex].link_data[i].image_width
                                     + "\nRectangle Height : " + pData.GetLinks()[fileIndex].link_data[i].image_height
                                     + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
@@ -284,11 +291,11 @@ namespace DropBox
                             //이후에 버튼을 눌러서 수정하는 작업 여기서 구현
                         }
                     }
-                    this.label1.Text = string.Empty;
+                    this.label_info.Text = string.Empty;
 
                     for (int j = str_work.Count; j > 0; j--)
                     {
-                        this.label1.Text += str_work[j - 1];
+                        this.label_info.Text += str_work[j - 1];
                     }
                 }
             }
@@ -300,8 +307,7 @@ namespace DropBox
             Button button_to_remove = (this.GetChildAtPoint(this.PointToClient(Cursor.Position)) as Button);
             //if it's a Button, remove it from the form
             DeleteLink(temp_delete_button.TabIndex);
-            pictureBox1.Controls.Remove(temp_delete_button);
-
+            pictureBox_main.Controls.Remove(temp_delete_button);
             //$$$$$$
             this.Invalidate();
         }
@@ -312,12 +318,12 @@ namespace DropBox
             //this.isDragged = true;
             this.myPress = true; //마우스가 눌러짐
             this.link_alloc.Visible = false;
-            this.fpanel_editImage_link.Visible = false;
             this.myPointStart.X = e.X; //마우스가 눌러진 X 좌표
             this.myPointStart.Y = e.Y; //마우스가 눌러진 Y 좌표
             this.click_init = 1;
+            this.panel_editImage_link.Visible = false;
             //pictureBox1.BringToFront();
-            this.g = Graphics.FromHwnd(pictureBox1.Handle);
+            this.g = Graphics.FromHwnd(pictureBox_main.Handle);
             //MessageBox.Show(pictureBox1.Width.ToString() + "//" + pictureBox1.Height.ToString());
             //MessageBox.Show(panel1.Width.ToString() + "//" + panel1.Height.ToString());
 
@@ -338,7 +344,7 @@ namespace DropBox
             {
                 if (this.myPress)
                 {
-                    g.DrawImage(mainImage, 0, 0, this.panel1.Width, this.panel1.Height);
+                    g.DrawImage(mainImage, 0, 0, this.panel_for_pic.Width, this.panel_for_pic.Height);
 
                     this.sizeX = Math.Abs(e.X - this.myPointStart.X);
                     this.sizeY = Math.Abs(e.Y - this.myPointStart.Y);
@@ -391,26 +397,31 @@ namespace DropBox
                 if (Math.Abs(this.myPointStart.X - e.X) > 5 && Math.Abs(this.myPointStart.Y - e.Y) > 5 && click_init == 1)
                 {
                     this.link_alloc.Visible = true;
-                    this.link_alloc.BringToFront();
+                    this.link_alloc.Parent = pictureBox_main;
+                    //this.link_alloc.BringToFront();
                     //사각형의 어느 꼭짓점에서 시작하는지에 따라 그려지는 과정이 다름
                     if (e.X < this.myPointStart.X && e.Y < this.myPointStart.Y)         //우측하단 시작
                     {
-                        this.link_alloc.Location = new Point(this.rect.X + (this.Width / 2) - (panel1.Width / 2), this.rect.Y);
+                        //this.link_alloc.Location = new Point(this.rect.X + (this.Width / 2) - (panel_for_pic.Width / 2), this.rect.Y);
+                        this.link_alloc.Location = new Point(e.X + 1, e.Y + 1);
                         link_temp.image_xy = new Point(e.X, e.Y);
                     }
                     else if (e.X > this.myPointStart.X && e.Y < this.myPointStart.Y)    //좌측하단 시작
                     {
-                        this.link_alloc.Location = new Point(this.rect.X + this.sizeX + (this.Width / 2) - (panel1.Width / 2), this.rect.Y);
+                        //this.link_alloc.Location = new Point(this.rect.X + this.sizeX + (this.Width / 2) - (panel_for_pic.Width / 2), this.rect.Y);
+                        this.link_alloc.Location = new Point(e.X - this.rect.Width + 1, e.Y + 1);
                         link_temp.image_xy = new Point(this.rect.X, e.Y);
                     }
                     else if (e.X < this.myPointStart.X && e.Y > this.myPointStart.Y)    //우측상단 시작
                     {
-                        this.link_alloc.Location = new Point(this.rect.X + (this.Width / 2) - (panel1.Width / 2), this.rect.Y + this.sizeY);
+                        //this.link_alloc.Location = new Point(this.rect.X + (this.Width / 2) - (panel_for_pic.Width / 2), this.rect.Y + this.sizeY);
+                        this.link_alloc.Location = new Point(e.X + 1, e.Y - this.rect.Height + 1);
                         link_temp.image_xy = new Point(e.X, this.rect.Y);
                     }
                     else                                                                //좌측상단 시작
                     {
-                        this.link_alloc.Location = new Point(this.rect.X + this.sizeX + (this.Width / 2) - (panel1.Width / 2), this.rect.Y + this.sizeY);
+                        //this.link_alloc.Location = new Point(this.rect.X + this.sizeX + (this.Width / 2) - (panel_for_pic.Width / 2), this.rect.Y + this.sizeY);
+                        this.link_alloc.Location = new Point(e.X - this.rect.Width + 1, e.Y - this.rect.Height + 1);
                         link_temp.image_xy = new Point(this.rect.X, this.rect.Y);
                     }
                 }
@@ -428,15 +439,19 @@ namespace DropBox
         //링크연동버튼
         private void button5_Click(object sender, EventArgs e)
         {
-            this.fpanel_editImage_link.Visible = true;
-            this.fpanel_editImage_link.BringToFront();
+            this.panel_editImage_link.Visible = true;
+            this.panel_editImage_link.BringToFront();
             this.link_alloc.Visible = false;
+            g.DrawImage(mainImage, 0, 0, this.panel_for_pic.Width, this.panel_for_pic.Height);
+            g.DrawRectangle(this.myPen, this.rect);
+            this.Invalidate();
+            fpanel_editImage_link.Visible = true;
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             //콤보박스에서 선택한 것이 리스트 박스 안에 없다면 추가한다.
-            if(!listBox1.Items.Contains(comboBox1.SelectedItem))
+            if(!listBox1.Items.Contains(cb_swipe.SelectedItem))
             {
                 fpanel_editImage_link.Visible = true;
                 fpanel_editImage_link.BringToFront();
@@ -447,22 +462,33 @@ namespace DropBox
                 //ADD하면서 pData에도 추가
                 //pData.AddLink(index, btn_id_to_add, pDstFile, new Point(-1, -1), -1, -1, comboBox1.SelectedItem);
             }
-
         }
 
         private void Form1_Resize(object sender, EventArgs e)
         {
+            this.panel_editImage_link.Size = new Size((int)(this.Width * 0.7), (int)(this.Height * 0.5));
+            this.panel_editImage_link.Location = new Point(0, this.Height - panel_editImage_link.Height - 50);
+            fpanel_editImage_link.Height = panel_editImage_link.Height - 40;
+            btn_close_linkPanel.Location = new Point(panel_editImage_link.Width - btn_close_linkPanel.Width - 5, 3);
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                btn_link[i].Size = new Size((int)(GetWidthOverHeight(pData.GetDeviceType()) * (int)(fpanel_editImage_link.Height * 0.9)), (int)(fpanel_editImage_link.Height * 0.9));
+            }
+
+            pictureBox_main.Location = new Point((int)(this.Width / 2) - panel_editImage_left2.Width, 20);
+
             //세로가 더 긴 경우
             if (img != null && (img.Height > img.Width))
             {
                 //원본 이미지 파일의 가로 세로 비율을 통해 새로운 resolution에서 같은 비율 적용
-                panel1.Height = (int)(this.Height * 0.9);                           //화면 아래로 잘려나가는 것을 방지하기 위함
+                panel_for_pic.Height = (int)(this.Height * 0.9);                           //화면 아래로 잘려나가는 것을 방지하기 위함
                 double WidthOverHeight = (double)img.Width / (double)img.Height;    //이미지의 가로세로 비율
-                panel1.Width = (int)(WidthOverHeight * (this.Height * 0.9));
-                panel1.Location = new Point(((this.Width / 2) - (panel1.Width / 2)), 0);
+                panel_for_pic.Width = (int)(WidthOverHeight * (this.Height * 0.9));
+                panel_for_pic.Location = new Point((panel_editImage_total.Width / 2) - panel_editImage_left2.Width, 20);
 
                 //resize시 원본대비 변경된 사이즈의 비율
-                resize_ratio =  (float)panel1.Width / (float)img.Width;
+                resize_ratio =  (float)panel_for_pic.Width / (float)img.Width;
 
                 try
                 {
@@ -492,6 +518,7 @@ namespace DropBox
         private void DeleteLink(int pDeleteIndex)
         {
             //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
             for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
             {
                 if (pData.GetLinks()[fileIndex].link_data[i].btn_id == pDeleteIndex)
@@ -504,17 +531,14 @@ namespace DropBox
                                     + "\n------------------------\n";
                     str_work.Add(work_message);
 
-                    this.label1.Text = string.Empty;
+                    this.label_info.Text = string.Empty;
 
                     for (int j = str_work.Count; j > 0; j--)
                     {
-                        this.label1.Text += str_work[j - 1];
+                        this.label_info.Text += str_work[j - 1];
                     }
                     pData.GetLinks()[fileIndex].link_data.RemoveAt(i);
-
                     break;
-
-                    
                 }
             }
         }
@@ -537,7 +561,7 @@ namespace DropBox
                     if (pData.GetLinks()[fileIndex].link_data[i].input_type.CompareTo(listBox1.SelectedItem.ToString()) == 0)
                     {
                         work_message =
-                                    "Destination Index : " + pData.GetLinks()[fileIndex].link_data[i].dst_file
+                                    "Destination Image : " + pData.GetLinks()[fileIndex].link_data[i].dst_file
                                     + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
                                     + "\n------------------------\n";
                         str_work.Add(work_message);
@@ -546,16 +570,17 @@ namespace DropBox
                     }
                 }
 
-                this.label1.Text = string.Empty;
+                this.label_info.Text = string.Empty;
 
                 for (int j = str_work.Count; j > 0; j--)
                 {
-                    this.label1.Text += str_work[j - 1];
+                    this.label_info.Text += str_work[j - 1];
                 }
             }
 
         }
 
+        //삭제
         private void del_btn_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
@@ -571,11 +596,11 @@ namespace DropBox
                                     + "\n------------------------\n";
                     str_work.Add(work_message);
 
-                    this.label1.Text = string.Empty;
+                    this.label_info.Text = string.Empty;
 
                     for (int j = str_work.Count; j > 0; j--)
                     {
-                        this.label1.Text += str_work[j - 1];
+                        this.label_info.Text += str_work[j - 1];
                     }
 
                     pData.GetLinks()[fileIndex].link_data.RemoveAt(i);
@@ -587,13 +612,19 @@ namespace DropBox
 
         private void Edit_Image_FormClosed(object sender, FormClosedEventArgs e)
         {
-            EditProject editProject = new EditProject(mPath, pData, sData, user_id);
+            EditProject editProject = new EditProject(mPath, pData, sData, user_id, pTotal_data);
             editProject.Show();
         }
-
+        
         private void BACK_btn_Click(object sender, EventArgs e)
         {
-            this.Close();
+            //this.Close();
+        }
+
+        private void btn_close_linkPanel_Click(object sender, EventArgs e)
+        {
+            panel_editImage_link.Visible = false;
+            g.DrawImage(mainImage, 0, 0, this.panel_for_pic.Width, this.panel_for_pic.Height);
         }
 
         //Xml 저장
@@ -705,11 +736,12 @@ namespace DropBox
             string pLinkX = "", pLinkY = "", pLinkWidth = "", pLinkHeight = "";
             btn_id_to_add = 0;
 
-            fileIndex = -1;
+            fileIndex = pData.GetLinks().Count;  //링크정보가 없는 fileIndex를 맨 끝 번호로 지정
             //선택된 파일의 인덱스 찾기
 
             for (i = 0; i < pData.GetLinks().Count; i++)
             {
+                //MessageBox.Show(image_name + "//" + pData.GetLinks()[i].file_name);
                 if (image_name.CompareTo(pData.GetLinks()[i].file_name) == 0)
                 {
                     fileIndex = i;
@@ -736,7 +768,7 @@ namespace DropBox
 
                         btnOnScreen.Add(new Button());
                         btnOnScreen[k].TabIndex = Convert.ToInt32(pTag);
-                        btnOnScreen[k].Parent = this.pictureBox1;
+                        btnOnScreen[k].Parent = this.pictureBox_main;
                         btnOnScreen[k].MouseUp += new MouseEventHandler(ButtonClickInImage);
                         btnOnScreen[k].Visible = true;
                         btnOnScreen[k].FlatStyle = FlatStyle.Flat;
@@ -782,6 +814,9 @@ namespace DropBox
             Button btn = sender as Button;
 
             link_alloc.Visible = false;
+            panel_editImage_link.Visible = false;
+            g.DrawImage(mainImage, 0, 0, this.panel_for_pic.Width, this.panel_for_pic.Height);
+            this.Invalidate();
 
             if (ctl != null)
             {
@@ -805,8 +840,8 @@ namespace DropBox
                 //추가하기
                 if (swipe == true)
                 {
-                    btn_index = pData.AddLink(image_name, addIndex, btn_id_to_add, btn.Name, new Point(-1, -1), -1, -1, comboBox1.SelectedItem.ToString());
-                    listBox1.Items.Add(comboBox1.SelectedItem);
+                    btn_index = pData.AddLink(image_name, addIndex, btn_id_to_add, btn.Name, new Point(-1, -1), -1, -1, cb_swipe.SelectedItem.ToString());
+                    listBox1.Items.Add(cb_swipe.SelectedItem);
                     listBox1.Height = listBox1.PreferredHeight;
                     work_message =
                                "저장되었습니다."
@@ -822,12 +857,12 @@ namespace DropBox
                                         (int)(link_temp.image_width / resize_ratio), (int)(link_temp.image_height / resize_ratio), "Single_Touch"); //single touch 부분 수정
                                                                                                                                                     //보여주기
                     Button temp_btn = new Button();
-                    temp_btn.Parent = pictureBox1;
+                    temp_btn.Parent = pictureBox_main;
                     temp_btn.TabIndex = btn_id_to_add;
                     temp_btn.MouseUp += new MouseEventHandler(ButtonClickInImage);
                     temp_btn.Location = link_temp.image_xy;
                     temp_btn.Size = new Size((int)link_temp.image_width, (int)link_temp.image_height);
-                    this.pictureBox1.Controls.Add(temp_btn);
+                    this.pictureBox_main.Controls.Add(temp_btn);
                     temp_btn.FlatStyle = FlatStyle.Flat;
                     temp_btn.BackColor = Color.Transparent;
                     temp_btn.FlatAppearance.BorderColor = Color.Lime;
@@ -849,18 +884,18 @@ namespace DropBox
                 str_work.Add(work_message);
 
                 //이후에 버튼을 눌러서 수정하는 작업 여기서 구현
-                this.label1.Text = "";
+                this.label_info.Text = "";
 
                 //우측에 출력되는 메시지
                 for (int j = str_work.Count; j > 0; j--)
                 {
-                    this.label1.Text += str_work[j - 1];
+                    this.label_info.Text += str_work[j - 1];
                 }
                 fpanel_editImage_link.Visible = false;
 
                 //MessageBox.Show(pData.GetLinks()[fileIndex).link_data.Count.ToString());
             }
-            this.Invalidate();
+            
         }
     }
 }

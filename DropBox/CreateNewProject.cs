@@ -10,12 +10,14 @@ using System.Windows.Forms;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml;
+using System.Drawing.Text;
 
 namespace DropBox
 {
     public partial class CreateNewProject : Form
     {
         string user_id;
+        PrivateFontCollection pfc = new PrivateFontCollection();
 
         public CreateNewProject(main temp, string _id)
         {
@@ -23,118 +25,141 @@ namespace DropBox
             textBoxProjectName_SetText();
             form1 = temp;
             user_id = _id;
+
+            pfc.AddFontFile(Path.Combine(Application.StartupPath, "KOPUBDOTUM_PRO_LIGHT.OTF"));
+            label_projectname.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_size.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
+            label_newProject_title.Font = new Font(pfc.Families[0], 18, FontStyle.Bold);
+            label_newProject_title.Location = new Point((int)(this.Width / 2) - (int)(label_newProject_title.Width / 2), label_newProject_title.Location.Y);
+            comboBox_size.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
+            textBox_projectname.Font = new Font(pfc.Families[0], 14, FontStyle.Regular);
         }
 
         protected void textBoxProjectName_SetText()
         {
-            this.textBoxProjectName.Text = "  Your project name";
-            textBoxProjectName.ForeColor = Color.Gray;
+            this.textBox_projectname.Text = "  Your project name";
+            textBox_projectname.ForeColor = Color.Gray;
         }
 
         private void textBoxProjectName_Enter(object sender, EventArgs e)
         {
-            if (textBoxProjectName.ForeColor == Color.Black)
+            if (textBox_projectname.ForeColor == Color.Black)
                 return;
-            textBoxProjectName.Text = "";
-            textBoxProjectName.ForeColor = Color.Black;
+            textBox_projectname.Text = "";
+            textBox_projectname.ForeColor = Color.Black;
         }
 
         private void textBoxProjectName_Leave(object sender, EventArgs e)
         {
-            if (textBoxProjectName.Text.Trim() == "")
+            if (textBox_projectname.Text.Trim() == "")
                 textBoxProjectName_SetText();
         }
 
         private void comboBox1_TextChanged(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedIndex < 0)
+            if (comboBox_size.SelectedIndex < 0)
             {
-                comboBox1.Text = "What device are you prototyping for?";
+                comboBox_size.Text = "What device are you prototyping for?";
             }
             else
             {
-                comboBox1.Text = comboBox1.SelectedText;
+                comboBox_size.Text = comboBox_size.SelectedText;
             }
         }
 
         private void btCreate_Click(object sender, EventArgs e)
         {
-            //string mPath = @"C:\Prototype\project\" + textBoxProjectName.Text + "\\";
-            string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + textBoxProjectName.Text + "\\";
-            DirectoryInfo di = new DirectoryInfo(mPath);
-
-            if (di.Exists == false)
+            if (textBox_projectname.Text.Contains("_"))
             {
-                di.Create();
-                //프로젝트를 만들면서 디바이스에 대한 정보만 가지고 있는 xml을 만든다.
-
-                XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
-                xmlWriterSettings.Indent = true;
-                xmlWriterSettings.NewLineOnAttributes = true;
-                using (XmlWriter xmlWriter = XmlWriter.Create(mPath + "\\" + "link.xml", xmlWriterSettings))
-                {
-                    xmlWriter.WriteStartDocument();
-                    xmlWriter.WriteStartElement("LinkTable");
-
-                    xmlWriter.WriteStartElement("UserId");
-                    xmlWriter.WriteString(user_id);       //재정의된 device info
-                    xmlWriter.WriteEndElement();
-
-                    xmlWriter.WriteStartElement("DeviceInfo");
-                    xmlWriter.WriteString(GetDeviceName(comboBox1.Text));       //재정의된 device info
-                    xmlWriter.WriteEndElement();
-                    xmlWriter.WriteStartElement("DeviceResolution");
-                    xmlWriter.WriteString(comboBox1.Text);                      //ex) iPhone5 (640 x 1280)
-                    xmlWriter.WriteEndElement();
-
-                    xmlWriter.WriteEndElement();
-                    xmlWriter.WriteEndDocument();
-                    xmlWriter.Flush();
-                    xmlWriter.Close();
-                    MessageBox.Show("create");
-                }
+                MessageBox.Show("제목에 '_'를 포함할 수 없습니다.");
+            }
+            else if(textBox_projectname.Text.Contains("Your project name"))
+            {
+                MessageBox.Show("제목을 입력하세요.");
+            }
+            else if(comboBox_size.Text.CompareTo("") ==0)
+            {
+                MessageBox.Show("사이즈를 선택하세요");
             }
             else
             {
-                MessageBox.Show("A project with this name already exists", "Warning",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            //Image mImage = Image.FromFile((string)di.GetFiles()[0].Name);
+                //string mPath = @"C:\Prototype\project\" + textBoxProjectName.Text + "\\";
+                string mPath = @"C:\Users\" + Environment.UserName + "\\Dropbox\\IMAGE\\" + textBox_projectname.Text + "\\";
+                DirectoryInfo di = new DirectoryInfo(mPath);
 
-            //@@@@ imagelistview
-            //System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(CreateNewProject));
-            //(System.Drawing.Image)(resources.GetObject("jiyong"));
-
-            using (Stream resource = GetType().Assembly.GetManifestResourceStream("DropBox.Resources.DoNotDelete.bmp"))
-            {
-                if (resource == null)
+                if (di.Exists == false)
                 {
-                    throw new ArgumentException("No such resource", "resourceName");
+                    di.Create();
+                    //프로젝트를 만들면서 디바이스에 대한 정보만 가지고 있는 xml을 만든다.
+
+                    XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+                    xmlWriterSettings.Indent = true;
+                    xmlWriterSettings.NewLineOnAttributes = true;
+                    using (XmlWriter xmlWriter = XmlWriter.Create(mPath + "\\" + "link.xml", xmlWriterSettings))
+                    {
+                        xmlWriter.WriteStartDocument();
+                        xmlWriter.WriteStartElement("LinkTable");
+
+                        xmlWriter.WriteStartElement("UserId");
+                        xmlWriter.WriteString(user_id);       //재정의된 device info
+                        xmlWriter.WriteEndElement();
+
+                        xmlWriter.WriteStartElement("DeviceInfo");
+                        xmlWriter.WriteString(GetDeviceName(comboBox_size.Text));       //재정의된 device info
+                        xmlWriter.WriteEndElement();
+                        xmlWriter.WriteStartElement("DeviceResolution");
+                        xmlWriter.WriteString(comboBox_size.Text);                      //ex) iPhone5 (640 x 1280)
+                        xmlWriter.WriteEndElement();
+
+                        xmlWriter.WriteEndElement();
+                        xmlWriter.WriteEndDocument();
+                        xmlWriter.Flush();
+                        xmlWriter.Close();
+                        //MessageBox.Show("create");
+                    }
                 }
-                using (Stream output = File.OpenWrite(mPath + "\\DoNotDelete.bmp"))
+                else
                 {
-                    resource.CopyTo(output);
+                    MessageBox.Show("A project with this name already exists", "Warning",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
-                //File.Copy(DropBox.Properties.Resources.jiyong.bmp, mPath);
+                //Image mImage = Image.FromFile((string)di.GetFiles()[0].Name);
 
-                File.SetAttributes(mPath + "\\DoNotDelete.bmp", FileAttributes.Hidden);
+                //@@@@ imagelistview
+                //System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(CreateNewProject));
+                //(System.Drawing.Image)(resources.GetObject("jiyong"));
+
+                using (Stream resource = GetType().Assembly.GetManifestResourceStream("DropBox.Resources.DoNotDelete.bmp"))
+                {
+                    if (resource == null)
+                    {
+                        throw new ArgumentException("No such resource", "resourceName");
+                    }
+                    using (Stream output = File.OpenWrite(mPath + "\\DoNotDelete.bmp"))
+                    {
+                        resource.CopyTo(output);
+                    }
+                    //File.Copy(DropBox.Properties.Resources.jiyong.bmp, mPath);
+
+                    File.SetAttributes(mPath + "\\DoNotDelete.bmp", FileAttributes.Hidden);
+                }
+                form1.imageListView_Main.Items.Add(mPath + "\\DoNotDelete.bmp", textBox_projectname.Text, comboBox_size.Text);
+                form1.imageListView_Main.ThumbnailSize = new Size(120, 120);
+
+                /*string pResolution;
+                Button newButton = new Button();
+                newButton.Name = textBoxProjectName.Text;
+                pResolution = comboBox1.Text.Replace(" (", System.Environment.NewLine + "(");
+                newButton.Text = textBoxProjectName.Text + "\n" + pResolution;
+                newButton.TextAlign = ContentAlignment.BottomCenter;
+                newButton.Size = new Size(128, 128);
+                newButton.Margin = new Padding(10, 10, 10, 10);
+                newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
+
+                form1.flowLayoutPanel1.Controls.Add(newButton);*/
+                this.Dispose();
             }
-            form1.imageListView_Main.Items.Add(mPath + "\\DoNotDelete.bmp", textBoxProjectName.Text, comboBox1.Text);
-            form1.imageListView_Main.ThumbnailSize = new Size(120, 120);
-
-            /*string pResolution;
-            Button newButton = new Button();
-            newButton.Name = textBoxProjectName.Text;
-            pResolution = comboBox1.Text.Replace(" (", System.Environment.NewLine + "(");
-            newButton.Text = textBoxProjectName.Text + "\n" + pResolution;
-            newButton.TextAlign = ContentAlignment.BottomCenter;
-            newButton.Size = new Size(128, 128);
-            newButton.Margin = new Padding(10, 10, 10, 10);
-            newButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.eachButton_Click);
-
-            form1.flowLayoutPanel1.Controls.Add(newButton);*/
-            this.Dispose();
         }
 
         //새로 만든 프로젝트를 눌렀을 때
@@ -334,6 +359,9 @@ namespace DropBox
 
         main form1;
 
-
+        private void button_create_cancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

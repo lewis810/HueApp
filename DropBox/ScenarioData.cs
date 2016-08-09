@@ -8,6 +8,8 @@ namespace DropBox
 {
     public class ScenarioData
     {
+        public int changed;
+
         public struct SCENARIO_DATA
         {
             public int tag;
