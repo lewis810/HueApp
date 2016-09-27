@@ -137,7 +137,7 @@
             this.panel_left.Location = new System.Drawing.Point(2, 50);
             this.panel_left.Margin = new System.Windows.Forms.Padding(2);
             this.panel_left.Name = "panel_left";
-            this.panel_left.Size = new System.Drawing.Size(598, 392);
+            this.panel_left.Size = new System.Drawing.Size(660, 448);
             this.panel_left.TabIndex = 11;
             // 
             // fp_route

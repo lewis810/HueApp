@@ -298,7 +298,6 @@
             this.panel_analysis_picture.Name = "panel_analysis_picture";
             this.panel_analysis_picture.Size = new System.Drawing.Size(302, 411);
             this.panel_analysis_picture.TabIndex = 3;
-            this.panel_analysis_picture.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel_analysis_picture_MouseMove);
             // 
             // panel_analysis_picture_dot
             // 
@@ -308,7 +307,6 @@
             this.panel_analysis_picture_dot.Name = "panel_analysis_picture_dot";
             this.panel_analysis_picture_dot.Size = new System.Drawing.Size(302, 411);
             this.panel_analysis_picture_dot.TabIndex = 0;
-            this.panel_analysis_picture_dot.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel_analysis_picture_dot_MouseMove);
             // 
             // Dots
             // 

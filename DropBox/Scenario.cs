@@ -25,17 +25,14 @@ namespace DropBox
         const int EDIT = 1;
         const int SHOW = 2;
 
-        //EditProject editProject = new EditProject();
-
         ScenarioData sData;
-        Control[] btn_link;
+        //Control[] btn_link;
         string mPath;
         int edit_index;
-        int select_image;       // 0 = start image, 1 = end image
         ListBox listBox;
         int temp_height;
         List<ScenarioData.PATH_DATA> sPath;
-        FlowLayoutPanel fpanel_path, fpanel_path2;
+        FlowLayoutPanel fpanel_path;
         PrivateFontCollection pfc = new PrivateFontCollection();
 
         public Scenario()
@@ -45,18 +42,26 @@ namespace DropBox
 
         public Scenario(int _show_type, string _path, ScenarioData _Data, int _edit_index, ListBox _listBox)
         {
+            /*
+            sData : 현재 프로젝트의 시나리오 데이터
+            show_type : 작업 종류  ( 0 : NEW, 1 : EDIT, 2 : SHOW )  default : 0
+            mPath : 작업 중인 프로젝트의 경로
+            edit_index : 시나리오의 내용을 수정하거나 보여주는 작업을 할 때 해당 시나리오만 접근할 수 있도록 미리 인덱스값을 받아온다.
+            listBox : 시나리오의 목록을 담고 있는 리스트박스, 작업내용을 반영하는 용도
+            sPath : 시나리오의 경로와 시간 정보 리스트
+            */
+
             InitializeComponent();
             sData = _Data;
-
             show_type = _show_type;
             mPath = _path;
             edit_index = _edit_index;
             listBox = _listBox;
-            temp_height = (int)(panel_left.Height * 0.9);
             sPath = new List<ScenarioData.PATH_DATA>();
+            
             Setup();
 
-            //EDIT과 SHOW의 경우 기존 정보 불러오기
+            //EDIT과 SHOW의 경우 현재 인덱스의 기존 정보 불러오기
             if (show_type == EDIT || show_type == SHOW)
             {
                 GetInfo();
@@ -65,6 +70,7 @@ namespace DropBox
 
         private void Setup()
         {
+            //폰트 설정
             pfc.AddFontFile(Path.Combine(Application.StartupPath, "KOPUBDOTUM_PRO_LIGHT.OTF"));
 
             //사이즈 조정
@@ -86,8 +92,8 @@ namespace DropBox
 
             //left wing
             panel_left.Size = new Size(this.Width - panel_right.Width, this.Height - panel_bottom.Height - panel_top.Height);
-            fp_route.Location = new Point(30, 250);
-            fp_route.Size = new Size(panel_left.Width - 60, panel_left.Height - 280);
+            fp_route.Location = new Point(30, 230);
+            fp_route.Size = new Size(panel_left.Width - 60, panel_left.Height - 260);
             label1.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
             label2.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
             label3.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
@@ -104,6 +110,8 @@ namespace DropBox
             textBox2.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
             textBox3.Font = new Font(pfc.Families[0], 18, FontStyle.Regular);
 
+            //temp_height: 시나리오 작업 화면에서 이미지의 사이즈를 설정할 때 사용한다.
+            temp_height = (int)(panel_left.Height * 0.5);
 
             //title
             label_title.Font = new Font(pfc.Families[0], 19, FontStyle.Bold);
@@ -113,19 +121,15 @@ namespace DropBox
             button_done.Location = new Point((int)(this.Width / 2) + (int)(this.Width * 0.1), button_done.Location.Y);
             button_cancel.Location = new Point((int)(this.Width / 2) - (int)(this.Width * 0.1) - button_cancel.Width, button_cancel.Location.Y);
 
-            
-
             //프로젝트 내에 있는 파일이름 가져오기
             DirectoryInfo dinfo = new DirectoryInfo(mPath);
-
             string[] extensions = new[] { ".jpg", ".tiff", ".bmp", ".png" };
-
             FileInfo[] files =
                 dinfo.EnumerateFiles()
                      .Where(f => extensions.Contains(f.Extension.ToLower()))
                      .ToArray();
 
-            btn_link = new Control[files.Length];
+            //btn_link = new Control[files.Length];
 
             for(int i = 0; i < files.Length; i++)
             {
@@ -135,67 +139,104 @@ namespace DropBox
 
         private void GetInfo()
         {
-            string temp = string.Empty;
-
+            /*
+            작업하려고 하는 인덱스의 시나리오 경로 정보를 읽어와서 sPath에 추가한다.
+            이후에 sPath에 수정사항을 반영하고 최종적으로 기존의 인덱스에 sPath의 정보를 덮어쓴다.
+            */
             for(int i = 0; i < sData.getSData()[edit_index].paths.Count; i++)
             {
-                sPath.Add(new ScenarioData.PATH_DATA() { tag = sData.getSData()[edit_index].paths[i].tag, path = sData.getSData()[edit_index].paths[i].path, time = sData.getSData()[edit_index].paths[i].time });
+                sPath.Add(new ScenarioData.PATH_DATA() { tag = sData.getSData()[edit_index].paths[i].tag, path = sData.getSData()[edit_index].paths[i].path, stay_time = sData.getSData()[edit_index].paths[i].stay_time, auto_change_time = sData.getSData()[edit_index].paths[i].auto_change_time });
             }
 
             //edit box에 데이터 미리 불러오기
             textBox1.Text = sData.getSData()[edit_index].title;
             textBox2.Text = sData.getSData()[edit_index].purpose;
-            if(show_type == SHOW || show_type == EDIT)
+
+            if (show_type == SHOW)
             {
                 textBox1.ReadOnly = true;
                 textBox2.ReadOnly = true;
                 textBox3.ReadOnly = true;
+            }
 
-                Button path_pic;
-                
-                for (int i = 0; i < sPath.Count; i++)
-                {
-                    fpanel_path2 = new FlowLayoutPanel();
-                    fpanel_path2.FlowDirection = FlowDirection.TopDown;
+            /*
+            임시로 Button 변수를 만들어서 각 경로의 정보를 Button으로 만들고 패널에 추가한다.
+            해당 변수를 재활용하여 모든 경로에 대한 정보를 패널에 추가한다.
 
-                    path_pic = new Button();
-                    path_pic.Size = new Size((int)(temp_height * 0.5625), temp_height);
-                    path_pic.BackgroundImage = Image.FromFile(mPath + sPath[i].path);
-                    path_pic.BackgroundImageLayout = ImageLayout.Stretch;
-                    path_pic.Click += new EventHandler(this.picture_click);
-                    path_pic.FlatStyle = FlatStyle.Flat;
-                    path_pic.FlatAppearance.BorderSize = 0;
-                    path_pic.Name = "path_pic" + sPath[i].tag.ToString();
-                    path_pic.TabIndex = sPath[i].tag;
-                    fpanel_path2.Controls.Add(path_pic);
+            가로방향 FlowLayoutPanel(fpanel_path)위에 세로방향 FlowLayoutPanel(fpanel_path)을 올린다.
+            각 fpanel_path에는 1개의 버튼, 2개의 레이블이 포함된다.
+            버튼의 배경이미지는 경로정보에서 해당되는 이미지로 설정하고
+            2개의 레이블은 각각 이미지 이름과 시간 정보를 나타낸다.
+            */
+            Button path_pic;
+            
+            for (int i = 0; i < sPath.Count; i++)
+            {
+                fpanel_path = new FlowLayoutPanel();
+                fpanel_path.FlowDirection = FlowDirection.TopDown;
 
-                    //label
-                    Label path_name, path_time;
-                    path_name = new Label();
-                    path_name.Text = sPath[i].path;
-                    fpanel_path2.Controls.Add(path_name);
+                path_pic = new Button();
+                path_pic.Size = new Size((int)(temp_height * 0.5625), temp_height);
+                path_pic.BackgroundImage = Image.FromFile(mPath + sPath[i].path);
+                path_pic.BackgroundImageLayout = ImageLayout.Stretch;
+                path_pic.Click += new EventHandler(this.picture_click);
+                path_pic.FlatStyle = FlatStyle.Flat;
+                path_pic.FlatAppearance.BorderSize = 0;
+                path_pic.Name = "path_pic" + sPath[i].tag.ToString();
+                path_pic.TabIndex = sPath[i].tag;
+                fpanel_path.Controls.Add(path_pic);
 
-                    path_time = new Label();
-                    path_time.Text = sPath[i].time;
-                    path_time.TabIndex = sPath[i].tag;
-                    path_time.Name = "path_time" + sPath[i].tag.ToString();
-                    fpanel_path2.Controls.Add(path_time);
+                //label
+                Label path_name;
+                path_name = new Label();
+                path_name.Width = fpanel_path.Width;
+                path_name.Text = sPath[i].path;
+                path_name.BorderStyle = BorderStyle.FixedSingle;
+                path_name.ForeColor = Color.FromArgb(96, 96, 96);
+                path_name.TextAlign = ContentAlignment.MiddleCenter;
+                fpanel_path.Controls.Add(path_name);
 
-                    //fpanel_path2.WrapContents = false;
-                    fpanel_path2.Size = fpanel_path2.PreferredSize;
-                    fpanel_path2.Name = "path_pic" + sPath[i].tag.ToString();
-                    fpanel_path2.TabIndex = sPath[i].tag;
-                    fpanel_path2.BackColor = Color.Transparent;
+                Button path_time;
+                path_time = new Button();
+                path_time.Width = fpanel_path.Width;
+                path_time.Text = "예상체류시간 : " + sPath[sPath.Count - 1].stay_time + "초";
+                path_time.TabIndex = sPath[i].tag;
+                path_time.FlatStyle = FlatStyle.Flat;
+                path_time.ForeColor = Color.FromArgb(96, 96, 96);
+                path_time.Name = "path_time" + sPath[i].tag.ToString();
+                path_time.Click += new EventHandler(this.picture_click);
+                fpanel_path.Controls.Add(path_time);
 
-                    fp_route.Controls.Add(fpanel_path2);
-                }
+                Button path_change_time;
+                path_change_time = new Button();
+                path_change_time.Width = fpanel_path.Width;
+                path_change_time.Text = "자동변경시간 : " + sPath[sPath.Count - 1].auto_change_time + "초";
+                path_change_time.TabIndex = sPath[sPath.Count - 1].tag;
+                path_change_time.Click += new EventHandler(this.picture_click);
+                path_change_time.FlatStyle = FlatStyle.Flat;
+                path_change_time.ForeColor = Color.FromArgb(96, 96, 96);
+                path_change_time.Name = "path_change_time" + sPath[sPath.Count - 1].tag.ToString();
+                fpanel_path.Controls.Add(path_change_time);
 
+                //fpanel_path2.WrapContents = false;
+                fpanel_path.Size = fpanel_path.PreferredSize;
+                fpanel_path.Name = "path_pic" + sPath[i].tag.ToString();
+                fpanel_path.TabIndex = sPath[i].tag;
+                fpanel_path.BackColor = Color.Transparent;
+
+                fp_route.Controls.Add(fpanel_path);
             }
         }
 
         private void picture_click(object sender, EventArgs e)
         {
-            if(show_type != SHOW)
+            /*
+            시나리오 추가, 수정 모드에서 이미지버튼을 클릭하면 시간정보를 입력할 수 있도록 한다.
+            이미지버튼을 클릭하면 시간정보를 입력하는 팝업창이 뜨며 입력시 해당 이미지 인덱스에 반영된다.
+            경로 리스트에서 해당 이미지의 인덱스 정보는 이름을 비교해서(GetControlByName) 찾는다.
+            */
+
+            if (show_type != SHOW)
             {
                 Button path_btn = sender as Button;
 
@@ -206,15 +247,25 @@ namespace DropBox
 
                 if (PopupInput(button1, 4, 75, ref var) == System.Windows.Forms.DialogResult.OK)
                 {
-                    ((Label)ctl).Text = var;
+                    //((Button)ctl).Text = var;
 
                     for(int i = 0; i < sPath.Count; i++)
                     {
                         if(sPath[i].tag == path_btn.TabIndex)
                         {
                             string temp_path = sPath[i].path;
-                            sPath.RemoveAt(i);
-                            sPath.Insert(i, new ScenarioData.PATH_DATA() { tag = path_btn.TabIndex, path = temp_path, time = var});
+                            
+                            if (ctl.Name.Contains("change"))
+                            {
+                                sPath.Insert(i, new ScenarioData.PATH_DATA() { tag = path_btn.TabIndex, path = temp_path, stay_time = sPath[i].stay_time, auto_change_time = var });
+                                ((Button)ctl).Text = "자동변경시간 : " + var + "초";
+                            }
+                            else
+                            {
+                                sPath.Insert(i, new ScenarioData.PATH_DATA() { tag = path_btn.TabIndex, path = temp_path, stay_time = var, auto_change_time = sPath[i].auto_change_time });
+                                ((Button)ctl).Text = "예상체류시간 : " + var + "초";
+                            }
+                            sPath.RemoveAt(i+1);
                         }
                     }
                 }
@@ -229,30 +280,23 @@ namespace DropBox
         {
             foreach (Control c in this.fp_route.Controls)
             {
-                if (c.Name == clicked_btn.Name)
+                foreach(Control ct in c.Controls)
                 {
-                    foreach (Control ct in c.Controls)
+                    if (ct.Name == clicked_btn.Name)
                     {
-                        if(ct is Label && ct.TabIndex == clicked_btn.TabIndex)
+                        if (ct is Button && ct.TabIndex == clicked_btn.TabIndex)
                         {
                             return ct;
                         }
                     }
                 }
             }
-
             return null;
         }
 
         public DialogResult PopupInput(Control ctrl, int border, int length, ref string output)
         {
-
-
-            //handle alignment
             Point ctrlpt = Control.MousePosition;
-            //Point ctrlpt = this.PointToScreen(ctrl.Location);
-            //ctrlpt.Y += 24;
-            //ctrlpt.X += 4;
 
             TextBox input = new TextBox { Height = 20, Width = length, Top = border / 2, Left = border / 2 };
             input.BorderStyle = BorderStyle.FixedSingle;
@@ -294,65 +338,70 @@ namespace DropBox
             return rst;
         }
        
-
-        private void SelectImage(object sender, EventArgs e)
+        private void path_time_click(object sender, EventArgs e)
         {
-            Control ctl = sender as Control;
-            Button btn = sender as Button;
-            if (ctl != null)
-            {
-                fpanel_path2 = new FlowLayoutPanel();
-                fpanel_path2.FlowDirection = FlowDirection.TopDown;
-
-
-                //여기서 에러나면 맨 처음은 0으로 설정
-                try
-                {
-                    sPath.Add(new ScenarioData.PATH_DATA() { tag = sPath[sPath.Count - 1].tag + 1, path = btn.Name, time = "-1" });
-                }
-                catch(ArgumentOutOfRangeException ae)
-                {
-                    sPath.Add(new ScenarioData.PATH_DATA() { tag = 1, path = btn.Name, time = "-1" });
-                }
-
-                MessageBox.Show(btn.Name);
-                Button path_pic = new Button();
-                path_pic.Size = new Size((int)(temp_height * 0.5625), temp_height);
-                path_pic.BackgroundImage = Image.FromFile(mPath + sPath[sPath.Count-1].path);
-                path_pic.BackgroundImageLayout = ImageLayout.Stretch;
-                path_pic.Click += new EventHandler(this.picture_click);
-                path_pic.FlatStyle = FlatStyle.Flat;
-                path_pic.FlatAppearance.BorderSize = 0;
-                path_pic.Name = "path_pic" + sPath[sPath.Count - 1].tag.ToString();
-                path_pic.TabIndex = sPath[sPath.Count - 1].tag;
-
-                fpanel_path2.Controls.Add(path_pic);
-
-                fp_route.AutoScroll = true;
-
-                //label
-                Label path_name, path_time;
-                path_name = new Label();
-                path_name.Text = sPath[sPath.Count - 1].path;
-                fpanel_path2.Controls.Add(path_name);
-
-                path_time = new Label();
-                path_time.Text = sPath[sPath.Count - 1].time;
-                path_time.TabIndex = sPath[sPath.Count - 1].tag;
-                path_time.Name = "path_time" + sPath[sPath.Count - 1].tag.ToString();
-                fpanel_path2.Controls.Add(path_time);
-
-                fpanel_path2.WrapContents = false;
-                fpanel_path2.Size = fpanel_path2.PreferredSize;
-                fpanel_path2.Name = "path_pic" + sPath[sPath.Count - 1].tag.ToString();
-                fpanel_path2.TabIndex = sPath[sPath.Count - 1].tag;
-                fpanel_path2.BackColor = Color.Transparent;
-                fp_route.Controls.Add(fpanel_path2);
-                fp_route.WrapContents = false;
-                fp_route.AutoScroll = true;
-            }
-            //완료 버튼 누르면 종료하는 것으로.
+            MessageBox.Show("haha");
         }
+
+        //private void SelectImage(object sender, EventArgs e)
+        //{
+        //    Control ctl = sender as Control;
+        //    Button btn = sender as Button;
+        //    if (ctl != null)
+        //    {
+        //        fpanel_path = new FlowLayoutPanel();
+        //        fpanel_path.FlowDirection = FlowDirection.TopDown;
+
+
+        //        //여기서 에러나면 맨 처음은 0으로 설정
+        //        try
+        //        {
+        //            sPath.Add(new ScenarioData.PATH_DATA() { tag = sPath[sPath.Count - 1].tag + 1, path = btn.Name, time = "-1" });
+        //        }
+        //        catch(ArgumentOutOfRangeException ae)
+        //        {
+        //            sPath.Add(new ScenarioData.PATH_DATA() { tag = 1, path = btn.Name, time = "-1" });
+        //        }
+
+        //        MessageBox.Show(btn.Name);
+        //        Button path_pic = new Button();
+        //        path_pic.Size = new Size((int)(temp_height * 0.5625), temp_height);
+        //        path_pic.BackgroundImage = Image.FromFile(mPath + sPath[sPath.Count-1].path);
+        //        path_pic.BackgroundImageLayout = ImageLayout.Stretch;
+        //        path_pic.Click += new EventHandler(this.picture_click);
+        //        path_pic.FlatStyle = FlatStyle.Flat;
+        //        path_pic.FlatAppearance.BorderSize = 0;
+        //        path_pic.Name = "path_pic" + sPath[sPath.Count - 1].tag.ToString();
+        //        path_pic.TabIndex = sPath[sPath.Count - 1].tag;
+
+        //        fpanel_path.Controls.Add(path_pic);
+        //        fp_route.AutoScroll = true;
+
+        //        //label
+        //        Label path_name;
+        //        path_name = new Label();
+        //        path_name.Text = sPath[sPath.Count - 1].path;
+        //        fpanel_path.Controls.Add(path_name);
+
+        //        Button path_time;
+        //        path_time = new Button();
+        //        path_time.Text = sPath[sPath.Count - 1].time;
+        //        path_time.TabIndex = sPath[sPath.Count - 1].tag;
+        //        path_pic.Click += new EventHandler(this.path_time_click);
+        //        path_time.Name = "path_time" + sPath[sPath.Count - 1].tag.ToString();
+        //        fpanel_path.Controls.Add(path_time);
+
+        //        fpanel_path.WrapContents = false;
+        //        fpanel_path.Size = fpanel_path.PreferredSize;
+        //        fpanel_path.Name = "path_pic" + sPath[sPath.Count - 1].tag.ToString();
+        //        fpanel_path.TabIndex = sPath[sPath.Count - 1].tag;
+        //        fpanel_path.BackColor = Color.Transparent;
+        //        fp_route.Controls.Add(fpanel_path);
+        //        fp_route.WrapContents = false;
+        //        fp_route.AutoScroll = true;
+        //    }
+        //    //완료 버튼 누르면 종료하는 것으로.
+        //}
 
         private void comboBox_images_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -388,17 +437,17 @@ namespace DropBox
             //this.Height = panel1.Height;
             if (ctl != null)
             {
-                fpanel_path2 = new FlowLayoutPanel();
-                fpanel_path2.FlowDirection = FlowDirection.TopDown;
+                fpanel_path = new FlowLayoutPanel();
+                fpanel_path.FlowDirection = FlowDirection.TopDown;
 
                 //여기서 에러나면 맨 처음은 0으로 설정
                 try
                 {
-                    sPath.Add(new ScenarioData.PATH_DATA() { tag = sPath[sPath.Count - 1].tag + 1, path = comboBox_images.SelectedItem.ToString(), time = "3" });
+                    sPath.Add(new ScenarioData.PATH_DATA() { tag = sPath[sPath.Count - 1].tag + 1, path = comboBox_images.SelectedItem.ToString(), stay_time = "3", auto_change_time = "0" });
                 }
                 catch (ArgumentOutOfRangeException ae)
                 {
-                    sPath.Add(new ScenarioData.PATH_DATA() { tag = 1, path = comboBox_images.SelectedItem.ToString(), time = "3" });
+                    sPath.Add(new ScenarioData.PATH_DATA() { tag = 1, path = comboBox_images.SelectedItem.ToString(), stay_time = "3", auto_change_time = "0" });
                 }
 
                 Button path_pic = new Button();
@@ -411,26 +460,46 @@ namespace DropBox
                 path_pic.Name = "path_pic" + sPath[sPath.Count - 1].tag.ToString();
                 path_pic.TabIndex = sPath[sPath.Count - 1].tag;
 
-                fpanel_path2.Controls.Add(path_pic);
+                fpanel_path.Controls.Add(path_pic);
 
                 //label
-                Label path_name, path_time;
+                Label path_name;
                 path_name = new Label();
+                path_name.Width = fpanel_path.Width;
+                path_name.BorderStyle = BorderStyle.FixedSingle;
                 path_name.Text = sPath[sPath.Count - 1].path;
-                fpanel_path2.Controls.Add(path_name);
+                path_name.ForeColor = Color.FromArgb(96, 96, 96);
+                path_name.TextAlign = ContentAlignment.MiddleCenter;
+                fpanel_path.Controls.Add(path_name);
 
-                path_time = new Label();
-                path_time.Text = sPath[sPath.Count - 1].time;
+                Button path_time;
+                path_time = new Button();
+                path_time.Width = fpanel_path.Width;
+                path_time.Text = "예상체류시간 : " + sPath[sPath.Count - 1].stay_time + "초";
                 path_time.TabIndex = sPath[sPath.Count - 1].tag;
+                path_time.Click += new EventHandler(this.picture_click);
+                path_time.FlatStyle = FlatStyle.Flat;
+                path_time.ForeColor = Color.FromArgb(96, 96, 96);
                 path_time.Name = "path_time" + sPath[sPath.Count - 1].tag.ToString();
-                fpanel_path2.Controls.Add(path_time);
+                fpanel_path.Controls.Add(path_time);
 
-                fpanel_path2.WrapContents = false;
-                fpanel_path2.Size = fpanel_path2.PreferredSize;
-                fpanel_path2.Name = "path_pic" + sPath[sPath.Count - 1].tag.ToString();
-                fpanel_path2.TabIndex = sPath[sPath.Count - 1].tag;
-                fpanel_path2.BackColor = Color.Transparent;
-                fp_route.Controls.Add(fpanel_path2);
+                Button path_change_time;
+                path_change_time = new Button();
+                path_change_time.Width = fpanel_path.Width;
+                path_change_time.Text = "자동변경시간 : " + sPath[sPath.Count - 1].auto_change_time + "초";
+                path_change_time.TabIndex = sPath[sPath.Count - 1].tag;
+                path_change_time.Click += new EventHandler(this.picture_click);
+                path_change_time.FlatStyle = FlatStyle.Flat;
+                path_change_time.ForeColor = Color.FromArgb(96, 96, 96);
+                path_change_time.Name = "path_change_time" + sPath[sPath.Count - 1].tag.ToString();
+                fpanel_path.Controls.Add(path_change_time);
+
+                fpanel_path.WrapContents = false;
+                fpanel_path.Size = fpanel_path.PreferredSize;
+                fpanel_path.Name = "path_pic" + sPath[sPath.Count - 1].tag.ToString();
+                fpanel_path.TabIndex = sPath[sPath.Count - 1].tag;
+                fpanel_path.BackColor = Color.Transparent;
+                fp_route.Controls.Add(fpanel_path);
                 fp_route.WrapContents = false;
                 fp_route.AutoScroll = true;
 
@@ -459,6 +528,7 @@ namespace DropBox
             string pTitle = textBox1.Text;
             string pPurpose = textBox2.Text;
             string pTime = textBox3.Text;
+
 
             //시간은 초단위로만 받기
             try

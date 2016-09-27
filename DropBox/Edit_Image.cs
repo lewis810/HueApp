@@ -18,24 +18,24 @@ namespace DropBox
 {
     public partial class Edit_Image : Form
     {
-        //%%%%%%%%%%%%%%%%%%%%%%%
-        public struct LINK
-        {
-            public string fileName;
-            public List<link_info_temp> link_data_temp;
-        };
+        ////%%%%%%%%%%%%%%%%%%%%%%%
+        //public struct LINK
+        //{
+        //    public string fileName;
+        //    public List<link_info_temp> link_data_temp;
+        //};
 
-        public struct link_info_temp
-        {
-            public int btn_id;
-            public Button bttn;
-            public string DstFile;
-            public Point image_xy;
-            public float image_width;
-            public float image_height;
-            public string input_type;
-        };
-        //%%%%%%%%%%%%%%%%%%%%%%%
+        //public struct link_info_temp
+        //{
+        //    public int btn_id;
+        //    public Button bttn;
+        //    public string DstFile;
+        //    public Point image_xy;
+        //    public float image_width;
+        //    public float image_height;
+        //    public string input_type;
+        //};
+        ////%%%%%%%%%%%%%%%%%%%%%%%
 
         struct link_info
         {
@@ -53,6 +53,7 @@ namespace DropBox
         List<EditProject.TotalData> pTotal_data;
 
         bool swipe = false;
+        int swipe_type = 0;
         string image_name;
         string work_message;
         int btn_id_to_add = -1;
@@ -448,21 +449,21 @@ namespace DropBox
             fpanel_editImage_link.Visible = true;
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //콤보박스에서 선택한 것이 리스트 박스 안에 없다면 추가한다.
-            if(!listBox1.Items.Contains(cb_swipe.SelectedItem))
-            {
-                fpanel_editImage_link.Visible = true;
-                fpanel_editImage_link.BringToFront();
-                swipe = true;
-                //MessageBox.Show("swipe3");
-                //밑에 링크박스 열리면서 선택할 경우 추가하도록
-                //listBox1.Items.Add(comboBox1.SelectedItem);
-                //ADD하면서 pData에도 추가
-                //pData.AddLink(index, btn_id_to_add, pDstFile, new Point(-1, -1), -1, -1, comboBox1.SelectedItem);
-            }
-        }
+        //private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    //콤보박스에서 선택한 것이 리스트 박스 안에 없다면 추가한다.
+        //    if(!listBox1.Items.Contains(cb_swipe.SelectedItem))
+        //    {
+        //        fpanel_editImage_link.Visible = true;
+        //        fpanel_editImage_link.BringToFront();
+        //        swipe = true;
+        //        //MessageBox.Show("swipe3");
+        //        //밑에 링크박스 열리면서 선택할 경우 추가하도록
+        //        //listBox1.Items.Add(comboBox1.SelectedItem);
+        //        //ADD하면서 pData에도 추가
+        //        //pData.AddLink(index, btn_id_to_add, pDstFile, new Point(-1, -1), -1, -1, comboBox1.SelectedItem);
+        //    }
+        //}
 
         private void Form1_Resize(object sender, EventArgs e)
         {
@@ -627,6 +628,150 @@ namespace DropBox
             g.DrawImage(mainImage, 0, 0, this.panel_for_pic.Width, this.panel_for_pic.Height);
         }
 
+        private void btn_swipe_left_Click(object sender, EventArgs e)
+        {
+            if(btn_swipe_left.BackColor == Color.Silver)
+            {
+                for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
+                {
+                    if (pData.GetLinks()[fileIndex].link_data[i].input_type.CompareTo("Swipe_Left") == 0)
+                    {
+                        work_message =
+                                        "링크가 삭제되었습니다."
+                                        + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
+                                        + "\n------------------------\n";
+                        str_work.Add(work_message);
+
+                        this.label_info.Text = string.Empty;
+
+                        for (int j = str_work.Count; j > 0; j--)
+                        {
+                            this.label_info.Text += str_work[j - 1];
+                        }
+                        pData.GetLinks()[fileIndex].link_data.RemoveAt(i);
+                        break;
+                    }
+                }
+                btn_swipe_left.BackColor = Color.White;
+            }
+            else
+            {
+                swipe = true;
+                swipe_type = 1;
+                this.panel_editImage_link.Visible = true;
+                this.panel_editImage_link.BringToFront();
+                fpanel_editImage_link.Visible = true;
+            }
+        }
+
+        private void btn_swipe_right_Click(object sender, EventArgs e)
+        {
+            if (btn_swipe_right.BackColor == Color.Silver)
+            {
+                for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
+                {
+                    if (pData.GetLinks()[fileIndex].link_data[i].input_type.CompareTo("Swipe_Right") == 0)
+                    {
+                        work_message =
+                                        "링크가 삭제되었습니다."
+                                        + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
+                                        + "\n------------------------\n";
+                        str_work.Add(work_message);
+
+                        this.label_info.Text = string.Empty;
+
+                        for (int j = str_work.Count; j > 0; j--)
+                        {
+                            this.label_info.Text += str_work[j - 1];
+                        }
+                        pData.GetLinks()[fileIndex].link_data.RemoveAt(i);
+                        break;
+                    }
+                }
+                btn_swipe_right.BackColor = Color.White;
+            }
+            else
+            {
+                swipe = true;
+                swipe_type = 2;
+                this.panel_editImage_link.Visible = true;
+                this.panel_editImage_link.BringToFront();
+                fpanel_editImage_link.Visible = true;
+            }
+        }
+
+        private void btn_swipe_up_Click(object sender, EventArgs e)
+        {
+            if (btn_swipe_up.BackColor == Color.Silver)
+            {
+                for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
+                {
+                    if (pData.GetLinks()[fileIndex].link_data[i].input_type.CompareTo("Swipe_Up") == 0)
+                    {
+                        work_message =
+                                        "링크가 삭제되었습니다."
+                                        + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
+                                        + "\n------------------------\n";
+                        str_work.Add(work_message);
+
+                        this.label_info.Text = string.Empty;
+
+                        for (int j = str_work.Count; j > 0; j--)
+                        {
+                            this.label_info.Text += str_work[j - 1];
+                        }
+                        pData.GetLinks()[fileIndex].link_data.RemoveAt(i);
+                        break;
+                    }
+                }
+                btn_swipe_up.BackColor = Color.White;
+            }
+            else
+            {
+                swipe = true;
+                swipe_type = 3;
+                this.panel_editImage_link.Visible = true;
+                this.panel_editImage_link.BringToFront();
+                fpanel_editImage_link.Visible = true;
+            }
+        }
+
+        private void btn_swipe_down_Click(object sender, EventArgs e)
+        {
+            if (btn_swipe_down.BackColor == Color.Silver)
+            {
+                for (int i = 0; i < pData.GetLinks()[fileIndex].link_data.Count; i++)
+                {
+                    if (pData.GetLinks()[fileIndex].link_data[i].input_type.CompareTo("Swipe_Down") == 0)
+                    {
+                        work_message =
+                                        "링크가 삭제되었습니다."
+                                        + "\nLink ID : " + pData.GetLinks()[fileIndex].link_data[i].btn_id
+                                        + "\n------------------------\n";
+                        str_work.Add(work_message);
+
+                        this.label_info.Text = string.Empty;
+
+                        for (int j = str_work.Count; j > 0; j--)
+                        {
+                            this.label_info.Text += str_work[j - 1];
+                        }
+                        pData.GetLinks()[fileIndex].link_data.RemoveAt(i);
+                        break;
+                    }
+                }
+                btn_swipe_down.BackColor = Color.White;
+            }
+            else
+            {
+                swipe = true;
+                swipe_type = 4;
+                this.panel_editImage_link.Visible = true;
+                this.panel_editImage_link.BringToFront();
+                fpanel_editImage_link.Visible = true;
+            }
+        }
+
         //Xml 저장
         private void SaveBtnClick(object sender, EventArgs e)
         {
@@ -786,12 +931,28 @@ namespace DropBox
                     //case : swipe --> id, type, dstFile만 있으면 되기 때문에 나머지는 -1로 초기화
                     if (pInputType.Contains("Swipe"))
                     {
-                        listBox1.Items.Add(pInputType);
-                        listBox1.Height = listBox1.PreferredHeight;
                         pLinkX = "-1";
                         pLinkY = "-1";
                         pLinkWidth = "-1";
                         pLinkHeight = "-1";
+
+                        if (pInputType.CompareTo("Swipe_Left") == 0)
+                        {
+                            btn_swipe_left.BackColor = Color.Silver;
+                        }
+                        else if (pInputType.CompareTo("Swipe_Right") == 0)
+                        {
+                            btn_swipe_right.BackColor = Color.Silver;
+                        }
+                        else if (pInputType.CompareTo("Swipe_Up") == 0)
+                        {
+                            btn_swipe_up.BackColor = Color.Silver;
+                        }
+                        else if (pInputType.CompareTo("Swipe_Down") == 0)
+                        {
+                            btn_swipe_down.BackColor = Color.Silver;
+                        }
+
                     }
                     //링크정보를 추가할 경우 부여되는 ID
                     if (btn_id_to_add <= Convert.ToInt32(pTag))
@@ -815,7 +976,14 @@ namespace DropBox
 
             link_alloc.Visible = false;
             panel_editImage_link.Visible = false;
-            g.DrawImage(mainImage, 0, 0, this.panel_for_pic.Width, this.panel_for_pic.Height);
+
+            try
+            {
+                g.DrawImage(mainImage, 0, 0, this.panel_for_pic.Width, this.panel_for_pic.Height);
+            }catch(NullReferenceException ne)
+            {
+
+            }
             this.Invalidate();
 
             if (ctl != null)
@@ -840,15 +1008,43 @@ namespace DropBox
                 //추가하기
                 if (swipe == true)
                 {
-                    btn_index = pData.AddLink(image_name, addIndex, btn_id_to_add, btn.Name, new Point(-1, -1), -1, -1, cb_swipe.SelectedItem.ToString());
-                    listBox1.Items.Add(cb_swipe.SelectedItem);
-                    listBox1.Height = listBox1.PreferredHeight;
+                    //이미 클릭되어 있던 버튼인 경우
+                    //이 경우는 버튼 클릭단계에서 취소 하는 것으로.
+
+                    //새로 추가하는 경우
+
+                    string swipe_type_input = string.Empty;
+                    if(swipe_type == 1)
+                    {
+                        swipe_type_input = "Swipe_Left";
+                        btn_swipe_left.BackColor = Color.Silver;
+                    }
+                    else if(swipe_type == 2)
+                    {
+                        swipe_type_input = "Swipe_Right";
+                        btn_swipe_right.BackColor = Color.Silver;
+                    }
+                    else if (swipe_type == 3)
+                    {
+                        swipe_type_input = "Swipe_Up";
+                        btn_swipe_up.BackColor = Color.Silver;
+                    }
+                    else if(swipe_type == 4)
+                    {
+                        swipe_type_input = "Swipe_Down";
+                        btn_swipe_down.BackColor = Color.Silver;
+                    }
+
+                    btn_index = pData.AddLink(image_name, addIndex, btn_id_to_add, btn.Name, new Point(-1, -1), -1, -1, swipe_type_input);
+                    //listBox1.Items.Add(cb_swipe.SelectedItem);
+                    //listBox1.Height = listBox1.PreferredHeight;
                     work_message =
                                "저장되었습니다."
                            + "\nDestination Index : " + pData.GetLinks()[addIndex].link_data[btn_index].dst_file
                            + "\nLink ID : " + pData.GetLinks()[addIndex].link_data[btn_index].btn_id
                            + "\n------------------------\n"; 
                     swipe = false;
+                    swipe_type = 0;
                 }
                 //case : button
                 else

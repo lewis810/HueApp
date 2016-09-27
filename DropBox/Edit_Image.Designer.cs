@@ -30,11 +30,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Edit_Image));
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.panel_image_link = new System.Windows.Forms.Panel();
             this.panel_for_pic = new System.Windows.Forms.Panel();
             this.pictureBox_main = new System.Windows.Forms.PictureBox();
-            this.cb_swipe = new System.Windows.Forms.ComboBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.del_btn = new System.Windows.Forms.Button();
             this.fpanel_editImage_link = new System.Windows.Forms.FlowLayoutPanel();
@@ -45,6 +45,10 @@
             this.panel_detail_info = new System.Windows.Forms.Panel();
             this.label_info = new System.Windows.Forms.Label();
             this.panel_editImage_left2 = new System.Windows.Forms.Panel();
+            this.btn_swipe_down = new System.Windows.Forms.Button();
+            this.btn_swipe_up = new System.Windows.Forms.Button();
+            this.btn_swipe_right = new System.Windows.Forms.Button();
+            this.btn_swipe_left = new System.Windows.Forms.Button();
             this.label_zoom = new System.Windows.Forms.Label();
             this.label_swipe = new System.Windows.Forms.Label();
             this.panel_editImage_link = new System.Windows.Forms.Panel();
@@ -97,23 +101,6 @@
             this.pictureBox_main.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.pictureBox_main.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.pictureBox_main.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
-            // 
-            // cb_swipe
-            // 
-            this.cb_swipe.Font = new System.Drawing.Font("굴림", 14F);
-            this.cb_swipe.ForeColor = System.Drawing.Color.Black;
-            this.cb_swipe.FormattingEnabled = true;
-            this.cb_swipe.Items.AddRange(new object[] {
-            "Swipe_Right",
-            "Swipe_Left",
-            "Swipe_Up",
-            "Swipe_Down"});
-            this.cb_swipe.Location = new System.Drawing.Point(80, 82);
-            this.cb_swipe.Margin = new System.Windows.Forms.Padding(2);
-            this.cb_swipe.Name = "cb_swipe";
-            this.cb_swipe.Size = new System.Drawing.Size(163, 27);
-            this.cb_swipe.TabIndex = 12;
-            this.cb_swipe.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // listBox1
             // 
@@ -218,21 +205,74 @@
             // panel_editImage_left2
             // 
             this.panel_editImage_left2.BackColor = System.Drawing.Color.White;
+            this.panel_editImage_left2.Controls.Add(this.btn_swipe_down);
+            this.panel_editImage_left2.Controls.Add(this.btn_swipe_up);
+            this.panel_editImage_left2.Controls.Add(this.btn_swipe_right);
+            this.panel_editImage_left2.Controls.Add(this.btn_swipe_left);
             this.panel_editImage_left2.Controls.Add(this.label_zoom);
             this.panel_editImage_left2.Controls.Add(this.label_swipe);
-            this.panel_editImage_left2.Controls.Add(this.cb_swipe);
             this.panel_editImage_left2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel_editImage_left2.Location = new System.Drawing.Point(0, 0);
             this.panel_editImage_left2.Name = "panel_editImage_left2";
             this.panel_editImage_left2.Size = new System.Drawing.Size(305, 739);
             this.panel_editImage_left2.TabIndex = 11;
             // 
+            // btn_swipe_down
+            // 
+            this.btn_swipe_down.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btn_swipe_down.BackgroundImage")));
+            this.btn_swipe_down.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btn_swipe_down.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_swipe_down.Location = new System.Drawing.Point(165, 173);
+            this.btn_swipe_down.Name = "btn_swipe_down";
+            this.btn_swipe_down.Size = new System.Drawing.Size(75, 75);
+            this.btn_swipe_down.TabIndex = 18;
+            this.btn_swipe_down.UseVisualStyleBackColor = true;
+            this.btn_swipe_down.Click += new System.EventHandler(this.btn_swipe_down_Click);
+            // 
+            // btn_swipe_up
+            // 
+            this.btn_swipe_up.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btn_swipe_up.BackgroundImage")));
+            this.btn_swipe_up.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btn_swipe_up.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_swipe_up.Location = new System.Drawing.Point(80, 173);
+            this.btn_swipe_up.Name = "btn_swipe_up";
+            this.btn_swipe_up.Size = new System.Drawing.Size(75, 75);
+            this.btn_swipe_up.TabIndex = 17;
+            this.btn_swipe_up.UseVisualStyleBackColor = true;
+            this.btn_swipe_up.Click += new System.EventHandler(this.btn_swipe_up_Click);
+            // 
+            // btn_swipe_right
+            // 
+            this.btn_swipe_right.BackColor = System.Drawing.Color.White;
+            this.btn_swipe_right.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btn_swipe_right.BackgroundImage")));
+            this.btn_swipe_right.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btn_swipe_right.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_swipe_right.Location = new System.Drawing.Point(165, 80);
+            this.btn_swipe_right.Name = "btn_swipe_right";
+            this.btn_swipe_right.Size = new System.Drawing.Size(75, 75);
+            this.btn_swipe_right.TabIndex = 16;
+            this.btn_swipe_right.UseVisualStyleBackColor = false;
+            this.btn_swipe_right.Click += new System.EventHandler(this.btn_swipe_right_Click);
+            // 
+            // btn_swipe_left
+            // 
+            this.btn_swipe_left.BackColor = System.Drawing.Color.White;
+            this.btn_swipe_left.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btn_swipe_left.BackgroundImage")));
+            this.btn_swipe_left.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btn_swipe_left.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_swipe_left.Location = new System.Drawing.Point(80, 80);
+            this.btn_swipe_left.Name = "btn_swipe_left";
+            this.btn_swipe_left.Size = new System.Drawing.Size(75, 75);
+            this.btn_swipe_left.TabIndex = 15;
+            this.btn_swipe_left.UseVisualStyleBackColor = false;
+            this.btn_swipe_left.Click += new System.EventHandler(this.btn_swipe_left_Click);
+            // 
             // label_zoom
             // 
             this.label_zoom.AutoSize = true;
             this.label_zoom.Font = new System.Drawing.Font("굴림", 18F);
             this.label_zoom.ForeColor = System.Drawing.Color.Black;
-            this.label_zoom.Location = new System.Drawing.Point(80, 124);
+            this.label_zoom.Location = new System.Drawing.Point(80, 342);
             this.label_zoom.Name = "label_zoom";
             this.label_zoom.Size = new System.Drawing.Size(70, 24);
             this.label_zoom.TabIndex = 14;
@@ -336,7 +376,6 @@
         private System.Windows.Forms.PictureBox pictureBox_main;
         private System.Windows.Forms.Panel panel_for_pic;
         private System.Windows.Forms.Label label_info;
-        private System.Windows.Forms.ComboBox cb_swipe;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button del_btn;
         private System.Windows.Forms.FlowLayoutPanel fpanel_editImage_link;
@@ -350,6 +389,10 @@
         private System.Windows.Forms.Panel panel_detail_info;
         private System.Windows.Forms.Panel panel_editImage_link;
         private System.Windows.Forms.Button btn_close_linkPanel;
+        private System.Windows.Forms.Button btn_swipe_down;
+        private System.Windows.Forms.Button btn_swipe_up;
+        private System.Windows.Forms.Button btn_swipe_right;
+        private System.Windows.Forms.Button btn_swipe_left;
     }
 }
 

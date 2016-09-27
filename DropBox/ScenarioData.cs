@@ -24,10 +24,9 @@ namespace DropBox
         {
             public int tag;
             public string path;
-            public string time;
+            public string stay_time;
+            public string auto_change_time;
         }
-
-        
 
         List<SCENARIO_DATA> sData = new List<SCENARIO_DATA>();
 
@@ -63,14 +62,14 @@ namespace DropBox
             return last_index;
         }
 
-        public void resetTime(int index, string pTime, string pPath, int pTag)
+        public void resetTime(int index, string pStayTime, string pPath, int pTag, string pAutoCgTime)
         {
             for(int i = 0; i < sData[index].paths.Count; i++)
             {
                 if(sData[index].paths[i].tag == pTag)
                 {
                     sData[index].paths.RemoveAt(i);
-                    sData[index].paths.Insert(i, new PATH_DATA() { tag = pTag, path = pPath, time = pTime });
+                    sData[index].paths.Insert(i, new PATH_DATA() { tag = pTag, path = pPath, stay_time = pStayTime, auto_change_time = pAutoCgTime });
                 }
             }
         }

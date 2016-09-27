@@ -31,31 +31,7 @@ namespace DropBox
 
         string project_name;
 
-        Regex rgbInputR;
-        Regex rgbInputG;
-        Regex rgbInputB;
-
-        int r;
-        int g;
-        int b;
-
-
-        string colorX;
-
         PrivateFontCollection pfc = new PrivateFontCollection();
-
-        [DllImport("gdi32")]
-        private static extern int GetPixel(IntPtr hdc, int x, int y);
-        [DllImport("User32")]
-        private static extern IntPtr GetWindowDC(IntPtr hwnd);
-
-        private static readonly IntPtr DesktopDC = GetWindowDC(IntPtr.Zero);
-
-        public static System.Drawing.Color GetPixelAtCursor()
-        {
-            System.Drawing.Point p = Cursor.Position;
-            return System.Drawing.Color.FromArgb(GetPixel(DesktopDC, p.X, p.Y));
-        }
 
         public Dots(List<EditProject.TotalData> _pTotal_data, string _project_name, ScenarioData _sData)
         {
@@ -248,24 +224,6 @@ namespace DropBox
             return TransparentImage;
         }
 
-        private void panel_analysis_picture_dot_MouseMove(object sender, MouseEventArgs e)
-        {
-            Console.WriteLine("1" + GetPixelAtCursor().A.ToString() + "//" + GetPixelAtCursor().R.ToString() + "//" + GetPixelAtCursor().G.ToString() + "//" + GetPixelAtCursor().B.ToString());
-
-        }
-
-        private void panel_analysis_picture_MouseMove(object sender, MouseEventArgs e)
-        {
-            Console.WriteLine("2" + GetPixelAtCursor().A.ToString() + "//" + GetPixelAtCursor().R.ToString() + "//" + GetPixelAtCursor().G.ToString() + "//" + GetPixelAtCursor().B.ToString());
-
-        }
-
-        private void pic_mousemove(object sender, MouseEventArgs e)
-        {
-            Console.WriteLine("3" + GetPixelAtCursor().A.ToString() + "//" + GetPixelAtCursor().R.ToString() + "//" + GetPixelAtCursor().G.ToString() + "//" + GetPixelAtCursor().B.ToString());
-
-        }
-
         public Color SetColor(int A, Color color)
         {
             return Color.FromArgb(A, color.R, color.G, color.B);
@@ -313,9 +271,6 @@ namespace DropBox
         {
             int click = 0;
             int visit = 0;
-
-            
-
         }
     }
 }

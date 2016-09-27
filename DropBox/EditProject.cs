@@ -505,7 +505,7 @@ namespace DropBox
                 string sTitle, sPurpose, sTime, sLevel;
                 int sTag = 0;
                 List<ScenarioData.PATH_DATA> sPath = new List<ScenarioData.PATH_DATA>();
-                string pPath, pPathTime;
+                string pPath, pStayTime, pAutoChangeTime;
 
                 foreach (XmlNode child_node in nodeList)
                 {
@@ -521,8 +521,13 @@ namespace DropBox
                     {
                         XmlNode temp = new_node.SelectSingleNode("Route" + (j+1).ToString());
                         pPath = temp.Attributes["img"].Value.ToString();
-                        pPathTime = temp.InnerText;
-                        sPath.Add(new ScenarioData.PATH_DATA() { tag = j, path = pPath, time = pPathTime });
+
+                        XmlNode stayTime = temp.SelectSingleNode("StayTime");
+                        pStayTime = stayTime.InnerText;
+                        XmlNode autoChangeTime = temp.SelectSingleNode("AutoChangeTime");
+                        pAutoChangeTime = autoChangeTime.InnerText;
+
+                        sPath.Add(new ScenarioData.PATH_DATA() { tag = j, path = pPath, stay_time = pStayTime, auto_change_time = pAutoChangeTime });
                     }
                     sTime = child_node.SelectSingleNode("TotalTime").InnerText;
                     Console.WriteLine("추가");
@@ -733,7 +738,7 @@ namespace DropBox
                 front.CompareTo("Route") == 0 || front.CompareTo("Survey") == 0)
             {
                 panel_analysis.Controls[0].Show();
-            }
+            }   
             else
             {
                 Dots dots = new Dots(total_data, pData.GetProjectName(), sData);
@@ -870,9 +875,17 @@ namespace DropBox
                         writer.WriteStartAttribute("img");
                         writer.WriteString(sData.getSData()[j].paths[k].path);
                         writer.WriteEndAttribute();
-                        writer.WriteString(sData.getSData()[j].paths[k].time);
+
+                        writer.WriteStartElement("StayTime");
+                        writer.WriteString(sData.getSData()[j].paths[k].stay_time);
                         writer.WriteEndElement();
-                        totalTime += Convert.ToInt16(sData.getSData()[j].paths[k].time);
+
+                        writer.WriteStartElement("AutoChangeTime");
+                        writer.WriteString(sData.getSData()[j].paths[k].auto_change_time);
+                        writer.WriteEndElement();
+
+                        writer.WriteEndElement();
+                        totalTime += Convert.ToInt16(sData.getSData()[j].paths[k].stay_time);
                     }
                     writer.WriteEndElement();
 
